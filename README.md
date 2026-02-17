@@ -16,3 +16,6 @@ Att. Lucas Alves
 4. Conseguir comparar as versões de cada arquivo.
 5. Manter um histórico da coisa toda.
 6. Garantir que isso tudo funcione de forma colaborativa. 
+
+17-02-2026: Acabei de me deparar com o setimo problema.
+7. Fazer tudo isso funfar através de linha de comando.
