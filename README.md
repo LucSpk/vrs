@@ -5,3 +5,14 @@ Ps. Sejam gentis.
 
 
 Att. Lucas Alves
+
+
+
+17-02-2026: Andei lendo alguns artigos e acho que primeiro preciso eleger alguns problemas iniciais a serem resolvidos, o que devem ser como as features da coisa toda.
+
+1. Como diacho vou "iniciar um repositório", começar a acompanhar as mudanças dos arquivos que estão dentro do diretório em tempo real. 
+2. Como salvar versões dos arquivos conforme tudo for sendo modificado. 
+3. Esse item meio que anda como anterior, meio que preciso identificar cada "versão" dos arquivos, para que eu possa voltar a elas depois, ou comparar as mudanças, ou seja lá o que for possível fazer com isso, e além disso, adicionar macros de tudo, quem fez, quando fez, etc.
+4. Conseguir comparar as versões de cada arquivo.
+5. Manter um histórico da coisa toda.
+6. Garantir que isso tudo funcione de forma colaborativa. 
