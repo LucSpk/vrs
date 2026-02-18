@@ -19,3 +19,6 @@ Att. Lucas Alves
 
 17-02-2026: Acabei de me deparar com o setimo problema.
 7. Fazer tudo isso funfar através de linha de comando.
+
+18-02-2026: Bem como pode ver, depois de algumas pesquisas, consegui uma forma de encontrar os arquivos do diretório. Agora estou tentandodescobrir como extender isso para os diretórios dentro do diretório principal. 
+
