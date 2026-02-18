@@ -3,7 +3,7 @@
 #include <string.h>
 #include <dirent.h>
 #include <sys/stat.h>
-#include <limits.h>
+#include <linux/limits.h>
 
 void identificaArquivos(char *caminho, int exibeOcultos) {
     struct dirent *entrada;
