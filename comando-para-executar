@@ -1,0 +1,5 @@
+
+gcc -c main.c
+gcc -c rastreador/identifica-arquivos-do-diretorio/identifica-arquivos.c
+gcc main.o identifica-arquivos.o -o programa -lcrypto
+./programa
