@@ -5,7 +5,7 @@
 #include <sys/stat.h>
 #include <limits.h>
 
-void identificaArquivos(char *caminho) {
+void identificaArquivos(char *caminho, int exibeOcultos) {
     struct dirent *entrada;
     DIR *dir = opendir(caminho);
 
@@ -21,6 +21,12 @@ void identificaArquivos(char *caminho) {
             continue;
         }
 
+        // Se a flag estiver ativada, ignora arquivos que começam com "."
+        if (!exibeOcultos && entrada->d_name[0] == '.') {
+            continue;
+        }
+
+
         char caminhoCompleto[PATH_MAX];
         snprintf(caminhoCompleto, sizeof(caminhoCompleto), "%s/%s", caminho, entrada->d_name);
 
@@ -31,7 +37,7 @@ void identificaArquivos(char *caminho) {
         }
 
         if (S_ISDIR(info.st_mode)) {
-            identificaArquivos(caminhoCompleto); // recursão
+            identificaArquivos(caminhoCompleto, exibeOcultos); // recursão
         } else if (S_ISREG(info.st_mode)) {
             printf("%s\n", caminhoCompleto);
         }
