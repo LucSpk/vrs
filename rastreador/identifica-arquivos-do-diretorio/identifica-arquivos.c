@@ -18,7 +18,12 @@ void identificaArquivos(char *caminho) {
     printf("Conteúdo do diretório:\n");
     
     while ((entrada = readdir(dir)) != NULL) {
-        printf("%s\n", entrada->d_name);
+        // - Fiz um teste e está aparecendo '.' e '..', na saida, o que corresponde a pasta atual e a aterior, vamos remover isso..
+        if(strcmp(entrada -> d_name, ".") == 0 || strcmp(entrada -> d_name, "..") == 0) {
+            continue;
+        }
+
+        printf("%s\n", entrada -> d_name);
     }
     closedir(dir);
 }
