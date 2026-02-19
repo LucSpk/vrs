@@ -5,7 +5,7 @@
 #include <sys/stat.h>
 #include <linux/limits.h>
 
-void identificaArquivos(char *caminho, int exibeOcultos) {
+static void _identificaArquivos(char *caminho, int exibeOcultos, char ***arr) {
     struct dirent *entrada;
     DIR *dir = opendir(caminho);
 
@@ -26,21 +26,27 @@ void identificaArquivos(char *caminho, int exibeOcultos) {
             continue;
         }
 
-
         char caminhoCompleto[PATH_MAX];
-        snprintf(caminhoCompleto, sizeof(caminhoCompleto), "%s/%s", caminho, entrada->d_name);
+        // - Formata a string;
+        snprintf(caminhoCompleto, sizeof(caminhoCompleto), "%s/%s", caminho, entrada -> d_name);
 
         struct stat info;
         if (stat(caminhoCompleto, &info) == -1) {
             perror("Erro no stat");
             continue;
         }
-
+        
+        // - Caso for um diretório, ele aciona a funcao recursivamente até encontrar o fim.
         if (S_ISDIR(info.st_mode)) {
-            identificaArquivos(caminhoCompleto, exibeOcultos); // recursão
+             _identificaArquivos(caminhoCompleto, exibeOcultos, arr); // recursão
         } else if (S_ISREG(info.st_mode)) {
             printf("%s\n", caminhoCompleto);
         }
     }
     closedir(dir);
+}
+
+void identificaArquivos(char *caminho, int exibeOcultos, char ***arr) {
+    
+    _identificaArquivos(caminho, exibeOcultos, arr);
 }
