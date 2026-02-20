@@ -46,7 +46,13 @@ static void _identificaArquivos(char *caminho, int exibeOcultos, char ***arr) {
     closedir(dir);
 }
 
-void identificaArquivos(char *caminho, int exibeOcultos, char ***arr) {
+void identificaArquivos(char *caminho, int exibeOcultos, char ***arr) {     // - ***arr eu tenho um ponteiro para o endereço de memória do array de strings
+
+    int tamanhoPadrao = 10;
+    arr = malloc(tamanhoPadrao * sizeof(char *));       // - Grava o endereço de memória dinâmica no ponteiro arr
+                                                        //      sizeof(char *) retornar o tamanho máximo de um uma variável tipo 'char' em bytes. usar somente o sizeof(char) 
+                                                        //      resultaria somente em tamanho 1 de um caracter apenas. "char *" representa o tamano do espaseo de memória do tipo char. 
+                                                        //      multiplica pelo tamanho padrão, para que tenha a quantidade de bytes equivalente a 10 chars.
     
     _identificaArquivos(caminho, exibeOcultos, arr);
 }
