@@ -5,7 +5,7 @@
 #include <sys/stat.h>
 #include <linux/limits.h>
 
-static void _identificaArquivos(char *caminho, int exibeOcultos, char ***arr, int tamanhoPadrao, int tamanhoAtual) {
+static void _identificaArquivos(char *caminho, int exibeOcultos, char ***arr, int *tamanhoPadrao, int *tamanhoAtual) {
     struct dirent *entrada;
     DIR *dir = opendir(caminho);
 
@@ -40,12 +40,25 @@ static void _identificaArquivos(char *caminho, int exibeOcultos, char ***arr, in
         if (S_ISDIR(info.st_mode)) {
              _identificaArquivos(caminhoCompleto, exibeOcultos, arr, tamanhoPadrao, tamanhoAtual);      // - Recursão
         } else if (S_ISREG(info.st_mode)) {
-            if(tamanhoAtual >= tamanhoPadrao) {                     // - Se o tamanho total do array se aproximar do maximo de memória reservado, dobra o tamanho usando realloc
-                tamanhoPadrao *= 2;
-                arr = realloc(arr, tamanhoPadrao * sizeof(char *));
+            if(*tamanhoAtual >= *tamanhoPadrao) {                     // - Se o tamanho total do array se aproximar do maximo de memória reservado, dobra o tamanho usando realloc
+                (*tamanhoPadrao) *= 2;
+                char **temp = realloc(*arr, (*tamanhoPadrao) * sizeof(char *));
+                if (!temp) {
+                    perror("Erro no realloc");
+                    return;
+                }
+                *arr = temp;
             }
-            
-            tamanhoAtual++;
+            //Posso ir para frente nos espeços de memória do ponteiro usanro arr[posição], dessa forma (*arr)[posição], me permite passear no segundo nivel do array
+            (*arr)[*tamanhoAtual] = malloc(strlen(caminhoCompleto) + 1);     // - Aloca memmória suficiente para o caminho + caractere nulo final '\0'
+            if (*arr == NULL) {
+                fprintf(stderr, "Erro: Falha na alocação de memória (malloc retornou NULL)\n");
+                return;
+            }
+
+            strcpy((*arr)[*tamanhoAtual], caminhoCompleto);
+
+            (*tamanhoAtual)++;
             printf("%s\n", caminhoCompleto);
         }
     }
@@ -56,10 +69,14 @@ void identificaArquivos(char *caminho, int exibeOcultos, char ***arr) {     // -
 
     int tamanhoAtual = 0;
     int tamanhoPadrao = 2;
-    arr = malloc(tamanhoPadrao * sizeof(char *));       // - Grava o endereço de memória dinâmica no ponteiro arr
+    *arr = malloc(tamanhoPadrao * sizeof(char *));      // - Grava o endereço de memória dinâmica no ponteiro arr
                                                         //      sizeof(char *) retornar o tamanho máximo de um uma variável tipo 'char' em bytes. usar somente o sizeof(char) 
                                                         //      resultaria somente em tamanho 1 de um caracter apenas. "char *" representa o tamano do espaseo de memória do tipo char. 
                                                         //      multiplica pelo tamanho padrão, para que tenha a quantidade de bytes equivalente a 10 chars.
-    
-    _identificaArquivos(caminho, exibeOcultos, arr, tamanhoPadrao, tamanhoAtual);
+    if (!*arr) {
+        perror("Erro no malloc inicial");
+        return;
+    }
+
+    _identificaArquivos(caminho, exibeOcultos, arr, &tamanhoPadrao, &tamanhoAtual);
 }
