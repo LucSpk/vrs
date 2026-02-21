@@ -59,13 +59,12 @@ static void _identificaArquivos(char *caminho, int exibeOcultos, char ***arr, in
             strcpy((*arr)[*tamanhoAtual], caminhoCompleto);
 
             (*tamanhoAtual)++;
-            printf("%s\n", caminhoCompleto);
         }
     }
     closedir(dir);
 }
 
-void identificaArquivos(char *caminho, int exibeOcultos, char ***arr) {     // - ***arr eu tenho um ponteiro para o endereço de memória do array de strings
+void identificaArquivos(char *caminho, int exibeOcultos, char ***arr, int *tamanhoFinal) {     // - ***arr eu tenho um ponteiro para o endereço de memória do array de strings
 
     int tamanhoAtual = 0;
     int tamanhoPadrao = 2;
@@ -79,4 +78,5 @@ void identificaArquivos(char *caminho, int exibeOcultos, char ***arr) {     // -
     }
 
     _identificaArquivos(caminho, exibeOcultos, arr, &tamanhoPadrao, &tamanhoAtual);
+    *tamanhoFinal = tamanhoAtual;
 }
