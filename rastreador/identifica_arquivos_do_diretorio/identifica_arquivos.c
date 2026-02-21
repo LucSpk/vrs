@@ -5,7 +5,7 @@
 #include <sys/stat.h>
 #include <linux/limits.h>
 
-static void _identificaArquivos(char *caminho, int exibeOcultos, char ***arr, int *tamanhoPadrao, int *tamanhoAtual) {
+static void _identifica_arquivos(char *caminho, int exibeOcultos, char ***arr, int *tamanhoPadrao, int *tamanhoAtual) {
     struct dirent *entrada;
     DIR *dir = opendir(caminho);
 
@@ -38,7 +38,7 @@ static void _identificaArquivos(char *caminho, int exibeOcultos, char ***arr, in
         
         // - Caso for um diretório, ele aciona a funcao recursivamente até encontrar o fim.
         if (S_ISDIR(info.st_mode)) {
-             _identificaArquivos(caminhoCompleto, exibeOcultos, arr, tamanhoPadrao, tamanhoAtual);      // - Recursão
+             _identifica_arquivos(caminhoCompleto, exibeOcultos, arr, tamanhoPadrao, tamanhoAtual);      // - Recursão
         } else if (S_ISREG(info.st_mode)) {
             if(*tamanhoAtual >= *tamanhoPadrao) {                     // - Se o tamanho total do array se aproximar do maximo de memória reservado, dobra o tamanho usando realloc
                 (*tamanhoPadrao) *= 2;
@@ -64,7 +64,7 @@ static void _identificaArquivos(char *caminho, int exibeOcultos, char ***arr, in
     closedir(dir);
 }
 
-void identificaArquivos(char *caminho, int exibeOcultos, char ***arr, int *tamanhoFinal) {     // - ***arr eu tenho um ponteiro para o endereço de memória do array de strings
+void identifica_arquivos(char *caminho, int exibeOcultos, char ***arr, int *tamanhoFinal) {     // - ***arr eu tenho um ponteiro para o endereço de memória do array de strings
 
     int tamanhoAtual = 0;
     int tamanhoPadrao = 2;
@@ -77,6 +77,6 @@ void identificaArquivos(char *caminho, int exibeOcultos, char ***arr, int *taman
         return;
     }
 
-    _identificaArquivos(caminho, exibeOcultos, arr, &tamanhoPadrao, &tamanhoAtual);
+    _identifica_arquivos(caminho, exibeOcultos, arr, &tamanhoPadrao, &tamanhoAtual);
     *tamanhoFinal = tamanhoAtual;
 }
