@@ -5,7 +5,7 @@
 #include <sys/stat.h>
 #include <linux/limits.h>
 
-static void _identificaArquivos(char *caminho, int exibeOcultos, char ***arr) {
+static void _identificaArquivos(char *caminho, int exibeOcultos, char ***arr, int tamanhoPadrao, int tamanhoAtual) {
     struct dirent *entrada;
     DIR *dir = opendir(caminho);
 
@@ -38,8 +38,14 @@ static void _identificaArquivos(char *caminho, int exibeOcultos, char ***arr) {
         
         // - Caso for um diretório, ele aciona a funcao recursivamente até encontrar o fim.
         if (S_ISDIR(info.st_mode)) {
-             _identificaArquivos(caminhoCompleto, exibeOcultos, arr); // recursão
+             _identificaArquivos(caminhoCompleto, exibeOcultos, arr, tamanhoPadrao, tamanhoAtual);      // - Recursão
         } else if (S_ISREG(info.st_mode)) {
+            if(tamanhoAtual >= tamanhoPadrao) {                     // - Se o tamanho total do array se aproximar do maximo de memória reservado, dobra o tamanho usando realloc
+                tamanhoPadrao *= 2;
+                arr = realloc(arr, tamanhoPadrao * sizeof(char *));
+            }
+            
+            tamanhoAtual++;
             printf("%s\n", caminhoCompleto);
         }
     }
@@ -48,11 +54,12 @@ static void _identificaArquivos(char *caminho, int exibeOcultos, char ***arr) {
 
 void identificaArquivos(char *caminho, int exibeOcultos, char ***arr) {     // - ***arr eu tenho um ponteiro para o endereço de memória do array de strings
 
-    int tamanhoPadrao = 10;
+    int tamanhoAtual = 0;
+    int tamanhoPadrao = 2;
     arr = malloc(tamanhoPadrao * sizeof(char *));       // - Grava o endereço de memória dinâmica no ponteiro arr
                                                         //      sizeof(char *) retornar o tamanho máximo de um uma variável tipo 'char' em bytes. usar somente o sizeof(char) 
                                                         //      resultaria somente em tamanho 1 de um caracter apenas. "char *" representa o tamano do espaseo de memória do tipo char. 
                                                         //      multiplica pelo tamanho padrão, para que tenha a quantidade de bytes equivalente a 10 chars.
     
-    _identificaArquivos(caminho, exibeOcultos, arr);
+    _identificaArquivos(caminho, exibeOcultos, arr, tamanhoPadrao, tamanhoAtual);
 }
