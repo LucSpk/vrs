@@ -3,6 +3,7 @@
 #include "rastreador/leitor_de_arquivos/le_arquivo.h"
 
 void identifica_arquivos(char *caminho, int exibeOcultos, char ***arr, int *tamanhoFinal); 
+void cria_hash_de_arquivo(const char *conteudo);
 
 int main() {
     printf("Iniciando...\n");
@@ -16,9 +17,9 @@ int main() {
         Arquivo arq = le_conteudo_arquivo(filePaths[i]);
 
         if (arq.conteudo != NULL) {
-            printf("Tamanho: %ld bytes\n", arq.tamanho);
-            printf("Conteúdo:\n%s\n", arq.conteudo);
-
+            //printf("Tamanho: %ld bytes\n", arq.tamanho);
+            //printf("Conteúdo:\n%s\n", arq.conteudo);
+            cria_hash_de_arquivo(arq.conteudo);
             free(arq.conteudo); // MUITO IMPORTANTE
         }
     }
