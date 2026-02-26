@@ -3,7 +3,7 @@
 #include <string.h>
 #include <openssl/sha.h>
 
-void _cria_hash_de_arquivo(const char *conteudo) {
+char *_cria_hash_de_arquivo(const char *conteudo) {
     unsigned char hash[SHA256_DIGEST_LENGTH]; // - SHA256_DIGEST_LENGTH = 32
     SHA256_CTX sha256;
 
@@ -14,20 +14,24 @@ void _cria_hash_de_arquivo(const char *conteudo) {
     // Finaliza e calcula o hash
     SHA256_Final(hash, &sha256);
 
-    char hash_hex[SHA256_DIGEST_LENGTH * 2 + 1];
+    //char hash_hex[SHA256_DIGEST_LENGTH * 2 + 1];
+    char *hash_hex = malloc(SHA256_DIGEST_LENGTH * 2 + 1);
+    if (!hash_hex) return NULL;
+    
     for(int i = 0; i < SHA256_DIGEST_LENGTH; i++) {
         sprintf(hash_hex + (i * 2), "%02x", hash[i]);
     }
     hash_hex[64] = '\0'; // Finalizador da string
 
+    return hash_hex;
+    
     // printf("String: %s\n", conteudo);
     // printf("SHA-256: %s\n", hash_hex);
 
     // - TODO: Retornar o hash
 
-    return;
 }
 
-void cria_hash_de_arquivo(const char *conteudo) {
-    _cria_hash_de_arquivo(conteudo);
+char * cria_hash_de_arquivo(const char *conteudo) {
+    return _cria_hash_de_arquivo(conteudo);
 }
