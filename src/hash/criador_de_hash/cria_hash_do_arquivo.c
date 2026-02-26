@@ -20,8 +20,10 @@ void _cria_hash_de_arquivo(const char *conteudo) {
     }
     hash_hex[64] = '\0'; // Finalizador da string
 
-    printf("String: %s\n", conteudo);
-    printf("SHA-256: %s\n", hash_hex);
+    // printf("String: %s\n", conteudo);
+    // printf("SHA-256: %s\n", hash_hex);
+
+    // - TODO: Retornar o hash
 
     return;
 }

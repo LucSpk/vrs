@@ -3,5 +3,7 @@ gcc -c src/main.c -o builds/main.o
 gcc -c src/rastreador/identifica_arquivos_do_diretorio/identifica_arquivos.c -o builds/identifica_arquivos.o
 gcc -c src/rastreador/leitor_de_arquivos/le_arquivo.c -o builds/le_arquivo.o
 gcc -c src/hash/criador_de_hash/cria_hash_do_arquivo.c -o builds/cria_hash_do_arquivo.o
-gcc builds/main.o builds/identifica_arquivos.o builds/le_arquivo.o builds/cria_hash_do_arquivo.o -o programa -lcrypto
+gcc -c src/zipper/compactador/compactador_de_arquivos.c -o builds/compactador_de_arquivos.o
+
+gcc builds/main.o builds/identifica_arquivos.o builds/le_arquivo.o builds/cria_hash_do_arquivo.o builds/compactador_de_arquivos.o -o programa -lcrypto -lz
 ./programa
