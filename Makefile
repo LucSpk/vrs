@@ -16,7 +16,8 @@ SRC = $(SRC_DIR)/main.c \
       $(SRC_DIR)/rastreador/identifica_arquivos_do_diretorio/identifica_arquivos.c \
       $(SRC_DIR)/rastreador/leitor_de_arquivos/le_arquivo.c \
       $(SRC_DIR)/hash/criador_de_hash/cria_hash_do_arquivo.c \
-      $(SRC_DIR)/zipper/compactador/compactador_de_arquivos.c
+      $(SRC_DIR)/zipper/compactador/compactador_de_arquivos.c \
+	  $(SRC_DIR)/arquivo/salva_arquivo.c
 
 # Gera os nomes dos objetos automaticamente
 OBJ = $(SRC:$(SRC_DIR)/%.c=$(BUILD_DIR)/%.o)
