@@ -6,11 +6,22 @@
 void identifica_arquivos(char *caminho, int exibeOcultos, char ***arr, int *tamanhoFinal); 
 char *cria_hash_de_arquivo(const char *conteudo);
 char *compactador_de_arquivos(const char *arquivo);
-//void salva_arquivo(const char *caminho, const char *zipFile);
+void salva_arquivo_no_diretorio(const char *caminho, const char *fileName, const char *zipFile);
 
 const char *pega_nome_arquivo(const char *path) {
     const char *p = strrchr(path, '/');
     return (p != NULL) ? p + 1 : path;
+}
+
+char* extrairSubstring(const char* str, int inicio, int tamanho) {
+    if (str == NULL || inicio < 0 || tamanho < 0) return NULL;
+    
+    char* sub = (char*)malloc(tamanho + 1); // +1 para o '\0'
+    if (sub == NULL) return NULL;
+    
+    strncpy(sub, str + inicio, tamanho);
+    sub[tamanho] = '\0'; // Garantir que a string termina
+    return sub;
 }
 
 int main() {
@@ -29,15 +40,21 @@ int main() {
         char *hash;
 
         // - TODO: pega o nome do arquivo nome do arquivo
-        const char *nomeArquivo = pega_nome_arquivo(filePaths[i]);
-        printf("%s: ", nomeArquivo);
+        //const char *nomeArquivo = pega_nome_arquivo(filePaths[i]);
         
-        char *fileDeterminante = malloc(28 + arq.tamanho);
-        sprintf(fileDeterminante, "blob %ld\\0%s", arq.tamanho, arq.conteudo);
-        hash = cria_hash_de_arquivo(fileDeterminante);
+        char *objeto = malloc(28 + arq.tamanho);
+        sprintf(objeto, "blob %ld\\0%s", arq.tamanho, arq.conteudo);
+        hash = cria_hash_de_arquivo(objeto);
+
         char *zipFile = compactador_de_arquivos(arq.conteudo);
         
-        //salva_arquivo(caminho, zipFile); 
+        
+        char *caminho = malloc(14);
+        sprintf(caminho, "./objects/%s", extrairSubstring(hash, 0, 2));
+        
+        // char *fileName = malloc(62);
+        // sprintf(fileName, )
+        salva_arquivo_no_diretorio(caminho, extrairSubstring(hash, 2, 62), zipFile); 
         
         free(arq.conteudo);
         free(zipFile);
