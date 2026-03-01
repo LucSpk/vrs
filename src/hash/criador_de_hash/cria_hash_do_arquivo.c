@@ -27,9 +27,6 @@ char *_cria_hash_de_arquivo(const char *conteudo) {
     
     // printf("String: %s\n", conteudo);
     // printf("SHA-256: %s\n", hash_hex);
-
-    // - TODO: Retornar o hash
-
 }
 
 char * cria_hash_de_arquivo(const char *conteudo) {
