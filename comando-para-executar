@@ -7,3 +7,5 @@ gcc -c src/zipper/compactador/compactador_de_arquivos.c -o builds/compactador_de
 
 gcc builds/main.o builds/identifica_arquivos.o builds/le_arquivo.o builds/cria_hash_do_arquivo.o builds/compactador_de_arquivos.o -o programa -lcrypto -lz
 ./programa
+
+make clean && make && ./programa
