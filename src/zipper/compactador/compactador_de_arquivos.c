@@ -2,8 +2,9 @@
 #include <string.h>
 #include <stdlib.h>
 #include <zlib.h>
+#include "../zipperfile.h"
 
-static char *_compactador_de_arquivos(const char *arquivo) {
+static ZipperFile _compactador_de_arquivos(const char *arquivo) {
     uLong sourceLen = strlen(arquivo) + 1;
     uLong destLen = compressBound(sourceLen);
 
@@ -11,13 +12,24 @@ static char *_compactador_de_arquivos(const char *arquivo) {
 
     int res = compress(compressedData, &destLen, (const Bytef*)arquivo, sourceLen);
 
-    if (res == Z_OK) 
-        return compressedData;
+    ZipperFile zipperFile;
+    zipperFile.conteudoComprimido = NULL;
+    zipperFile.tamanhoComprimido = 0;
+    zipperFile.tamanhDescomprimido = 0;
+
+    if (res == Z_OK) {
+        zipperFile.conteudoComprimido = compressedData;
+        zipperFile.tamanhoComprimido = destLen;
+        zipperFile.tamanhDescomprimido = sourceLen;
+        
+        return zipperFile;
+    }
     
     printf("Erro na compressão.\n");
-    return "";
+    free(compressedData);
+    return zipperFile;
 }
 
-char *compactador_de_arquivos(const char *arquivo) {
+ZipperFile compactador_de_arquivos(const char *arquivo) {
     return _compactador_de_arquivos(arquivo);
 }
