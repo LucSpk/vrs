@@ -28,7 +28,7 @@ static void _salva_arquivo_no_diretorio(const char *caminho, const char *fileNam
     
     snprintf(filePath, sizeof(filePath), "%s/%s", caminho, fileName);
     
-    printf("Criando: %s\n", filePath);
+    // printf("Criando: %s\n", filePath);
     FILE *arquivo;
     arquivo = fopen(filePath, "wb");
     if (arquivo == NULL) {

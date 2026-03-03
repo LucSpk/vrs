@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include "rastreador/leitor_de_arquivos/le_arquivo.h"
 #include <string.h>
+#include <linux/limits.h>
 
 void identifica_arquivos(char *caminho, int exibeOcultos, char ***arr, int *tamanhoFinal); 
 char *cria_hash_de_arquivo(const char *conteudo);
@@ -55,6 +56,12 @@ int main() {
         // char *fileName = malloc(62);
         // sprintf(fileName, )
         salva_arquivo_no_diretorio(caminho, extrairSubstring(hash, 2, 62), zipFile); 
+        printf("Antes di ler arquivo: %s - ", caminho);
+        
+        char tmp[PATH_MAX];
+        snprintf(tmp, sizeof(tmp), "%s/%s", caminho, extrairSubstring(hash, 2, 62));
+        Arquivo arq2 = le_conteudo_arquivo(tmp);
+        printf("%s \n", arq2.conteudo);
         
         free(arq.conteudo);
         free(zipFile);
