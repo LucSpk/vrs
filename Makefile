@@ -12,13 +12,15 @@ SRC_DIR = src
 BUILD_DIR = builds
 
 # Arquivos fonte
-SRC = $(SRC_DIR)/main.c \
-      $(SRC_DIR)/rastreador/identifica_arquivos_do_diretorio/identifica_arquivos.c \
-      $(SRC_DIR)/rastreador/leitor_de_arquivos/le_arquivo.c \
-      $(SRC_DIR)/hash/criador_de_hash/cria_hash_do_arquivo.c \
-      $(SRC_DIR)/zipper/compactador/compactador_de_arquivos.c \
-	  $(SRC_DIR)/arquivo/salva_arquivo.c
+# SRC = $(SRC_DIR)/main.c \
+#       $(SRC_DIR)/rastreador/identifica_arquivos_do_diretorio/identifica_arquivos.c \
+#       $(SRC_DIR)/rastreador/leitor_de_arquivos/le_arquivo.c \
+#       $(SRC_DIR)/hash/criador_de_hash/cria_hash_do_arquivo.c \
+#       $(SRC_DIR)/zipper/compactador/compactador_de_arquivos.c \
+# 	  $(SRC_DIR)/arquivo/salva_arquivo.c
 
+# Descobre todos os .c recursivamente e gera objetos correspondentes em builds/
+SRC := $(shell find $(SRC_DIR) -type f -name '*.c')
 # Gera os nomes dos objetos automaticamente
 OBJ = $(SRC:$(SRC_DIR)/%.c=$(BUILD_DIR)/%.o)
 
