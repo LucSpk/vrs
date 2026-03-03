@@ -1,13 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "rastreador/leitor_de_arquivos/le_arquivo.h"
 #include <string.h>
 #include <linux/limits.h>
+#include "rastreador/leitor_de_arquivos/le_arquivo.h"
+#include "zipper/zipperfile.h"
 
 void identifica_arquivos(char *caminho, int exibeOcultos, char ***arr, int *tamanhoFinal); 
 char *cria_hash_de_arquivo(const char *conteudo);
-char *compactador_de_arquivos(const char *arquivo);
-void salva_arquivo_no_diretorio(const char *caminho, const char *fileName, const char *zipFile);
+ZipperFile compactador_de_arquivos(const char *arquivo);
+void salva_arquivo_no_diretorio(const char *caminho, const char *fileName, const unsigned char *zipFile);
 
 const char *pega_nome_arquivo(const char *path) {
     const char *p = strrchr(path, '/');
@@ -44,13 +45,13 @@ int main() {
         sprintf(objeto, "blob %ld\\0%s", arq.tamanho, arq.conteudo);
         hash = cria_hash_de_arquivo(objeto);
 
-        char *zipFile = compactador_de_arquivos(arq.conteudo);
+        ZipperFile zipFile = compactador_de_arquivos(arq.conteudo);
         
         
         char *caminho = malloc(14);
         sprintf(caminho, "./objects/%s", extrairSubstring(hash, 0, 2));
         
-        salva_arquivo_no_diretorio(caminho, extrairSubstring(hash, 2, 62), zipFile); 
+        salva_arquivo_no_diretorio(caminho, extrairSubstring(hash, 2, 62), zipFile.conteudoComprimido); 
         
         char tmp[PATH_MAX];
         snprintf(tmp, sizeof(tmp), "%s/%s", caminho, extrairSubstring(hash, 2, 62));
@@ -58,7 +59,6 @@ int main() {
         
 
         free(arq.conteudo);
-        free(zipFile);
     }
     
 //    for (int i = 0; i < totalArquivos; i++) {
@@ -67,5 +67,6 @@ int main() {
 //    }
 //    free(filePaths);          // libera o array principal
 
+    printf("Fim!\n");
     return 0;
 }
