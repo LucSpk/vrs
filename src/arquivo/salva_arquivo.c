@@ -20,7 +20,7 @@ static void _cria_diretorios(const char *path) {
     mkdir(tmp, 0777);
 }
 
-static void _salva_arquivo_no_diretorio(const char *caminho, const char *fileName, const char *zipFile) {
+static void _salva_arquivo_no_diretorio(const char *caminho, const char *fileName, const unsigned char *zipFile) {
     _cria_diretorios(caminho);
     
     int tamanho = strlen(caminho) + strlen(fileName) + 2;
@@ -36,10 +36,10 @@ static void _salva_arquivo_no_diretorio(const char *caminho, const char *fileNam
         return;
     }
 
-    fprintf(arquivo, zipFile);
+    fwrite(zipFile, 1, tamanho, arquivo);
     fclose(arquivo);
 }
 
-void salva_arquivo_no_diretorio(const char *caminho, const char *fileName, const char *zipFile) {
+void salva_arquivo_no_diretorio(const char *caminho, const char *fileName, const unsigned char *zipFile) {
     _salva_arquivo_no_diretorio(caminho, fileName, zipFile);
 }
