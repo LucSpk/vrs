@@ -59,10 +59,13 @@ int main() {
         Arquivo arq2 = le_conteudo_arquivo(tmp);
         
         char *uncompressFile = descompacta_arquivos(zipFile);
-        printf("Uncompress Fille: %s\n", uncompressFile);
+        if (uncompressFile != NULL) {
+            printf("Uncompress Fille: %s - %s\n", filePaths[i], uncompressFile);
+            free(uncompressFile);
+        } else {
+            printf("Erro ao descompactar arquivo\n");
+        }
 
-        free(uncompressFile);
-        free(arq.conteudo);
     }
     
 //    for (int i = 0; i < totalArquivos; i++) {
