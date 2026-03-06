@@ -25,3 +25,14 @@ Att. Lucas Alves
 19-02-2026: Com a ajuda da lib sys/stat.h eu consegui ver o que é e o que não é diretório através do S_ISDIR(info.st_mode). Mas hoje estou com encalhado com um problema que esta realmente me fazendo pesquisar bastante. É bem simples de entender, Mas aparentemente nada fácil de se implementar, heheh, Atualmente estou simplesmente jogando no console os caminhos dos arquivos, mas isso de nada adianta, preciso ter esses caminhos gravados em algum lugar para que eu possa usar sempre que precisar e transoformar essa função em algo versátil. Seguindo essa linha, tenho que por tudo isso em uma estrutura de dados o que em C é um belo desafio, ja que não sei nem quantos arquivos vou ter no total, nem o tamanho do file path de cada um. Em algumas pesquisas eu vi que o normal é usar um malloc, mas ta dificil para entender como isso funciona, e como usar isso.
 
 23-02-2026: Depois de um bom esforço consegui entender mais ou menos o funcionamento do malloc e do realloc, pelo menos entender o suficiente para finalizar a função de leitura dos arquivos do diretório. Ainda não entendo exatamente a função do free, mas cheguei a finalizar o código e imprimir todo através da main. Estou começando a rumar em direção do função que vai identificar o conteudo dos arquivos, mas antes, preciso ver algo sobre o array que memória dinamica, se ele é um problema para o meu projeto e vou precisar migrar os itens para um array estático, ou se é algo que eu posso usar sem medo.
+
+04-03-2026: Nos ultimos dias conseguegui evoluir um pouco do código e ornaginzar melhor os pensamentos na cabeça, tenho pelo menos um esboço do que seria cada coisa, claro que muito provavelemnte terei que evoluir muito do que ja foi feito ainda, devo sitar o código que descompacta os arquivos, que atualmente precisa do tamanho do arquivo descompactado, o que que não faz muito sentido no momento, terei que evoluir essa função ainda. Estou tentando mantor todas as "ferramentas" necessárias para o funcionamento do inicio do rastreio do repositório (por enquanto o descompactador ainda não seria tão importante, mas tava no escopo). O que seria importante agora:
+    - Iniciar Repo (vsr start)
+        1. Criar o diretório .vsr
+        2. Criar o diretório de logs dentro do .vsr/logs
+        3. Encontra todas os os arquivos do diretório e subdiretórios em tempo real (Rastreando todos conforme forem sendo adicionados, ou apagados).
+    - Rastrear mudanças (vsr track <file_path>) 
+        1. Criar ler arquivo
+        2. Cria hash unico
+        3. Compacta arquivo 
+        4. Salva arquivo Compactado no diretório .vrs/objects
