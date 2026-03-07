@@ -2,8 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <linux/limits.h>
-#include "rastreador/leitor_de_arquivos/le_arquivo.h"
-#include "zipper/zipperfile.h"
+#include "../includes/core/le_arquivo.h"
+#include "../includes/types/zipper_file.h"
 
 void identifica_arquivos(char *caminho, int exibeOcultos, char ***arr, int *tamanhoFinal); 
 char *cria_hash_de_arquivo(const char *conteudo);
