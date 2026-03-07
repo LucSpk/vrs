@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <zlib.h>
 #include <string.h>
-#include "../zipperfile.h"
+#include "../../../../includes/types/zipper_file.h"
 
 static char *_descompacta_arquivos(const ZipperFile arquivoZip) {
     

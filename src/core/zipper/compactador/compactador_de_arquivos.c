@@ -2,7 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <zlib.h>
-#include "../zipperfile.h"
+#include "../../../../includes/types/zipper_file.h"
 
 static ZipperFile _compactador_de_arquivos(const char *arquivo) {
     uLong sourceLen = strlen(arquivo) + 1;
