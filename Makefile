@@ -26,7 +26,45 @@ OBJ = $(SRC:$(SRC_DIR)/%.c=$(BUILD_DIR)/%.o)
 
 # Nome do executável
 TARGET = programa
+# Nome do compilador
+CC = gcc
 
+# Flags de compilação
+CFLAGS = -Wall -c
+
+# Bibliotecas necessárias
+LIBS = -lcrypto -lz
+
+# Diretórios
+SRC_DIR = src
+BUILD_DIR = builds
+BIN_DIR = bin
+
+# Descobre todos os .c recursivamente
+SRC := $(shell find $(SRC_DIR) -type f -name '*.c')
+
+# Gera os nomes dos objetos automaticamente
+OBJ = $(SRC:$(SRC_DIR)/%.c=$(BUILD_DIR)/%.o)
+
+# Nome do executável
+TARGET = $(BIN_DIR)/vsr
+
+# Regra principal
+all: $(TARGET)
+
+# Linka o executável
+$(TARGET): $(OBJ)
+	@mkdir -p $(BIN_DIR)
+	$(CC) $(OBJ) -o $(TARGET) $(LIBS)
+
+# Compila cada .c em .o
+$(BUILD_DIR)/%.o: $(SRC_DIR)/%.c
+	@mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) $< -o $@
+
+# Limpeza
+clean:
+	rm -rf $(BUILD_DIR) $(BIN_DIR)
 # Regra principal
 all: $(TARGET)
 
