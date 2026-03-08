@@ -27,7 +27,7 @@ char* extrairSubstring(const char* str, int inicio, int tamanho) {
     return sub;
 }
 
-int main() {
+void execuit() {
     printf("Iniciando...\n");
 
     char **filePaths = NULL;
@@ -75,5 +75,9 @@ int main() {
 //    free(filePaths);          // libera o array principal
 
     printf("Fim!\n");
+}
+
+int main() {
+    
     return 0;
 }
