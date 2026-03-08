@@ -56,7 +56,7 @@ void execuit() {
         
         char tmp[PATH_MAX];
         snprintf(tmp, sizeof(tmp), "%s/%s", caminho, extrairSubstring(hash, 2, 62));
-        Arquivo arq2 = le_conteudo_arquivo(tmp);
+       // Arquivo arq2 = le_conteudo_arquivo(tmp);
         
         char *uncompressFile = descompacta_arquivos(zipFile);
         if (uncompressFile != NULL) {
@@ -77,7 +77,9 @@ void execuit() {
     printf("Fim!\n");
 }
 
-int main() {
+int main(int argc) {
     
+    printf("Inicio.\n");
+    printf("Arg: %d\n", argc);
     return 0;
 }
