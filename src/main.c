@@ -77,9 +77,15 @@ void execuit() {
     printf("Fim!\n");
 }
 
-int main(int argc) {
+int main(int argc, char *argv[]) {
     
     printf("Inicio.\n");
     printf("Arg: %d\n", argc);
+    
+    for(int i = 0; i < argc; i++) {
+        printf("%s ", argv[i]);
+    }
+    printf("\n");
+    
     return 0;
 }
