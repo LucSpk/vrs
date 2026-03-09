@@ -27,7 +27,7 @@ char* extrairSubstring(const char* str, int inicio, int tamanho) {
     return sub;
 }
 
-int main() {
+void execuit() {
     printf("Iniciando...\n");
 
     char **filePaths = NULL;
@@ -56,7 +56,7 @@ int main() {
         
         char tmp[PATH_MAX];
         snprintf(tmp, sizeof(tmp), "%s/%s", caminho, extrairSubstring(hash, 2, 62));
-        Arquivo arq2 = le_conteudo_arquivo(tmp);
+       // Arquivo arq2 = le_conteudo_arquivo(tmp);
         
         char *uncompressFile = descompacta_arquivos(zipFile);
         if (uncompressFile != NULL) {
@@ -75,5 +75,21 @@ int main() {
 //    free(filePaths);          // libera o array principal
 
     printf("Fim!\n");
+}
+
+int main(int argc, char *argv[]) {
+
+    if(strcmp(argv[1], "start") == 0) {
+        printf("Executa comando start\n");
+    }
+    
+    printf("Inicio.\n");
+    printf("Arg: %d\n", argc);
+    
+    for(int i = 0; i < argc; i++) {
+        printf("%s ", argv[i]);
+    }
+    printf("\n");
+    
     return 0;
 }
