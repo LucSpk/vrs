@@ -78,6 +78,10 @@ void execuit() {
 }
 
 int main(int argc, char *argv[]) {
+
+    if(strcmp(argv[1], "start") == 0) {
+        printf("Executa comando start\n");
+    }
     
     printf("Inicio.\n");
     printf("Arg: %d\n", argc);
