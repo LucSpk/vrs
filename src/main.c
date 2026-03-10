@@ -82,17 +82,17 @@ void execuit() {
 int main(int argc, char *argv[]) {
 
     if(strcmp(argv[1], "start") == 0) {
-        printf("Executa comando start.\n");
+        printf("Comado start.\n");
         command_start();
     }
     
-    printf("Inicio.\n");
-    printf("Arg: %d\n", argc);
+    // printf("Inicio.\n");
+    // printf("Arg: %d\n", argc);
     
-    for(int i = 0; i < argc; i++) {
-        printf("%s ", argv[i]);
-    }
-    printf("\n");
+    // for(int i = 0; i < argc; i++) {
+    //     printf("%s ", argv[i]);
+    // }
+    // printf("\n");
     
     return 0;
 }
