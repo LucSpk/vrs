@@ -83,7 +83,9 @@ int main(int argc, char *argv[]) {
 
     if(strcmp(argv[1], "start") == 0) {
         printf("Comado start.\n");
+        char **filePaths = NULL;
         command_start();
+
     }
     
     // printf("Inicio.\n");
