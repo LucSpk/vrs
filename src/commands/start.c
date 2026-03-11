@@ -19,6 +19,7 @@ int command_start(void)
 
     cria_diretorio(".vsr");
     cria_diretorio(".vsr/objects");
+    cria_diretorio(".vsr/logs");
 
     printf("Repositório iniciado com sucesso.\n");
 
