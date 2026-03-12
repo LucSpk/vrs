@@ -5,6 +5,8 @@
 #include "../includes/core/le_arquivo.h"
 #include "../includes/types/zipper_file.h"
 
+#include"./commands/start.h"
+
 void identifica_arquivos(char *caminho, int exibeOcultos, char ***arr, int *tamanhoFinal); 
 char *cria_hash_de_arquivo(const char *conteudo);
 ZipperFile compactador_de_arquivos(const char *arquivo);
@@ -80,16 +82,19 @@ void execuit() {
 int main(int argc, char *argv[]) {
 
     if(strcmp(argv[1], "start") == 0) {
-        printf("Executa comando start\n");
+        printf("Comado start.\n");
+        char **filePaths = NULL;
+        command_start();
+
     }
     
-    printf("Inicio.\n");
-    printf("Arg: %d\n", argc);
+    // printf("Inicio.\n");
+    // printf("Arg: %d\n", argc);
     
-    for(int i = 0; i < argc; i++) {
-        printf("%s ", argv[i]);
-    }
-    printf("\n");
+    // for(int i = 0; i < argc; i++) {
+    //     printf("%s ", argv[i]);
+    // }
+    // printf("\n");
     
     return 0;
 }
