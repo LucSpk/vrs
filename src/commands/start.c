@@ -22,14 +22,3 @@ int command_start(void) {
 
     return 0;
 }
-
-// static int cria_diretorio(const char *nome)
-// {
-//     if (mkdir(nome, 0777) == 0) {
-//         printf("Diretório criado: %s\n", nome);
-//         return 0;
-//     }
-
-//     printf("Diretório já existe ou erro ao criar: %s\n", nome);
-//     return 1;
-// }
