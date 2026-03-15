@@ -1,9 +1,7 @@
 #include <stdio.h>
 #include <sys/stat.h>
-#include "start.h"
 #include "../../includes/core/criar_diretorio.h"
-
-void identifica_arquivos(char *caminho, int exibeOcultos, char ***arr, int *tamanhoFinal); 
+#include "../../includes/core/identifica_arquivos.h"
 
 int command_start(void) {
     printf("Inicializando repositório VSR...\n");
