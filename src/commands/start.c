@@ -1,22 +1,11 @@
 #include <stdio.h>
 #include <sys/stat.h>
 #include "start.h"
+#include "../../includes/core/criar_diretorio.h"
 
 void identifica_arquivos(char *caminho, int exibeOcultos, char ***arr, int *tamanhoFinal); 
 
-static int cria_diretorio(const char *nome)
-{
-    if (mkdir(nome, 0777) == 0) {
-        printf("Diretório criado: %s\n", nome);
-        return 0;
-    }
-
-    printf("Diretório já existe ou erro ao criar: %s\n", nome);
-    return 1;
-}
-
-int command_start(void)
-{
+int command_start(void) {
     printf("Inicializando repositório VSR...\n");
 
     cria_diretorio(".vsr");
@@ -35,3 +24,14 @@ int command_start(void)
 
     return 0;
 }
+
+// static int cria_diretorio(const char *nome)
+// {
+//     if (mkdir(nome, 0777) == 0) {
+//         printf("Diretório criado: %s\n", nome);
+//         return 0;
+//     }
+
+//     printf("Diretório já existe ou erro ao criar: %s\n", nome);
+//     return 1;
+// }
