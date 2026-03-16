@@ -5,7 +5,7 @@
 #include "../includes/core/le_arquivo.h"
 #include "../includes/types/zipper_file.h"
 
-#include"./commands/start.h"
+#include"../includes/commands/start.h"
 
 void identifica_arquivos(char *caminho, int exibeOcultos, char ***arr, int *tamanhoFinal); 
 char *cria_hash_de_arquivo(const char *conteudo);
