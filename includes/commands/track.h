@@ -1,0 +1,1 @@
+int command_track_path(char *path);
