@@ -36,3 +36,5 @@ Att. Lucas Alves
         2. Cria hash unico
         3. Compacta arquivo 
         4. Salva arquivo Compactado no diretório .vrs/objects
+
+16-03-2025: Eu estava pensando e vi que estava fazendo a ação de "identificar os arquivos do diretório" sem ser necessária. Então eu a removi do comando start. Aproveitei o intervalo entre "Começar a montar algumas funções uteis" e "Iniciar a construção do cli" para da uma arrumada nas estruturas para se adequar melhor as minhas percepçoes no momento. Comecei a utilizar arquivos .h para facilitar os imports e dei uma mudada no arquivo Makefile.
