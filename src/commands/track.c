@@ -14,7 +14,7 @@ void verifica(char *path) {
 }
 
 static int _command_track_path(char *path) {
-    printf("%s\n", path);
+    verifica(path);
     return 0;
 
     // 1. Localizar o arquivo no working directory
