@@ -1,4 +1,21 @@
-int _command_track_path(char *path) {
+#include <stdio.h>
+
+void verifica(char *path) {
+    FILE *file;
+    // const char *filename = "exemplo.txt";
+
+    file = fopen(path, "r");
+    if (file) {
+        printf("O arquivo %s existe.\n", path);
+        fclose(file); // Essencial fechar se abrir
+    } else {
+        printf("O arquivo %s nao existe.\n", path);
+    }
+}
+
+static int _command_track_path(char *path) {
+    printf("%s\n", path);
+    return 0;
 
     // 1. Localizar o arquivo no working directory
     // 2. Verificar regras do .gitignore
@@ -19,5 +36,5 @@ int _command_track_path(char *path) {
 }
 
 int command_track_path(char *path) {
-    int _command_track_path(path);
+    return _command_track_path(path);
 }
