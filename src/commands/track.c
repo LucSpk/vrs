@@ -1,6 +1,8 @@
 #include <stdio.h>
+#include "../../includes/core/le_arquivo.h"
 
 void verifica(char *path) {
+    // - TODO: Transforma em uma função separada.
     FILE *file;
     // const char *filename = "exemplo.txt";
 
@@ -14,13 +16,13 @@ void verifica(char *path) {
 }
 
 static int _command_track_path(char *path) {
-    verifica(path);
-    return 0;
-
+    
     // 1. Localizar o arquivo no working directory
-    // 2. Verificar regras do .gitignore
+    verifica(path);
+    // 2. TODO: Verificar regras do .gitignore
     // 3. Ler metadados (path, permissões, timestamp)
     // 4. Ler conteúdo do arquivo
+    Arquivo arquivo = le_conteudo_arquivo(path);
     // 5. Gerar hash do conteúdo (SHA)
     // 6. Verificar se o objeto já existe em .git/objects
     // 7. Se não existir:
@@ -32,7 +34,7 @@ static int _command_track_path(char *path) {
     //     - permissões
     // 9. Marcar arquivo como “staged”
     // 10. Atualizar estado interno para comparação futura (git status)
-
+    return 0;
 }
 
 int command_track_path(char *path) {
