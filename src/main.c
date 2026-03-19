@@ -6,6 +6,7 @@
 #include "../includes/types/zipper_file.h"
 
 #include"../includes/commands/start.h"
+#include"../includes/commands/track.h"
 
 void identifica_arquivos(char *caminho, int exibeOcultos, char ***arr, int *tamanhoFinal); 
 char *cria_hash_de_arquivo(const char *conteudo);
@@ -82,10 +83,16 @@ void execuit() {
 int main(int argc, char *argv[]) {
 
     if(strcmp(argv[1], "start") == 0) {
-        printf("Comado start.\n");
         char **filePaths = NULL;
         command_start();
+    }
 
+    if(strcmp(argv[1], "track") == 0) {
+        if(!argv[2]) {
+            printf("ERRO: Comando não obedece a estrutura da função track: vrs track <fileName>.\n");
+            return 1;
+        }
+        command_track_path(argv[2]);
     }
     
     // printf("Inicio.\n");
