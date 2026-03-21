@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <openssl/sha.h>
+#include "../../../includes/types/arquivo.h"
 
 char *_cria_hash_de_arquivo(const char *conteudo) {
     unsigned char hash[SHA256_DIGEST_LENGTH]; // - SHA256_DIGEST_LENGTH = 32
@@ -31,4 +32,10 @@ char *_cria_hash_de_arquivo(const char *conteudo) {
 
 char * cria_hash_de_arquivo(const char *conteudo) {
     return _cria_hash_de_arquivo(conteudo);
+}
+
+char * cria_hash(const Arquivo arq) {
+    char *objeto = malloc(28 + arq.tamanho);
+    sprintf(objeto, "blob %ld\\0%s", arq.tamanho, arq.conteudo);
+    return _cria_hash_de_arquivo(objeto);
 }

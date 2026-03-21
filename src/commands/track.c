@@ -15,6 +15,9 @@ static int _command_track_path(char *path) {
     // 4. Ler conteúdo do arquivo
     Arquivo arquivo = le_conteudo_arquivo(path);
     // 5. Gerar hash do conteúdo (SHA)
+    char *hash;
+    hash = cria_hash(arquivo);
+    printf("%s\n", hash);
     // 6. Verificar se o objeto já existe em .git/objects
     // 7. Se não existir:
     //     - Comprimir conteúdo (zlib)
