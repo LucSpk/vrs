@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "../../includes/core/io.h"
+#include "../../includes/core/hash.h"
 
 static int _command_track_path(char *path) {
     
