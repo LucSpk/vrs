@@ -1,19 +1,6 @@
 #include <stdio.h>
 #include "../../includes/core/le_arquivo.h"
-
-void verifica(char *path) {
-    // - TODO: Transforma em uma função separada.
-    FILE *file;
-    // const char *filename = "exemplo.txt";
-
-    file = fopen(path, "r");
-    if (file) {
-        printf("O arquivo %s existe.\n", path);
-        fclose(file); // Essencial fechar se abrir
-    } else {
-        printf("O arquivo %s nao existe.\n", path);
-    }
-}
+#include "../../includes/core/io.h"
 
 static int _command_track_path(char *path) {
     
