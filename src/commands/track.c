@@ -5,7 +5,11 @@
 static int _command_track_path(char *path) {
     
     // 1. Localizar o arquivo no working directory
-    verifica(path);
+    int err = 0;
+    err = verifica(path);
+    if(err) 
+        return 1;
+    
     // 2. TODO: Verificar regras do .gitignore
     // 3. Ler metadados (path, permissões, timestamp)
     // 4. Ler conteúdo do arquivo
