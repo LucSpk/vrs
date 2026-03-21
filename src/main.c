@@ -2,8 +2,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <linux/limits.h>
-#include "../includes/core/le_arquivo.h"
+#include "../includes/core/io.h"
 #include "../includes/types/zipper_file.h"
+#include "../includes/types/arquivo.h"
 
 #include"../includes/commands/start.h"
 #include"../includes/commands/track.h"
