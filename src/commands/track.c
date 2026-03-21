@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include "../../includes/core/le_arquivo.h"
 #include "../../includes/core/io.h"
 
 static int _command_track_path(char *path) {
