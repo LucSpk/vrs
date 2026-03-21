@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "../../../includes/core/le_arquivo.h"
+#include "../../../includes/types/arquivo.h"
 
 static Arquivo _le_conteudo_arquivo(const char *filePath) {
     Arquivo resultado;
