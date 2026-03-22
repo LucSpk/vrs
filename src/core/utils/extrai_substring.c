@@ -1,6 +1,6 @@
 #include <stdlib.h>
 
-static char* _extrairSubstring(const char* str, int inicio, int tamanho) {
+static char* _extrair_substring(const char* str, int inicio, int tamanho) {
     if (str == NULL || inicio < 0 || tamanho < 0) return NULL;
     
     char* sub = (char*)malloc(tamanho + 1); // +1 para o '\0'
@@ -11,6 +11,6 @@ static char* _extrairSubstring(const char* str, int inicio, int tamanho) {
     return sub;
 }
 
-char* extrairSubstring(const char* str, int inicio, int tamanho) {
-    return _extrairSubstring(str, inicio, tamanho);
+char* extrair_substring(const char* str, int inicio, int tamanho) {
+    return _extrair_substring(str, inicio, tamanho);
 }
