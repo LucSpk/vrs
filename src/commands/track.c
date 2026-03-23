@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "../../includes/core/io.h"
 #include "../../includes/core/hash.h"
+#include "../../includes/core/arquivo.h"
 
 static int _command_track_path(char *path) {
     
@@ -14,11 +15,29 @@ static int _command_track_path(char *path) {
     // 3. Ler metadados (path, permissões, timestamp)
     // 4. Ler conteúdo do arquivo
     Arquivo arquivo = le_conteudo_arquivo(path);
+
     // 5. Gerar hash do conteúdo (SHA)
     char *hash;
     hash = cria_hash(arquivo);
-    printf("%s\n", hash);
+
     // 6. Verificar se o objeto já existe em .git/objects
+    char *caminho = malloc(14);
+    sprintf(caminho, "./objects/%s", extrair_substring(hash, 0, 2));
+
+    err = verifica_diretorio(caminho);
+    if(err < 0) return 1;
+    
+    char fileName = extrairSubstring(hash, 2, 62);
+    int tamanho = strlen(caminho) + strlen(fileName) + 2;
+    char filePath[tamanho];
+    snprintf(filePath, sizeof(filePath), "%s/%s", caminho, fileName);
+    if(!verifica(filePath)) {
+        printf("Arquivo ja existe.");
+        return 1;
+    }
+
+    
+
     // 7. Se não existir:
     //     - Comprimir conteúdo (zlib)
     //     - Salvar como blob em .git/objects
