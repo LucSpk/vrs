@@ -8,16 +8,16 @@
 #include "../../includes/core/utils.h"
 
 int atualizaIndex(char *hash, char *fileName) {
-    if(verifica("./index")) {
+    if(!verifica(".vsr/index")) {
         int err = 0;
-        err = salva_arquivo_no_diretorio(".", "index", ""); 
+        err = salva_arquivo_no_diretorio(".vrs/", "index", ""); 
         if(err) {
             printf("Erro ao criar arquivo index");
             return 1;
         }
     }
 
-    FILE *file = fopen("./index", "r+");
+    FILE *file = fopen(".vsr/index", "r+");
     if (file == NULL) {
         printf("Erro ao abrir o arquivo index");
         return 1;
@@ -82,9 +82,9 @@ static int _command_track_path(char *path) {
     //     - Salvar como blob em .git/objects
     int tamanhoInput = (7 + 10 + zipFile.tamanhoComprimido);                 // - blob <size>\0dados
     char fileParaSerSalvo[tamanhoInput];
-    snprintf(fileParaSerSalvo, "blob %s\\0%s", zipFile.tamanhoComprimido, zipFile.conteudoComprimido);
+    snprintf(fileParaSerSalvo, tamanhoInput, "blob %ld\\0%s", zipFile.tamanhoComprimido, zipFile.conteudoComprimido);
 
-    err = salva_arquivo_no_diretorio(caminho, extrairSubstring(hash, 2, 62), fileParaSerSalvo); 
+    err = salva_arquivo_no_diretorio(caminho, extrair_substring(hash, 2, 62), fileParaSerSalvo); 
     if(err) {
         printf("Erro ai salvar o arquivo no diretorio");
         return 1;

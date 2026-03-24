@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <string.h>
 
 static char* _extrair_substring(const char* str, int inicio, int tamanho) {
     if (str == NULL || inicio < 0 || tamanho < 0) return NULL;
