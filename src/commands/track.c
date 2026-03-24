@@ -41,7 +41,11 @@ static int _command_track_path(char *path) {
     //     - Comprimir conteúdo (zlib)
     ZipperFile zipFile = compactador_de_arquivos(arquivo.conteudo);
     //     - Salvar como blob em .git/objects
-    err = salva_arquivo_no_diretorio(caminho, extrairSubstring(hash, 2, 62), zipFile.conteudoComprimido); 
+    int tamanho = (7 + 10 + zipFile.tamanhoComprimido);                 // - blob <size>\0dados
+    char fileParaSerSalvo[tamanho];
+    snprintf(fileParaSerSalvo, "blob %s\\0%s", zipFile.tamanhoComprimido, zipFile.conteudoComprimido);
+
+    err = salva_arquivo_no_diretorio(caminho, extrairSubstring(hash, 2, 62), fileParaSerSalvo); 
     if(err) {
         printf("Erro ai salvar o arquivo no diretorio");
         return 1;
