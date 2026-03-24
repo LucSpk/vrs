@@ -36,6 +36,7 @@ int atualizaIndex(char *hash, char *fileName) {
     while (fgets(linha, sizeof(linha), file)) {
         sscanf(linha, "%s %s", hashAtual, pathAtual);
         if (strcmp(pathAtual, fileName) == 0) {
+            // - TODO: Caso arquivo exista atualizar o hash, caso não exista adicionar linha com "<hash> <fileName>"
             existe = 1;
             break;
         }
