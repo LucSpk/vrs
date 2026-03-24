@@ -4,6 +4,33 @@
 #include "../../includes/core/arquivo.h"
 #include "../../includes/core/zipper.h"
 
+int atualizaIndex(char *hash, char *fileName) {
+    if(verifica("./index")) {
+        int err = 0;
+        err = salva_arquivo_no_diretorio(".", "index", ""); 
+        if(err) {
+            printf("Erro ao criar arquivo index");
+            return 1;
+        }
+    }
+
+    FILE *file = fopen("./index", "r+");
+    if (file == NULL) {
+        printf("Erro ao abrir o arquivo index");
+        return 1;
+    }
+
+    char linha[512];
+    char hashAtual[65];
+    char pathAtual[256];
+    int encontrou = 0;
+
+    while (fgets(linha, sizeof(linha), file)) {
+    }
+
+
+}
+
 static int _command_track_path(char *path) {
     
     // 1. Localizar o arquivo no working directory
@@ -54,6 +81,10 @@ static int _command_track_path(char *path) {
     //     - caminho do arquivo
     //     - hash do blob
     //     - permissões
+    err = atualizaIndex(hash, path);
+    if(err) 
+        return err;
+    
     // 9. Marcar arquivo como “staged”
     // 10. Atualizar estado interno para comparação futura (git status)
     return 0;
