@@ -1,8 +1,11 @@
 #include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
 #include "../../includes/core/io.h"
 #include "../../includes/core/hash.h"
-#include "../../includes/core/arquivo.h"
+#include "../../includes/core/arquivos.h"
 #include "../../includes/core/zipper.h"
+#include "../../includes/core/utils.h"
 
 int atualizaIndex(char *hash, char *fileName) {
     if(verifica("./index")) {
@@ -23,12 +26,21 @@ int atualizaIndex(char *hash, char *fileName) {
     char linha[512];
     char hashAtual[65];
     char pathAtual[256];
-    int encontrou = 0;
+    int existe = 0;
 
     while (fgets(linha, sizeof(linha), file)) {
+        sscanf(linha, "%s %s", hashAtual, pathAtual);
+        if (strcmp(pathAtual, fileName) == 0) {
+            existe = 1;
+            break;
+        }
     }
 
-
+    if (existe) {
+        printf("Arquivo já existe no index\n");
+    } else {
+        printf("Arquivo NÃO existe no index\n");
+    }
 }
 
 static int _command_track_path(char *path) {
@@ -55,9 +67,9 @@ static int _command_track_path(char *path) {
     err = verifica_diretorio(caminho);
     if(err < 0) return 1;
     
-    char fileName = extrairSubstring(hash, 2, 62);
-    int tamanho = strlen(caminho) + strlen(fileName) + 2;
-    char filePath[tamanho];
+    char *fileName = extrair_substring(hash, 2, 62);
+    int tamanhoFilePath = strlen(caminho) + strlen(fileName) + 2;
+    char filePath[tamanhoFilePath];
     snprintf(filePath, sizeof(filePath), "%s/%s", caminho, fileName);
     if(!verifica(filePath)) {
         printf("Arquivo ja existe.");
@@ -68,8 +80,8 @@ static int _command_track_path(char *path) {
     //     - Comprimir conteúdo (zlib)
     ZipperFile zipFile = compactador_de_arquivos(arquivo.conteudo);
     //     - Salvar como blob em .git/objects
-    int tamanho = (7 + 10 + zipFile.tamanhoComprimido);                 // - blob <size>\0dados
-    char fileParaSerSalvo[tamanho];
+    int tamanhoInput = (7 + 10 + zipFile.tamanhoComprimido);                 // - blob <size>\0dados
+    char fileParaSerSalvo[tamanhoInput];
     snprintf(fileParaSerSalvo, "blob %s\\0%s", zipFile.tamanhoComprimido, zipFile.conteudoComprimido);
 
     err = salva_arquivo_no_diretorio(caminho, extrairSubstring(hash, 2, 62), fileParaSerSalvo); 
