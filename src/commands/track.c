@@ -8,18 +8,22 @@
 #include "../../includes/core/utils.h"
 
 int atualizaIndex(char *hash, char *fileName) {
-    if(!verifica(".vsr/index")) {
+    printf("Verifica se .vsr/index existe.\n");
+    if(verifica("./.vsr/index")) {
+        printf("index não existe.\n");
         int err = 0;
-        err = salva_arquivo_no_diretorio(".vrs/", "index", ""); 
+        printf("Cria arquivo index");
+        err = salva_arquivo_no_diretorio(".vsr/", "index", " "); 
         if(err) {
-            printf("Erro ao criar arquivo index");
+            printf("Erro ao criar arquivo index.\n");
             return 1;
         }
     }
 
+    printf("Abre index.\n");
     FILE *file = fopen(".vsr/index", "r+");
     if (file == NULL) {
-        printf("Erro ao abrir o arquivo index");
+        printf("Erro ao abrir o arquivo index.\n");
         return 1;
     }
 
@@ -28,6 +32,7 @@ int atualizaIndex(char *hash, char *fileName) {
     char pathAtual[256];
     int existe = 0;
 
+    printf("Verifica linha a linha se o arquivo sendo inserido existe.\n");
     while (fgets(linha, sizeof(linha), file)) {
         sscanf(linha, "%s %s", hashAtual, pathAtual);
         if (strcmp(pathAtual, fileName) == 0) {
@@ -60,9 +65,9 @@ static int _command_track_path(char *path) {
     char *hash;
     hash = cria_hash(arquivo);
 
-    // 6. Verificar se o objeto já existe em .git/objects
+    // 6. Verificar se o objeto já existe em .vrs/objects
     char *caminho = malloc(14);
-    sprintf(caminho, "./objects/%s", extrair_substring(hash, 0, 2));
+    sprintf(caminho, ".vsr/objects/%s", extrair_substring(hash, 0, 2));
 
     err = verifica_diretorio(caminho);
     if(err < 0) return 1;
@@ -72,7 +77,7 @@ static int _command_track_path(char *path) {
     char filePath[tamanhoFilePath];
     snprintf(filePath, sizeof(filePath), "%s/%s", caminho, fileName);
     if(!verifica(filePath)) {
-        printf("Arquivo ja existe.");
+        printf("Arquivo ja existe.\n");
         return 1;
     }
 
