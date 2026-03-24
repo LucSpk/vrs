@@ -41,6 +41,8 @@ static int _command_track_path(char *path) {
     //     - Comprimir conteúdo (zlib)
     ZipperFile zipFile = compactador_de_arquivos(arquivo.conteudo);
     //     - Salvar como blob em .git/objects
+    salva_arquivo_no_diretorio(caminho, extrairSubstring(hash, 2, 62), zipFile.conteudoComprimido); 
+    
     // 8. Criar/atualizar entrada no index (staging area):
     //     - caminho do arquivo
     //     - hash do blob
