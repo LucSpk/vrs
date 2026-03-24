@@ -2,6 +2,7 @@
 #include "../../includes/core/io.h"
 #include "../../includes/core/hash.h"
 #include "../../includes/core/arquivo.h"
+#include "../../includes/core/zipper.h"
 
 static int _command_track_path(char *path) {
     
@@ -36,10 +37,9 @@ static int _command_track_path(char *path) {
         return 1;
     }
 
-    
-
     // 7. Se não existir:
     //     - Comprimir conteúdo (zlib)
+    ZipperFile zipFile = compactador_de_arquivos(arquivo.conteudo);
     //     - Salvar como blob em .git/objects
     // 8. Criar/atualizar entrada no index (staging area):
     //     - caminho do arquivo
