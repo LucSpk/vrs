@@ -8,11 +8,8 @@
 #include "../../includes/core/utils.h"
 
 int atualizaIndex(char *hash, char *fileName) {
-    printf("Verifica se .vsr/index existe.\n");
     if(verifica("./.vsr/index")) {
-        printf("index não existe.\n");
         int err = 0;
-        printf("Cria arquivo index");
         err = salva_arquivo_no_diretorio(".vsr/", "index", " "); 
         if(err) {
             printf("Erro ao criar arquivo index.\n");
@@ -20,35 +17,19 @@ int atualizaIndex(char *hash, char *fileName) {
         }
     }
 
-    printf("Abre index.\n");
-    FILE *file = fopen(".vsr/index", "r+");
+    FILE *file = fopen(".vsr/index", "r");
     if (file == NULL) {
-        printf("Erro ao abrir o arquivo index.\n");
+        printf("Erro ao criar arquivo temporário.\n");
         return 1;
     }
 
-    char linha[512];
-    char hashAtual[65];
-    char pathAtual[256];
-    int existe = 0;
-
-    printf("Verifica linha a linha se o arquivo sendo inserido existe.\n");
-    while (fgets(linha, sizeof(linha), file)) {
-        sscanf(linha, "%s %s", hashAtual, pathAtual);
-        if (strcmp(pathAtual, fileName) == 0) {
-            char content[66 + sizeof(pathAtual)]; // 65 + tamanho da path | 64 do hash + 1 do espaço, +1 para \n
-            snprintf(content, "%s %s", hash, pathAtual);
-            // - TODO: Caso arquivo exista atualizar o hash, caso não exista adicionar linha com "<hash> <fileName>"
-            existe = 1;
-            break;
-        }
+    FILE *temp = fopen(".vsr/index.tmp", "w");
+    if (temp == NULL) {
+        printf("Erro ao criar arquivo temporário.\n");
+        return 1;
     }
 
-    if (existe) {
-        printf("Arquivo já existe no index\n");
-    } else {
-        printf("Arquivo NÃO existe no index\n");
-    }
+    return 0;
 }
 
 static int _command_track_path(char *path) {
