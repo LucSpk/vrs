@@ -23,7 +23,7 @@ int atualizaIndex(char *hash, char *fileName) {
         return 1;
     }
 
-    FILE *temp = fopen(".vsr/index.tmp", "w");
+    FILE *temp = fopen(".vsr/index-tmp", "w");
     if (temp == NULL) {
         printf("Erro ao criar arquivo temporário.\n");
         return 1;
@@ -32,15 +32,32 @@ int atualizaIndex(char *hash, char *fileName) {
     char linha[1024];
     char hashAtual[128];
     char pathAtual[512];
+    int existe = 0;
     
-    printf("Conteudo do index: \n");
     while(fgets(linha, sizeof(linha), file)) {
         hashAtual[0] = '\0';
         pathAtual[0] = '\0';
 
         sscanf(linha, "%s %s", hashAtual, pathAtual);
-        printf("%s %s\n", hashAtual, pathAtual);
+        if(strcmp(pathAtual, fileName) == 0) {
+            printf("Arquivo existe: %s\n", fileName);
+
+            fprintf(temp, "%s %s\n", hash, fileName);
+            existe = 1;
+        } else {
+            fprintf(temp, "%s %s\n", hashAtual, pathAtual);
+        }
     }
+
+    if(!existe) {
+        fprintf(temp, "%s %s\n", hash, fileName);
+    }
+
+    fclose(file);
+    fclose(temp);
+
+    remove(".vsr/index");
+    rename(".vsr/index-tmp", ".vsr/index");
 
     return 0;
 }
