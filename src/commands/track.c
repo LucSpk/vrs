@@ -29,6 +29,19 @@ int atualizaIndex(char *hash, char *fileName) {
         return 1;
     }
 
+    char linha[1024];
+    char hashAtual[128];
+    char pathAtual[512];
+    
+    printf("Conteudo do index: \n");
+    while(fgets(linha, sizeof(linha), file)) {
+        hashAtual[0] = '\0';
+        pathAtual[0] = '\0';
+
+        sscanf(linha, "%s %s", hashAtual, pathAtual);
+        printf("%s %s\n", hashAtual, pathAtual);
+    }
+
     return 0;
 }
 
@@ -60,10 +73,10 @@ static int _command_track_path(char *path) {
     int tamanhoFilePath = strlen(caminho) + strlen(fileName) + 2;
     char filePath[tamanhoFilePath];
     snprintf(filePath, sizeof(filePath), "%s/%s", caminho, fileName);
-    if(!verifica(filePath)) {
-        printf("Arquivo ja existe.\n");
-        return 1;
-    }
+    // if(!verifica(filePath)) {
+    //     printf("Arquivo ja existe.\n");
+    //     return 1;
+    // }
 
     // 7. Se não existir:
     //     - Comprimir conteúdo (zlib)
