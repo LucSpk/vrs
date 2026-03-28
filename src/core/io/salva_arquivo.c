@@ -20,26 +20,26 @@ static void _cria_diretorios(const char *path) {
     mkdir(tmp, 0777);
 }
 
-static void _salva_arquivo_no_diretorio(const char *caminho, const char *fileName, const unsigned char *zipFile) {
+static int _salva_arquivo_no_diretorio(const char *caminho, const char *fileName, const unsigned char *zipFile) {
     _cria_diretorios(caminho);
     
     int tamanho = strlen(caminho) + strlen(fileName) + 2;
     char filePath[tamanho];
     
     snprintf(filePath, sizeof(filePath), "%s/%s", caminho, fileName);
-    
-    // printf("Criando: %s\n", filePath);
+  
     FILE *arquivo;
     arquivo = fopen(filePath, "wb");
     if (arquivo == NULL) {
         printf("Erro ao criar o arquivo!\n");
-        return;
+        return 1;
     }
 
     fwrite(zipFile, 1, tamanho, arquivo);
     fclose(arquivo);
+    return 0;
 }
 
-void salva_arquivo_no_diretorio(const char *caminho, const char *fileName, const unsigned char *zipFile) {
-    _salva_arquivo_no_diretorio(caminho, fileName, zipFile);
+int salva_arquivo_no_diretorio(const char *caminho, const char *fileName, const unsigned char *zipFile) {
+    return _salva_arquivo_no_diretorio(caminho, fileName, zipFile);
 }

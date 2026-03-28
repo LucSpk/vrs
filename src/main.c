@@ -12,7 +12,7 @@
 void identifica_arquivos(char *caminho, int exibeOcultos, char ***arr, int *tamanhoFinal); 
 char *cria_hash_de_arquivo(const char *conteudo);
 ZipperFile compactador_de_arquivos(const char *arquivo);
-void salva_arquivo_no_diretorio(const char *caminho, const char *fileName, const unsigned char *zipFile);
+// void salva_arquivo_no_diretorio(const char *caminho, const char *fileName, const unsigned char *zipFile);
 char *descompacta_arquivos(const ZipperFile arquivoZip);
 
 const char *pega_nome_arquivo(const char *path) {
