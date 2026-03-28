@@ -35,10 +35,10 @@ static int _command_track_path(char *path) {
     int tamanhoFilePath = strlen(caminho) + strlen(fileName) + 2;
     char filePath[tamanhoFilePath];
     snprintf(filePath, sizeof(filePath), "%s/%s", caminho, fileName);
-    // if(!verifica(filePath)) {
-    //     printf("Arquivo ja existe.\n");
-    //     return 1;
-    // }
+    if(!verifica(filePath)) {
+        printf("Arquivo ja existe.\n");
+        return 1;
+    }
 
     // 7. Se não existir:
     //     - Comprimir conteúdo (zlib)
