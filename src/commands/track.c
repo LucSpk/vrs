@@ -7,61 +7,6 @@
 #include "../../includes/core/zipper.h"
 #include "../../includes/core/utils.h"
 
-int atualizaIndex(char *hash, char *fileName) {
-    if(verifica("./.vsr/index")) {
-        int err = 0;
-        err = salva_arquivo_no_diretorio(".vsr/", "index", " "); 
-        if(err) {
-            printf("Erro ao criar arquivo index.\n");
-            return 1;
-        }
-    }
-
-    FILE *file = fopen(".vsr/index", "r");
-    if (file == NULL) {
-        printf("Erro ao criar arquivo temporário.\n");
-        return 1;
-    }
-
-    FILE *temp = fopen(".vsr/index-tmp", "w");
-    if (temp == NULL) {
-        printf("Erro ao criar arquivo temporário.\n");
-        return 1;
-    }
-
-    char linha[1024];
-    char hashAtual[128];
-    char pathAtual[512];
-    int existe = 0;
-    
-    while(fgets(linha, sizeof(linha), file)) {
-        hashAtual[0] = '\0';
-        pathAtual[0] = '\0';
-
-        sscanf(linha, "%s %s", hashAtual, pathAtual);
-        if(strcmp(pathAtual, fileName) == 0) {
-            printf("Arquivo existe: %s\n", fileName);
-
-            fprintf(temp, "%s %s\n", hash, fileName);
-            existe = 1;
-        } else {
-            fprintf(temp, "%s %s\n", hashAtual, pathAtual);
-        }
-    }
-
-    if(!existe) {
-        fprintf(temp, "%s %s\n", hash, fileName);
-    }
-
-    fclose(file);
-    fclose(temp);
-
-    remove(".vsr/index");
-    rename(".vsr/index-tmp", ".vsr/index");
-
-    return 0;
-}
-
 static int _command_track_path(char *path) {
     
     // 1. Localizar o arquivo no working directory
@@ -112,7 +57,7 @@ static int _command_track_path(char *path) {
     //     - caminho do arquivo
     //     - hash do blob
     //     - permissões
-    err = atualizaIndex(hash, path);
+    err = atualiza_index(hash, path);
     if(err) 
         return err;
     
