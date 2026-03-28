@@ -9,3 +9,4 @@ gcc builds/main.o builds/identifica_arquivos.o builds/le_arquivo.o builds/cria_h
 ./programa
 
 clear && make clean && make && ./bin/vsr start
+clear && make clean && make && ./bin/vsr track ./teste/arquivo_de_teste.txt 
