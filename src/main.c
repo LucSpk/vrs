@@ -95,6 +95,10 @@ int main(int argc, char *argv[]) {
         }
         command_track_path(argv[2]);
     }
+
+    if(strcmp(argv[1], "save") == 0) {
+        
+    }
     
     // printf("Inicio.\n");
     // printf("Arg: %d\n", argc);
