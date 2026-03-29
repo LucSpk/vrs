@@ -97,7 +97,10 @@ int main(int argc, char *argv[]) {
     }
 
     if(strcmp(argv[1], "save") == 0) {
-        
+        if(!argv[2]) {
+            printf("ERRO: Comando não obedece a estrutura da função save: vrs save <mensagem entre aspas>.\n");
+            return 1;
+        }
     }
     
     // printf("Inicio.\n");
