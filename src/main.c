@@ -6,8 +6,9 @@
 #include "../includes/types/zipper_file.h"
 #include "../includes/types/arquivo.h"
 
-#include"../includes/commands/start.h"
-#include"../includes/commands/track.h"
+#include "../includes/commands/start.h"
+#include "../includes/commands/track.h"
+#include "../includes/commands/save.h"
 
 void identifica_arquivos(char *caminho, int exibeOcultos, char ***arr, int *tamanhoFinal); 
 char *cria_hash_de_arquivo(const char *conteudo);
@@ -101,6 +102,8 @@ int main(int argc, char *argv[]) {
             printf("ERRO: Comando não obedece a estrutura da função save: vrs save <mensagem entre aspas>.\n");
             return 1;
         }
+
+        command_save(argv[2]);
     }
     
     // printf("Inicio.\n");
