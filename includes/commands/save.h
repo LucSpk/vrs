@@ -1,5 +1,5 @@
-#ifndef COMMANDS_SAVE
-#define COMMANDS_SAVE
+#ifndef COMMAND_SAVE
+#define COMMAND_SAVE
 
 int command_save(char *path);
 
