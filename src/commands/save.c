@@ -1,5 +1,32 @@
 static int _command_save(char *path) {
 
+    // 1. Lê arquivo index
+    // 2. Cria objeto tree para cada entrada do index.
+    //      - Converter hash (hex) → binário
+    //      - 100644 <path>\0<hash_binario>
+    // 3. Montar conteúdo da tree
+    //      - Junte tudo: <entry1><entry2><entry3>...
+    // 4. Criar objeto tree completo
+    //      - tree <tamanho>\0<conteudo>
+    // 5. Gerar hash da tree
+    //      - hash_tree = SHA(...)
+    // 6. Salvar tree em .vrs/objects/
+    //      - Mesma lógica do blob: objects/xx/yyyy...
+    // 7. Criar objeto commit
+    //      - Formato:
+    //          | tree <hash_tree>
+    //          | parent <hash_commit_anterior>   (se existir)
+    //          | author Seu Nome
+    //          | date timestamp
+    //          |
+    //          | mensagem do commit
+    // 8. Gerar hash do commit
+    //      - commit <tamanho>\0<conteudo>
+    // 9. Salvar commit em .vrs/objects/
+    // 10. Atualizar HEAD
+    //      - Criar/atualizar: .vrs/HEAD
+    //      - Conteúdo: <hash_do_commit>
+
 }
 
 int command_save(char *path) {
