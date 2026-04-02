@@ -1,13 +1,28 @@
 #include <stdio.h>
+#include <stdlib.h>
 
 static int _command_save(char *path) {
     int err = 0;
+    
     // 1. Lê arquivo index
     FILE *fileIndex = fopen("./.vsr/index", "r");
     if(fileIndex == NULL) {
         printf("Erro: Algo deu errado para ao abrir o arquivo index.");
         return 1;
     }
+
+    char linha[1024];
+    char hashAtual[128];
+    char pathAtual[1024];
+
+    while (fgets(linha, sizeof(linha), fileIndex)) {
+        hashAtual[0] = '\0';
+        pathAtual[0] = '\0';
+
+        sscanf(linha, "%s %s", hashAtual, pathAtual);
+
+    }
+    
 
     // 2. Cria objeto tree para cada entrada do index.
     //      - Converter hash (hex) → binário
@@ -34,7 +49,7 @@ static int _command_save(char *path) {
     // 10. Atualizar HEAD
     //      - Criar/atualizar: .vrs/HEAD
     //      - Conteúdo: <hash_do_commit>
-
+    printf("\n");
 }
 
 int command_save(char *path) {
