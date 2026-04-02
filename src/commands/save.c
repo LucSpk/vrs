@@ -1,6 +1,14 @@
-static int _command_save(char *path) {
+#include <stdio.h>
 
+static int _command_save(char *path) {
+    int err = 0;
     // 1. Lê arquivo index
+    FILE *fileIndex = fopen("./.vsr/index", "r");
+    if(fileIndex == NULL) {
+        printf("Erro: Algo deu errado para ao abrir o arquivo index.");
+        return 1;
+    }
+
     // 2. Cria objeto tree para cada entrada do index.
     //      - Converter hash (hex) → binário
     //      - 100644 <path>\0<hash_binario>
