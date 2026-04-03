@@ -1,10 +1,29 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+static char _char_to_bin(unsigned char c, char *out) {
+    for (int i = 7; i >= 0; i--) {
+        out[7 - i] = (c & (1 << i)) ? '1' : '0';
+    }
+    out[8] = '\0';
+}
+
+static char *_cria_objeto_tree(char *hash, char *path) {
+    char output[sizeof(char *) + 1];
+    printf("%s: ", hash);
+    while(*hash) {
+        _char_to_bin((unsigned char)*hash, output);
+        puts(output);
+        ++hash;
+    }
+    printf("\n");
+    return "";
+}
+
 static int _command_save(char *path) {
     int err = 0;
     
-    // 1. Lê arquivo index
+    // 1. Lê arquivo indexbrad
     FILE *fileIndex = fopen("./.vsr/index", "r");
     if(fileIndex == NULL) {
         printf("Erro: Algo deu errado para ao abrir o arquivo index.");
@@ -20,6 +39,7 @@ static int _command_save(char *path) {
         pathAtual[0] = '\0';
 
         sscanf(linha, "%s %s", hashAtual, pathAtual);
+        _cria_objeto_tree(hashAtual, pathAtual);
 
     }
     
