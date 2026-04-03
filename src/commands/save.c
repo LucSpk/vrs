@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 static char _char_to_bin(unsigned char c, char *out) {
     for (int i = 7; i >= 0; i--) {
@@ -9,15 +10,25 @@ static char _char_to_bin(unsigned char c, char *out) {
 }
 
 static char *_cria_objeto_tree(char *hash, char *path) {
+    char *result = malloc((strlen(hash) * 8) + 1);
+    
     char output[sizeof(char *) + 1];
-    printf("%s: ", hash);
+    int count = 0;
     while(*hash) {
         _char_to_bin((unsigned char)*hash, output);
-        puts(output);
+        result[count + 0] = output[0];
+        result[count + 1] = output[1];
+        result[count + 2] = output[2];
+        result[count + 3] = output[3];
+        result[count + 4] = output[4];
+        result[count + 5] = output[5];
+        result[count + 6] = output[6];
+        result[count + 7] = output[7];
+        count += 8;
         ++hash;
     }
-    printf("\n");
-    return "";
+
+    return result;
 }
 
 static int _command_save(char *path) {
