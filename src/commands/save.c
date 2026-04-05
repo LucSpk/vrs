@@ -65,9 +65,10 @@ static int _command_save(char *path) {
         char *entry = malloc((sizeof(char *) * 9) + sizeof(pathAtual) + strlen(hashBinaria));
         sprintf(entry, "100644 %s\\0%s", pathAtual, hashBinaria);
 
-        content[tamanhoAtualContent] = malloc();
+        content[tamanhoAtualContent] = malloc(strlen(entry) + 1);
+        strcpy(content[tamanhoAtualContent], entry);
 
-
+        tamanhoAtualContent++;
     }
     
 
