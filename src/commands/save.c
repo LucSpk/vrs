@@ -9,7 +9,7 @@ static char _char_to_bin(unsigned char c, char *out) {
     out[8] = '\0';
 }
 
-static char *_cria_objeto_tree(char *hash, char *path) {
+static char *_converte_hash_para_binario(char *hash, char *path) {
     char *result = malloc((strlen(hash) * 8) + 1);
     
     char output[sizeof(char *) + 1];
@@ -45,12 +45,28 @@ static int _command_save(char *path) {
     char hashAtual[128];
     char pathAtual[1024];
 
+    int tamanhoContent = 10;
+    int tamanhoAtualContent = 0;
+    char **content = malloc(tamanhoContent);
     while (fgets(linha, sizeof(linha), fileIndex)) {
         hashAtual[0] = '\0';
         pathAtual[0] = '\0';
 
         sscanf(linha, "%s %s", hashAtual, pathAtual);
-        _cria_objeto_tree(hashAtual, pathAtual);
+        char *hashBinaria = _converte_hash_para_binario(hashAtual, pathAtual);
+
+        if(tamanhoAtualContent >= tamanhoContent) {
+            tamanhoContent *= 2;
+            char **contentTemp = realloc(content, tamanhoContent);
+
+            content = contentTemp;
+        }
+
+        char *entry = malloc((sizeof(char *) * 9) + sizeof(pathAtual) + strlen(hashBinaria));
+        sprintf(entry, "100644 %s\\0%s", pathAtual, hashBinaria);
+
+        content[tamanhoAtualContent] = malloc();
+
 
     }
     
