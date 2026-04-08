@@ -47,7 +47,7 @@ static int _command_save(char *path) {
 
     int tamanhoContent = 10;
     int tamanhoAtualContent = 0;
-    char **content = malloc(tamanhoContent);
+    char **content = malloc(sizeof(char *) * tamanhoContent);
     while (fgets(linha, sizeof(linha), fileIndex)) {
         hashAtual[0] = '\0';
         pathAtual[0] = '\0';
@@ -55,14 +55,16 @@ static int _command_save(char *path) {
         sscanf(linha, "%s %s", hashAtual, pathAtual);
         char *hashBinaria = _converte_hash_para_binario(hashAtual, pathAtual);
 
+        printf("path: %s\n", pathAtual);
         if(tamanhoAtualContent >= tamanhoContent) {
             tamanhoContent *= 2;
-            char **contentTemp = realloc(content, tamanhoContent);
+            char **contentTemp = realloc(content, sizeof(char *) * tamanhoContent);
 
             content = contentTemp;
         }
 
-        char *entry = malloc((sizeof(char *) * 9) + sizeof(pathAtual) + strlen(hashBinaria));
+        size_t tamanhoEntry = strlen(pathAtual) + strlen(hashBinaria) + 20;
+        char *entry = malloc(tamanhoEntry);
         sprintf(entry, "100644 %s\\0%s", pathAtual, hashBinaria);
 
         content[tamanhoAtualContent] = malloc(strlen(entry) + 1);
