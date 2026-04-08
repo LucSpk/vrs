@@ -55,22 +55,29 @@ static int _command_save(char *path) {
         sscanf(linha, "%s %s", hashAtual, pathAtual);
         char *hashBinaria = _converte_hash_para_binario(hashAtual, pathAtual);
 
-        printf("path: %s\n", pathAtual);
         if(tamanhoAtualContent >= tamanhoContent) {
             tamanhoContent *= 2;
             char **contentTemp = realloc(content, sizeof(char *) * tamanhoContent);
+            if (!contentTemp) {
+                free(content);
+                return 1;
+            }
 
             content = contentTemp;
         }
 
         size_t tamanhoEntry = strlen(pathAtual) + strlen(hashBinaria) + 20;
         char *entry = malloc(tamanhoEntry);
-        sprintf(entry, "100644 %s\\0%s", pathAtual, hashBinaria);
+        sprintf(entry, "100644 %s%c%s", pathAtual, '\0', hashBinaria);
 
         content[tamanhoAtualContent] = malloc(strlen(entry) + 1);
         strcpy(content[tamanhoAtualContent], entry);
 
         tamanhoAtualContent++;
+    }
+
+    for(int i = 0; i < tamanhoAtualContent; i++) {
+        printf("entry[%d]: %s\n", i, content[i]);
     }
     
 
