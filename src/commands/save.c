@@ -97,7 +97,7 @@ static int _command_save(char *path) {
     // 10. Atualizar HEAD
     //      - Criar/atualizar: .vrs/HEAD
     //      - Conteúdo: <hash_do_commit>
-    closedir(fileIndex);
+    fclose(fileIndex);
     printf("\n");
 }
 
