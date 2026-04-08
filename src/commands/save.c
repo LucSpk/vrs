@@ -53,7 +53,7 @@ static int _command_save(char *path) {
         pathAtual[0] = '\0';
 
         sscanf(linha, "%s %s", hashAtual, pathAtual);
-        char *hashBinaria = _converte_hash_para_binario(hashAtual, pathAtual);
+        unsigned char *hashBinaria = (unsigned char *) _converte_hash_para_binario(hashAtual, pathAtual);
 
         if(tamanhoAtualContent >= tamanhoContent) {
             tamanhoContent *= 2;
@@ -66,10 +66,18 @@ static int _command_save(char *path) {
             content = contentTemp;
         }
 
+        // 2. Cria objeto tree para cada entrada do index.
+        //      - Converter hash (hex) → binário
+        //      - 100644 <path>\0<hash_binario>
         size_t tamanhoEntry = strlen(pathAtual) + strlen(hashBinaria) + 20;
         char *entry = malloc(tamanhoEntry);
         sprintf(entry, "100644 %s%c%s", pathAtual, '\0', hashBinaria);
+        
+        //sprintf(entry, "100644 %s\\0%s", pathAtual, hashBinaria);
 
+        // 3. Montar conteúdo da tree
+        //      - Junte tudo: <entry1><entry2><entry3>...
+ 
         content[tamanhoAtualContent] = malloc(strlen(entry) + 1);
         strcpy(content[tamanhoAtualContent], entry);
 
@@ -78,14 +86,9 @@ static int _command_save(char *path) {
 
     for(int i = 0; i < tamanhoAtualContent; i++) {
         printf("entry[%d]: %s\n", i, content[i]);
+        // printf("%02x ", content[i]);
     }
-    
 
-    // 2. Cria objeto tree para cada entrada do index.
-    //      - Converter hash (hex) → binário
-    //      - 100644 <path>\0<hash_binario>
-    // 3. Montar conteúdo da tree
-    //      - Junte tudo: <entry1><entry2><entry3>...
     // 4. Criar objeto tree completo
     //      - tree <tamanho>\0<conteudo>
     // 5. Gerar hash da tree
