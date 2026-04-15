@@ -45,9 +45,8 @@ static int _command_save(char *path) {
     char hashAtual[128];
     char pathAtual[1024];
 
-    int tamanhoContent = 10;
-    int tamanhoAtualContent = 0;
-    char **content = malloc(sizeof(char *) * tamanhoContent);
+    int tamanhoContent = 0;
+    unsigned *content = NULL;
     while (fgets(linha, sizeof(linha), fileIndex)) {
         hashAtual[0] = '\0';
         pathAtual[0] = '\0';
@@ -60,55 +59,34 @@ static int _command_save(char *path) {
         size_t entrySize = 7 + pathLen + 1 + hashSize;      // - "100644 " + path + '\0' + hash
         
         unsigned char *entry = malloc(entrySize);
-        size_t offset = 0;
-
-        // modo
-        memcpy(entry + offset, "100644 ", 7);
-        offset += 7;
-
-        // path
-        memcpy(entry + offset, pathAtual, pathLen);
-        offset += pathLen;
-
-        // separador NULL
-        entry[offset] = '\0';
-        offset += 1;
-
-        // hash binário
-        memcpy(entry + offset, hashBinaria, hashSize);
-
-        if(tamanhoAtualContent >= tamanhoContent) {
-            tamanhoContent *= 2;
-            char **contentTemp = realloc(content, sizeof(char *) * tamanhoContent);
-            if (!contentTemp) {
-                free(content);
-                return 1;
-            }
-
-            content = contentTemp;
-        }
+        size_t offset = 0;]
 
         // 2. Cria objeto tree para cada entrada do index.
         //      - Converter hash (hex) → binário
         //      - 100644 <path>\0<hash_binario>
-        size_t tamanhoEntry = strlen(pathAtual) + strlen(hashBinaria) + 20;
-        char *entry = malloc(tamanhoEntry);
-        sprintf(entry, "100644 %s%c%s", pathAtual, '\0', hashBinaria);
-        
-        //sprintf(entry, "100644 %s\\0%s", pathAtual, hashBinaria);
+
+        memcpy(entry + offset, "100644 ", 7);           // modo
+        offset += 7;
+        memcpy(entry + offset, pathAtual, pathLen);     // path
+        offset += pathLen;
+        entry[offset] = '\0';                           // separador NULL
+        offset += 1;
+        memcpy(entry + offset, hashBinaria, hashSize);  // hash binário
 
         // 3. Montar conteúdo da tree
         //      - Junte tudo: <entry1><entry2><entry3>...
- 
-        content[tamanhoAtualContent] = malloc(strlen(entry) + 1);
-        strcpy(content[tamanhoAtualContent], entry);
+        unsigned char *tempContent = realloc(content, tamanhoContent + entrySize);
+        if(!tempContent) {
+            free(tempContent);
+            free(entry);
+            return 1;
+        }
 
-        tamanhoAtualContent++;
-    }
+        content = tempContent;
+        memcpy(content + tamanhoContent, entry, entrySize);
+        tamanhoContent += entrySize;
 
-    for(int i = 0; i < tamanhoAtualContent; i++) {
-        printf("entry[%d]: %s\n", i, content[i]);
-        // printf("%02x ", content[i]);
+        free(entry);
     }
 
     // 4. Criar objeto tree completo
