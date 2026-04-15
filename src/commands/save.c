@@ -31,6 +31,20 @@ static char *_converte_hash_para_binario(char *hash, char *path) {
     return result;
 }
 
+static int _contar_digitos(int n) {
+    if (n == 0) return 1; // Caso especial para 0
+    
+    int contador = 0;
+    // // Se quiser contar o sinal negativo, trate n < 0 separadamente
+    // if (n < 0) n = -n; 
+
+    while (n != 0) {
+        n /= 10;
+        contador++;
+    }
+    return contador;
+}
+
 static int _command_save(char *path) {
     int err = 0;
     
@@ -59,19 +73,21 @@ static int _command_save(char *path) {
         size_t entrySize = 7 + pathLen + 1 + hashSize;      // - "100644 " + path + '\0' + hash
         
         unsigned char *entry = malloc(entrySize);
-        size_t offset = 0;
+        size_t offsetEntry = 0;
 
         // 2. Cria objeto tree para cada entrada do index.
         //      - Converter hash (hex) → binário
         //      - 100644 <path>\0<hash_binario>
-
-        memcpy(entry + offset, "100644 ", 7);           // modo
-        offset += 7;
-        memcpy(entry + offset, pathAtual, pathLen);     // path
-        offset += pathLen;
-        entry[offset] = '\0';                           // separador NULL
-        offset += 1;
-        memcpy(entry + offset, hashBinaria, hashSize);  // hash binário
+        memcpy(entry + offsetEntry, "100644 ", 7);           // modo
+        offsetEntry += 7;
+        memcpy(entry + offsetEntry, pathAtual, pathLen);     // path
+        offsetEntry += pathLen;
+        entry[offsetEntry] = '\0';                           // separador NULL
+        offsetEntry += 1;
+        memcpy(entry + offsetEntry, hashBinaria, hashSize);  // hash binário
+        // O memcpy move um bloco de memorioa de um lugar para o outro
+        // Sintaxe: void *memcpy(void *dest, const void *src, size_t n);
+        // quando eu faço entry + offsetEntry eu estou movendo o "cursor" para o fim da memoria ocupada antes de inserir mais dados
 
         // 3. Montar conteúdo da tree
         //      - Junte tudo: <entry1><entry2><entry3>...
@@ -91,6 +107,19 @@ static int _command_save(char *path) {
 
     // 4. Criar objeto tree completo
     //      - tree <tamanho>\0<conteudo>
+    size_t sizeOfTamanhoContent = _contar_digitos(tamanhoContent);
+    unsigned int treeSize = sizeOfTamanhoContent + tamanhoContent + 6;
+    unsigned char *tree = malloc(treeSize);
+    size_t offsetTree = 0;
+
+    memcmp(tree, "tree ", 5);
+    offsetTree += 5;
+    memcmp(tree + offsetTree, tamanhoContent, sizeOfTamanhoContent);
+    offsetTree += sizeOfTamanhoContent;
+    tree[offsetTree] = '\0';
+    offsetTree += 1;
+    memcpy(tree + offsetTree, content, tamanhoContent);
+
     // 5. Gerar hash da tree
     //      - hash_tree = SHA(...)
     // 6. Salvar tree em .vrs/objects/
