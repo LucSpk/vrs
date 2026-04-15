@@ -59,7 +59,7 @@ static int _command_save(char *path) {
         size_t entrySize = 7 + pathLen + 1 + hashSize;      // - "100644 " + path + '\0' + hash
         
         unsigned char *entry = malloc(entrySize);
-        size_t offset = 0;]
+        size_t offset = 0;
 
         // 2. Cria objeto tree para cada entrada do index.
         //      - Converter hash (hex) → binário
