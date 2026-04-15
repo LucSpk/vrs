@@ -54,6 +54,28 @@ static int _command_save(char *path) {
 
         sscanf(linha, "%s %s", hashAtual, pathAtual);
         unsigned char *hashBinaria = (unsigned char *) _converte_hash_para_binario(hashAtual, pathAtual);
+        
+        size_t hashSize = 32;                               // - SHA-256 - 64 caracteres hex |2 caracteres hex = 1 byte| >> 32 bytes
+        size_t pathLen = strlen(pathAtual);
+        size_t entrySize = 7 + pathLen + 1 + hashSize;      // - "100644 " + path + '\0' + hash
+        
+        unsigned char *entry = malloc(entrySize);
+        size_t offset = 0;
+
+        // modo
+        memcpy(entry + offset, "100644 ", 7);
+        offset += 7;
+
+        // path
+        memcpy(entry + offset, pathAtual, pathLen);
+        offset += pathLen;
+
+        // separador NULL
+        entry[offset] = '\0';
+        offset += 1;
+
+        // hash binário
+        memcpy(entry + offset, hashBinaria, hashSize);
 
         if(tamanhoAtualContent >= tamanhoContent) {
             tamanhoContent *= 2;
