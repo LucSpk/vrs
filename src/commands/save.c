@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "../../includes/core/hash.h"
 
 static char _char_to_bin(unsigned char c, char *out) {
     for (int i = 7; i >= 0; i--) {
@@ -60,7 +61,7 @@ static int _command_save(char *path) {
     char pathAtual[1024];
 
     int tamanhoContent = 0;
-    unsigned *content = NULL;
+    unsigned char *content = NULL;
     while (fgets(linha, sizeof(linha), fileIndex)) {
         hashAtual[0] = '\0';
         pathAtual[0] = '\0';
@@ -112,9 +113,9 @@ static int _command_save(char *path) {
     unsigned char *tree = malloc(treeSize);
     size_t offsetTree = 0;
 
-    memcmp(tree, "tree ", 5);
+    memcpy(tree, "tree ", 5);
     offsetTree += 5;
-    memcmp(tree + offsetTree, tamanhoContent, sizeOfTamanhoContent);
+    memcpy(tree + offsetTree, &tamanhoContent, sizeOfTamanhoContent);
     offsetTree += sizeOfTamanhoContent;
     tree[offsetTree] = '\0';
     offsetTree += 1;
@@ -122,6 +123,9 @@ static int _command_save(char *path) {
 
     // 5. Gerar hash da tree
     //      - hash_tree = SHA(...)
+    char *treeHash;
+    // treeHash = cria_hash(tree);
+
     // 6. Salvar tree em .vrs/objects/
     //      - Mesma lógica do blob: objects/xx/yyyy...
     // 7. Criar objeto commit
