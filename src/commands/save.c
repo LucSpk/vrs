@@ -124,7 +124,7 @@ static int _command_save(char *path) {
     // 5. Gerar hash da tree
     //      - hash_tree = SHA(...)
     char *treeHash;
-    // treeHash = cria_hash(tree);
+    treeHash = cria_hash(tree);
 
     // 6. Salvar tree em .vrs/objects/
     //      - Mesma lógica do blob: objects/xx/yyyy...

@@ -22,7 +22,7 @@ static int _command_track_path(char *path) {
 
     // 5. Gerar hash do conteúdo (SHA)
     char *hash;
-    hash = cria_hash(arquivo);
+    hash = cria_hash_de_arquivo(arquivo);
 
     // 6. Verificar se o objeto já existe em .vrs/objects
     char *caminho = malloc(14);
