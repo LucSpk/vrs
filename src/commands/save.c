@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include "../../includes/core/hash.h"
+#include "../../includes/core/utils.h"
+#include "../../includes/core/io.h"
 
 static char _char_to_bin(unsigned char c, char *out) {
     for (int i = 7; i >= 0; i--) {
