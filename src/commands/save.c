@@ -156,6 +156,35 @@ static int _command_save(char *mensagem) {
         fclose(headFile);
     }
 
+    // - Pega timeStamp do momento
+    time_t timeStamp = time(NULL);
+
+    // - Inicia conteudo do commit
+    char commitContent[4096];
+
+    if(strlen(parentHash) > 0) {
+        sprintf(
+            commitContent, 
+            "tree %s\nparent %s\nauthor %s\nDate %ld\n\n%s",
+            tree,
+            parentHash,
+            "", // TODO: Implementar melhoria para considerar o author
+            timeStamp,
+            mensagem
+        );
+    } else {
+        sprintf(
+            commitContent, 
+            "tree %s\nauthor %s\nDate %ld\n\n%s",
+            tree,
+            "", // TODO: Implementar melhoria para considerar o author
+            timeStamp,
+            mensagem
+        );
+    }
+
+    printf(commitContent);
+
     // 8. Gerar hash do commit
     //      - commit <tamanho>\0<conteudo>
     // 9. Salvar commit em .vrs/objects/
