@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include "../../includes/core/hash.h"
 #include "../../includes/core/utils.h"
 #include "../../includes/core/io.h"
@@ -48,7 +49,7 @@ static int _contar_digitos(int n) {
     return contador;
 }
 
-static int _command_save(char *path) {
+static int _command_save(char *mensagem) {
     int err = 0;
     
     // 1. Lê arquivo indexbrad
@@ -147,6 +148,14 @@ static int _command_save(char *path) {
     //          | date timestamp
     //          |
     //          | mensagem do commit
+    char parentHash[128];
+    FILE *headFile = fopen("./.vsr/HEAD", "r");
+    if(headFile != NULL) {
+        fgets(parentHash, sizeof(parentHash), headFile);
+        parentHash[strcspn(parentHash, "\n")] = '\0'; // remove \n
+        fclose(headFile);
+    }
+
     // 8. Gerar hash do commit
     //      - commit <tamanho>\0<conteudo>
     // 9. Salvar commit em .vrs/objects/
@@ -157,6 +166,6 @@ static int _command_save(char *path) {
     printf("\n");
 }
 
-int command_save(char *path) {
-    return _command_save(path);
+int command_save(char *mensagem) {
+    return _command_save(mensagem);
 }
