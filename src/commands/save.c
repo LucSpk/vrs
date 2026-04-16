@@ -128,6 +128,15 @@ static int _command_save(char *path) {
 
     // 6. Salvar tree em .vrs/objects/
     //      - Mesma lógica do blob: objects/xx/yyyy...
+    char *caminho = malloc(14);
+    sprintf(caminho, ".vsr/objects/%s", extrair_substring(treeHash, 0, 2));
+    
+    err = salva_arquivo_no_diretorio(caminho, extrair_substring(treeHash, 2, 62), tree); 
+    if(err) {
+        printf("Erro ai salvar o arquivo no diretorio");
+        return 1;
+    }
+
     // 7. Criar objeto commit
     //      - Formato:
     //          | tree <hash_tree>
