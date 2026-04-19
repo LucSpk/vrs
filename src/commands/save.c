@@ -219,6 +219,15 @@ static int _command_save(char *mensagem) {
     // 11. Atualizar HEAD
     //      - Criar/atualizar: .vrs/HEAD
     //      - Conteúdo: <hash_do_commit>
+    FILE *headFileWrite = fopen("./.vsr/HEAD", "w");
+    if (headFileWrite == NULL) {
+        printf("Erro ao abrir HEAD\n");
+        return 1;
+    }
+
+    fprintf(headFileWrite, "%s", commitHash);
+    fclose(headFileWrite);
+
     fclose(fileIndex);
     printf("\n");
 }
