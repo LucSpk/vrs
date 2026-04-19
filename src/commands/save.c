@@ -184,7 +184,7 @@ static int _command_save(char *mensagem) {
 
     printf(commitContent);
 
-    // 8. Gerar hash do commit
+    // 8. Cria objeto commit
     //      - commit <tamanho>\0<conteudo>
     size_t lenCommit = strlen(commitContent);
     char tamanhoCommitStr[32];
@@ -205,7 +205,8 @@ static int _command_save(char *mensagem) {
     offsetCommit += 1;
 
     memcpy(commitObject + offsetCommit, commitContent, lenCommit);
-
+    
+    // 9. Gera hash do commit 
     char *commitHash;
     commitHash = cria_hash(commitObject);
 
