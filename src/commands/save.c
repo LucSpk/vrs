@@ -210,8 +210,13 @@ static int _command_save(char *mensagem) {
     char *commitHash;
     commitHash = cria_hash(commitObject);
 
-    // 9. Salvar commit em .vrs/objects/
-    // 10. Atualizar HEAD
+    // 10. Salvar commit em .vrs/objects/
+    char *caminhoCommit = malloc(14);
+    sprintf(caminhoCommit, ".vsr/objects/%s", extrair_substring(commitHash, 0, 2));
+    
+    err = salva_arquivo_no_diretorio(caminhoCommit, extrair_substring(commitHash, 2, 62), commitObject); 
+
+    // 11. Atualizar HEAD
     //      - Criar/atualizar: .vrs/HEAD
     //      - Conteúdo: <hash_do_commit>
     fclose(fileIndex);
