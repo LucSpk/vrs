@@ -161,7 +161,6 @@ static int _command_save(char *mensagem) {
 
     // - Inicia conteudo do commit
     char commitContent[4096];
-
     if(strlen(parentHash) > 0) {
         sprintf(
             commitContent, 
@@ -187,6 +186,29 @@ static int _command_save(char *mensagem) {
 
     // 8. Gerar hash do commit
     //      - commit <tamanho>\0<conteudo>
+    size_t lenCommit = strlen(commitContent);
+    char tamanhoCommitStr[32];
+    sprintf(tamanhoCommitStr, "%lu", lenCommit);
+
+    size_t lenTamanhoCommit = strlen(tamanhoCommitStr);
+    size_t tamanhoHeaderCommit = 7 + lenTamanhoCommit + 1 + lenCommit;
+    char *commitObject = malloc(tamanhoHeaderCommit);
+    size_t offsetCommit = 0;
+
+    memcpy(commitObject, "commit ", 7);
+    offsetCommit += 7;
+
+    memcpy(commitObject + offsetCommit, tamanhoCommitStr, lenTamanhoCommit);
+    offsetTree += lenTamanhoCommit;
+
+    commitObject[offsetCommit] = '\0';
+    offsetCommit += 1;
+
+    memcpy(commitObject + offsetCommit, commitContent, lenCommit);
+
+    char *commitHash;
+    commitHash = cria_hash(commitObject);
+
     // 9. Salvar commit em .vrs/objects/
     // 10. Atualizar HEAD
     //      - Criar/atualizar: .vrs/HEAD
