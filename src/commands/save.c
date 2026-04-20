@@ -182,8 +182,6 @@ static int _command_save(char *mensagem) {
         );
     }
 
-    printf(commitContent);
-
     // 8. Cria objeto commit
     //      - commit <tamanho>\0<conteudo>
     size_t lenCommit = strlen(commitContent);
@@ -229,7 +227,6 @@ static int _command_save(char *mensagem) {
     fclose(headFileWrite);
 
     fclose(fileIndex);
-    printf("\n");
 }
 
 int command_save(char *mensagem) {
