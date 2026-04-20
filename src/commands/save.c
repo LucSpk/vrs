@@ -1,6 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
+#include "../../includes/core/hash.h"
+#include "../../includes/core/utils.h"
+#include "../../includes/core/io.h"
 
 static char _char_to_bin(unsigned char c, char *out) {
     for (int i = 7; i >= 0; i--) {
@@ -31,7 +35,21 @@ static char *_converte_hash_para_binario(char *hash, char *path) {
     return result;
 }
 
-static int _command_save(char *path) {
+static int _contar_digitos(int n) {
+    if (n == 0) return 1; // Caso especial para 0
+    
+    int contador = 0;
+    // // Se quiser contar o sinal negativo, trate n < 0 separadamente
+    // if (n < 0) n = -n; 
+
+    while (n != 0) {
+        n /= 10;
+        contador++;
+    }
+    return contador;
+}
+
+static int _command_save(char *mensagem) {
     int err = 0;
     
     // 1. Lê arquivo indexbrad
@@ -45,44 +63,83 @@ static int _command_save(char *path) {
     char hashAtual[128];
     char pathAtual[1024];
 
-    int tamanhoContent = 10;
-    int tamanhoAtualContent = 0;
-    char **content = malloc(tamanhoContent);
+    int tamanhoContent = 0;
+    unsigned char *content = NULL;
     while (fgets(linha, sizeof(linha), fileIndex)) {
         hashAtual[0] = '\0';
         pathAtual[0] = '\0';
 
         sscanf(linha, "%s %s", hashAtual, pathAtual);
-        char *hashBinaria = _converte_hash_para_binario(hashAtual, pathAtual);
+        unsigned char *hashBinaria = (unsigned char *) _converte_hash_para_binario(hashAtual, pathAtual);
+        
+        size_t hashSize = 32;                               // - SHA-256 - 64 caracteres hex |2 caracteres hex = 1 byte| >> 32 bytes
+        size_t pathLen = strlen(pathAtual);
+        size_t entrySize = 7 + pathLen + 1 + hashSize;      // - "100644 " + path + '\0' + hash
+        
+        unsigned char *entry = malloc(entrySize);
+        size_t offsetEntry = 0;
 
-        if(tamanhoAtualContent >= tamanhoContent) {
-            tamanhoContent *= 2;
-            char **contentTemp = realloc(content, tamanhoContent);
+        // 2. Cria objeto tree para cada entrada do index.
+        //      - Converter hash (hex) → binário
+        //      - 100644 <path>\0<hash_binario>
+        memcpy(entry + offsetEntry, "100644 ", 7);           // modo
+        offsetEntry += 7;
+        memcpy(entry + offsetEntry, pathAtual, pathLen);     // path
+        offsetEntry += pathLen;
+        entry[offsetEntry] = '\0';                           // separador NULL
+        offsetEntry += 1;
+        memcpy(entry + offsetEntry, hashBinaria, hashSize);  // hash binário
+        // O memcpy move um bloco de memorioa de um lugar para o outro
+        // Sintaxe: void *memcpy(void *dest, const void *src, size_t n);
+        // quando eu faço entry + offsetEntry eu estou movendo o "cursor" para o fim da memoria ocupada antes de inserir mais dados
 
-            content = contentTemp;
+        // 3. Montar conteúdo da tree
+        //      - Junte tudo: <entry1><entry2><entry3>...
+        unsigned char *tempContent = realloc(content, tamanhoContent + entrySize);
+        if(!tempContent) {
+            free(tempContent);
+            free(entry);
+            return 1;
         }
 
-        char *entry = malloc((sizeof(char *) * 9) + sizeof(pathAtual) + strlen(hashBinaria));
-        sprintf(entry, "100644 %s\\0%s", pathAtual, hashBinaria);
+        content = tempContent;
+        memcpy(content + tamanhoContent, entry, entrySize);
+        tamanhoContent += entrySize;
 
-        content[tamanhoAtualContent] = malloc(strlen(entry) + 1);
-        strcpy(content[tamanhoAtualContent], entry);
-
-        tamanhoAtualContent++;
+        free(entry);
     }
-    
 
-    // 2. Cria objeto tree para cada entrada do index.
-    //      - Converter hash (hex) → binário
-    //      - 100644 <path>\0<hash_binario>
-    // 3. Montar conteúdo da tree
-    //      - Junte tudo: <entry1><entry2><entry3>...
     // 4. Criar objeto tree completo
     //      - tree <tamanho>\0<conteudo>
+    size_t sizeOfTamanhoContent = _contar_digitos(tamanhoContent);
+    unsigned int treeSize = sizeOfTamanhoContent + tamanhoContent + 6;
+    unsigned char *tree = malloc(treeSize);
+    size_t offsetTree = 0;
+
+    memcpy(tree, "tree ", 5);
+    offsetTree += 5;
+    memcpy(tree + offsetTree, &tamanhoContent, sizeOfTamanhoContent);
+    offsetTree += sizeOfTamanhoContent;
+    tree[offsetTree] = '\0';
+    offsetTree += 1;
+    memcpy(tree + offsetTree, content, tamanhoContent);
+
     // 5. Gerar hash da tree
     //      - hash_tree = SHA(...)
+    char *treeHash;
+    treeHash = cria_hash(tree);
+
     // 6. Salvar tree em .vrs/objects/
     //      - Mesma lógica do blob: objects/xx/yyyy...
+    char *caminho = malloc(14);
+    sprintf(caminho, ".vsr/objects/%s", extrair_substring(treeHash, 0, 2));
+    
+    err = salva_arquivo_no_diretorio(caminho, extrair_substring(treeHash, 2, 62), tree); 
+    if(err) {
+        printf("Erro ai salvar o arquivo no diretorio");
+        return 1;
+    }
+
     // 7. Criar objeto commit
     //      - Formato:
     //          | tree <hash_tree>
@@ -91,16 +148,87 @@ static int _command_save(char *path) {
     //          | date timestamp
     //          |
     //          | mensagem do commit
-    // 8. Gerar hash do commit
+    char parentHash[128];
+    FILE *headFile = fopen("./.vsr/HEAD", "r");
+    if(headFile != NULL) {
+        fgets(parentHash, sizeof(parentHash), headFile);
+        parentHash[strcspn(parentHash, "\n")] = '\0'; // remove \n
+        fclose(headFile);
+    }
+
+    // - Pega timeStamp do momento
+    time_t timeStamp = time(NULL);
+
+    // - Inicia conteudo do commit
+    char commitContent[4096];
+    if(strlen(parentHash) > 0) {
+        sprintf(
+            commitContent, 
+            "tree %s\nparent %s\nauthor %s\nDate %ld\n\n%s",
+            tree,
+            parentHash,
+            "", // TODO: Implementar melhoria para considerar o author
+            timeStamp,
+            mensagem
+        );
+    } else {
+        sprintf(
+            commitContent, 
+            "tree %s\nauthor %s\nDate %ld\n\n%s",
+            tree,
+            "", // TODO: Implementar melhoria para considerar o author
+            timeStamp,
+            mensagem
+        );
+    }
+
+    // 8. Cria objeto commit
     //      - commit <tamanho>\0<conteudo>
-    // 9. Salvar commit em .vrs/objects/
-    // 10. Atualizar HEAD
+    size_t lenCommit = strlen(commitContent);
+    char tamanhoCommitStr[32];
+    sprintf(tamanhoCommitStr, "%lu", lenCommit);
+
+    size_t lenTamanhoCommit = strlen(tamanhoCommitStr);
+    size_t tamanhoHeaderCommit = 7 + lenTamanhoCommit + 1 + lenCommit;
+    char *commitObject = malloc(tamanhoHeaderCommit);
+    size_t offsetCommit = 0;
+
+    memcpy(commitObject, "commit ", 7);
+    offsetCommit += 7;
+
+    memcpy(commitObject + offsetCommit, tamanhoCommitStr, lenTamanhoCommit);
+    offsetTree += lenTamanhoCommit;
+
+    commitObject[offsetCommit] = '\0';
+    offsetCommit += 1;
+
+    memcpy(commitObject + offsetCommit, commitContent, lenCommit);
+    
+    // 9. Gera hash do commit 
+    char *commitHash;
+    commitHash = cria_hash(commitObject);
+
+    // 10. Salvar commit em .vrs/objects/
+    char *caminhoCommit = malloc(14);
+    sprintf(caminhoCommit, ".vsr/objects/%s", extrair_substring(commitHash, 0, 2));
+    
+    err = salva_arquivo_no_diretorio(caminhoCommit, extrair_substring(commitHash, 2, 62), commitObject); 
+
+    // 11. Atualizar HEAD
     //      - Criar/atualizar: .vrs/HEAD
     //      - Conteúdo: <hash_do_commit>
-    closedir(fileIndex);
-    printf("\n");
+    FILE *headFileWrite = fopen("./.vsr/HEAD", "w");
+    if (headFileWrite == NULL) {
+        printf("Erro ao abrir HEAD\n");
+        return 1;
+    }
+
+    fprintf(headFileWrite, "%s", commitHash);
+    fclose(headFileWrite);
+
+    fclose(fileIndex);
 }
 
-int command_save(char *path) {
-    return _command_save(path);
+int command_save(char *mensagem) {
+    return _command_save(mensagem);
 }

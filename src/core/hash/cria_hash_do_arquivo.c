@@ -30,11 +30,11 @@ char *_cria_hash_de_arquivo(const char *conteudo) {
     // printf("SHA-256: %s\n", hash_hex);
 }
 
-char * cria_hash_de_arquivo(const char *conteudo) {
+char * cria_hash(const char *conteudo) {
     return _cria_hash_de_arquivo(conteudo);
 }
 
-char * cria_hash(const Arquivo arq) {
+char * cria_hash_de_arquivo(const Arquivo arq) {
     char *objeto = malloc(28 + arq.tamanho);
     sprintf(objeto, "blob %ld\\0%s", arq.tamanho, arq.conteudo);
     return _cria_hash_de_arquivo(objeto);
