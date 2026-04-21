@@ -159,7 +159,7 @@ static int _command_save(char *mensagem) {
 
     size_t lenTamanhoCommit = strlen(tamanhoCommitStr);
     size_t tamanhoHeaderCommit = 7 + lenTamanhoCommit + 1 + lenCommit;
-    char *commitObject = malloc(tamanhoHeaderCommit);
+    char *commit = malloc(tamanhoHeaderCommit);
     // size_t offsetCommit = 0;
 
     // memcpy(commitObject, "commit ", 7);
@@ -172,17 +172,17 @@ static int _command_save(char *mensagem) {
     // offsetCommit += 1;
 
     // memcpy(commitObject + offsetCommit, commitContent, lenCommit);
-    _cria_objeto(commitObject, "commit ", 7, tamanhoCommitStr, lenTamanhoCommit, commitContent, lenCommit);
+    _cria_objeto(commit, "commit ", 7, tamanhoCommitStr, lenTamanhoCommit, commitContent, lenCommit);
     
     // 9. Gera hash do commit 
     char *commitHash;
-    commitHash = cria_hash(commitObject);
+    commitHash = cria_hash(commit);
 
     // 10. Salvar commit em .vrs/objects/
     char *caminhoCommit = malloc(14);
     sprintf(caminhoCommit, ".vsr/objects/%s", extrair_substring(commitHash, 0, 2));
     
-    err = salva_arquivo_no_diretorio(caminhoCommit, extrair_substring(commitHash, 2, 62), commitObject); 
+    err = salva_arquivo_no_diretorio(caminhoCommit, extrair_substring(commitHash, 2, 62), commit); 
 
     // 11. Atualizar HEAD
     //      - Criar/atualizar: .vrs/HEAD
