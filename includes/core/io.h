@@ -5,7 +5,7 @@
 
 int verifica(char *path);
 Arquivo le_conteudo_arquivo(const char *filePath);
-int salva_arquivo_no_diretorio(const char *caminho, const char *fileName, const unsigned char *zipFile);
+int salva_arquivo_no_diretorio(const char *caminho, const char *fileName, const unsigned char *content, size_t contentSize);
 int atualiza_index(char *hash, char *fileName);
 
 #endif
