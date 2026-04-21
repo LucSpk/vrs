@@ -160,18 +160,19 @@ static int _command_save(char *mensagem) {
     size_t lenTamanhoCommit = strlen(tamanhoCommitStr);
     size_t tamanhoHeaderCommit = 7 + lenTamanhoCommit + 1 + lenCommit;
     char *commitObject = malloc(tamanhoHeaderCommit);
-    size_t offsetCommit = 0;
+    // size_t offsetCommit = 0;
 
-    memcpy(commitObject, "commit ", 7);
-    offsetCommit += 7;
+    // memcpy(commitObject, "commit ", 7);
+    // offsetCommit += 7;
 
-    memcpy(commitObject + offsetCommit, tamanhoCommitStr, lenTamanhoCommit);
-    offsetTree += lenTamanhoCommit;
+    // memcpy(commitObject + offsetCommit, tamanhoCommitStr, lenTamanhoCommit);
+    // offsetTree += lenTamanhoCommit;
 
-    commitObject[offsetCommit] = '\0';
-    offsetCommit += 1;
+    // commitObject[offsetCommit] = '\0';
+    // offsetCommit += 1;
 
-    memcpy(commitObject + offsetCommit, commitContent, lenCommit);
+    // memcpy(commitObject + offsetCommit, commitContent, lenCommit);
+    _cria_objeto(commitObject, "commit ", 7, tamanhoCommitStr, lenTamanhoCommit, commitContent, lenCommit);
     
     // 9. Gera hash do commit 
     char *commitHash;
