@@ -6,7 +6,7 @@
 #include "../../includes/core/utils.h"
 #include "../../includes/core/io.h"
 
-static void _move_memoria(char *target, char *source, size_t *offset, size_t length) {
+static void _move_memoria(unsigned char *target, unsigned char *source, size_t *offset, size_t length) {
     // O memcpy move um bloco de memorioa de um lugar para o outro
     // Sintaxe: void *memcpy(void *dest, const void *src, size_t n);
     // quando eu faço entry + offsetEntry eu estou movendo o "cursor" para o fim da memoria ocupada antes de inserir mais dados
@@ -83,18 +83,15 @@ static int _command_save(char *mensagem) {
 
     // 4. Criar objeto tree completo
     //      - tree <tamanho>\0<conteudo>
+    char tamanhoContentStr[20];
+    sprintf(tamanhoContentStr, "%d", tamanhoContent);
+
     size_t sizeOfTamanhoContent = contar_digitos(tamanhoContent);
     unsigned int treeSize = sizeOfTamanhoContent + tamanhoContent + 6;
+    
     unsigned char *tree = malloc(treeSize);
-    size_t offsetTree = 0;
 
-    memcpy(tree, "tree ", 5);
-    offsetTree += 5;
-    memcpy(tree + offsetTree, &tamanhoContent, sizeOfTamanhoContent);
-    offsetTree += sizeOfTamanhoContent;
-    tree[offsetTree] = '\0';
-    offsetTree += 1;
-    memcpy(tree + offsetTree, content, tamanhoContent);
+    size_t offsetTree = _cria_objeto(tree, "tree ", 5, tamanhoContentStr, sizeOfTamanhoContent, content, tamanhoContent);
 
     // 5. Gerar hash da tree
     //      - hash_tree = SHA(...)
