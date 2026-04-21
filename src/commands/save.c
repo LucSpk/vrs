@@ -6,6 +6,30 @@
 #include "../../includes/core/utils.h"
 #include "../../includes/core/io.h"
 
+static void _move_memoria(char *target, char *source, size_t *offset, size_t length) {
+    // O memcpy move um bloco de memorioa de um lugar para o outro
+    // Sintaxe: void *memcpy(void *dest, const void *src, size_t n);
+    // quando eu faço entry + offsetEntry eu estou movendo o "cursor" para o fim da memoria ocupada antes de inserir mais dados
+
+    memcpy((target + *offset), source, length);           // modo
+    *offset += length;
+}
+
+static size_t _cria_objeto(char *target, 
+        char *header, size_t headerLen,
+        char *arg1, size_t arg1Len,
+        char *arg2, size_t arg2Len
+    ) {
+    size_t offset = 0;
+    _move_memoria(target, header, &offset, headerLen);
+    _move_memoria(target, arg1, &offset, arg1Len);
+    target[offset] = '\0';                           // separador NULL
+    offset += 1;
+    _move_memoria(target, arg2, &offset, arg2Len);
+
+    return offset;
+}
+
 static int _command_save(char *mensagem) {
     int err = 0;
     
@@ -34,21 +58,12 @@ static int _command_save(char *mensagem) {
         size_t entrySize = 7 + pathLen + 1 + hashSize;      // - "100644 " + path + '\0' + hash
         
         unsigned char *entry = malloc(entrySize);
-        size_t offsetEntry = 0;
+        // size_t offsetEntry = 0;
 
         // 2. Cria objeto tree para cada entrada do index.
         //      - Converter hash (hex) → binário
         //      - 100644 <path>\0<hash_binario>
-        memcpy(entry + offsetEntry, "100644 ", 7);           // modo
-        offsetEntry += 7;
-        memcpy(entry + offsetEntry, pathAtual, pathLen);     // path
-        offsetEntry += pathLen;
-        entry[offsetEntry] = '\0';                           // separador NULL
-        offsetEntry += 1;
-        memcpy(entry + offsetEntry, hashBinaria, hashSize);  // hash binário
-        // O memcpy move um bloco de memorioa de um lugar para o outro
-        // Sintaxe: void *memcpy(void *dest, const void *src, size_t n);
-        // quando eu faço entry + offsetEntry eu estou movendo o "cursor" para o fim da memoria ocupada antes de inserir mais dados
+        size_t offsetEntry = _cria_objeto(entry, "100644 ", 7, pathAtual, pathLen, (char *)hashBinaria, hashSize);
 
         // 3. Montar conteúdo da tree
         //      - Junte tudo: <entry1><entry2><entry3>...
