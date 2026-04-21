@@ -6,7 +6,7 @@
 static int _atualiza_index(char *hash, char *fileName) {
     if(verifica("./.vsr/index")) {
         int err = 0;
-        err = salva_arquivo_no_diretorio(".vsr/", "index", " "); 
+        err = salva_arquivo_no_diretorio(".vsr/", "index", " ", 1); 
         if(err) {
             printf("Erro ao criar arquivo index.\n");
             return 1;

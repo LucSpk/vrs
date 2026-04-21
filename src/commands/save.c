@@ -30,6 +30,18 @@ static size_t _cria_objeto(char *target,
     return offset;
 }
 
+static int _salva_objeto(char *hash, char * object, size_t objectSize) {
+    char *caminho = malloc(14);
+    sprintf(caminho, ".vsr/objects/%s", extrair_substring(hash, 0, 2));
+    
+    int err = salva_arquivo_no_diretorio(caminho, extrair_substring(hash, 2, 62), object, objectSize); 
+    if(!err) 
+        return err;
+
+    printf("Erro ai salvar o arquivo no diretorio");
+    return 1;
+}
+
 static int _command_save(char *mensagem) {
     int err = 0;
     
@@ -100,14 +112,15 @@ static int _command_save(char *mensagem) {
 
     // 6. Salvar tree em .vrs/objects/
     //      - Mesma lógica do blob: objects/xx/yyyy...
-    char *caminho = malloc(14);
-    sprintf(caminho, ".vsr/objects/%s", extrair_substring(treeHash, 0, 2));
+    // char *caminho = malloc(14);
+    // sprintf(caminho, ".vsr/objects/%s", extrair_substring(treeHash, 0, 2));
     
-    err = salva_arquivo_no_diretorio(caminho, extrair_substring(treeHash, 2, 62), tree); 
-    if(err) {
-        printf("Erro ai salvar o arquivo no diretorio");
-        return 1;
-    }
+    // err = salva_arquivo_no_diretorio(caminho, extrair_substring(treeHash, 2, 62), tree); 
+    // if(err) {
+    //     printf("Erro ai salvar o arquivo no diretorio");
+    //     return 1;
+    // }
+    _salva_objeto(treeHash, tree, treeSize);
 
     // 7. Criar objeto commit
     //      - Formato:
@@ -179,10 +192,11 @@ static int _command_save(char *mensagem) {
     commitHash = cria_hash(commit);
 
     // 10. Salvar commit em .vrs/objects/
-    char *caminhoCommit = malloc(14);
-    sprintf(caminhoCommit, ".vsr/objects/%s", extrair_substring(commitHash, 0, 2));
+    // char *caminhoCommit = malloc(14);
+    // sprintf(caminhoCommit, ".vsr/objects/%s", extrair_substring(commitHash, 0, 2));
     
-    err = salva_arquivo_no_diretorio(caminhoCommit, extrair_substring(commitHash, 2, 62), commit); 
+    // err = salva_arquivo_no_diretorio(caminhoCommit, extrair_substring(commitHash, 2, 62), commit); 
+    _salva_objeto(commitHash, commit, tamanhoHeaderCommit);
 
     // 11. Atualizar HEAD
     //      - Criar/atualizar: .vrs/HEAD

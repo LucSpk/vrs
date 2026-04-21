@@ -57,7 +57,7 @@ void execuit() {
         char *caminho = malloc(14);
         sprintf(caminho, "./objects/%s", extrairSubstring(hash, 0, 2));
         
-        salva_arquivo_no_diretorio(caminho, extrairSubstring(hash, 2, 62), zipFile.conteudoComprimido); 
+        salva_arquivo_no_diretorio(caminho, extrairSubstring(hash, 2, 62), zipFile.conteudoComprimido, zipFile.tamanhoComprimido); 
         
         char tmp[PATH_MAX];
         snprintf(tmp, sizeof(tmp), "%s/%s", caminho, extrairSubstring(hash, 2, 62));
