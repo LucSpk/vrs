@@ -6,20 +6,6 @@
 #include "../../includes/core/utils.h"
 #include "../../includes/core/io.h"
 
-static int _contar_digitos(int n) {
-    if (n == 0) return 1; // Caso especial para 0
-    
-    int contador = 0;
-    // // Se quiser contar o sinal negativo, trate n < 0 separadamente
-    // if (n < 0) n = -n; 
-
-    while (n != 0) {
-        n /= 10;
-        contador++;
-    }
-    return contador;
-}
-
 static int _command_save(char *mensagem) {
     int err = 0;
     
@@ -82,7 +68,7 @@ static int _command_save(char *mensagem) {
 
     // 4. Criar objeto tree completo
     //      - tree <tamanho>\0<conteudo>
-    size_t sizeOfTamanhoContent = _contar_digitos(tamanhoContent);
+    size_t sizeOfTamanhoContent = contar_digitos(tamanhoContent);
     unsigned int treeSize = sizeOfTamanhoContent + tamanhoContent + 6;
     unsigned char *tree = malloc(treeSize);
     size_t offsetTree = 0;
