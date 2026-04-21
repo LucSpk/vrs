@@ -63,7 +63,7 @@ static int _command_save(char *mensagem) {
         // 2. Cria objeto tree para cada entrada do index.
         //      - Converter hash (hex) → binário
         //      - 100644 <path>\0<hash_binario>
-        size_t offsetEntry = _cria_objeto(entry, "100644 ", 7, pathAtual, pathLen, (char *)hashBinaria, hashSize);
+        _cria_objeto(entry, "100644 ", 7, pathAtual, pathLen, (char *)hashBinaria, hashSize);
 
         // 3. Montar conteúdo da tree
         //      - Junte tudo: <entry1><entry2><entry3>...
