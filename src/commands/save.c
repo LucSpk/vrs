@@ -6,47 +6,40 @@
 #include "../../includes/core/utils.h"
 #include "../../includes/core/io.h"
 
-static char _char_to_bin(unsigned char c, char *out) {
-    for (int i = 7; i >= 0; i--) {
-        out[7 - i] = (c & (1 << i)) ? '1' : '0';
-    }
-    out[8] = '\0';
+static void _move_memoria(unsigned char *target, unsigned char *source, size_t *offset, size_t length) {
+    // O memcpy move um bloco de memorioa de um lugar para o outro
+    // Sintaxe: void *memcpy(void *dest, const void *src, size_t n);
+    // quando eu faço entry + offsetEntry eu estou movendo o "cursor" para o fim da memoria ocupada antes de inserir mais dados
+
+    memcpy((target + *offset), source, length);           // modo
+    *offset += length;
 }
 
-static char *_converte_hash_para_binario(char *hash, char *path) {
-    char *result = malloc((strlen(hash) * 8) + 1);
-    
-    char output[sizeof(char *) + 1];
-    int count = 0;
-    while(*hash) {
-        _char_to_bin((unsigned char)*hash, output);
-        result[count + 0] = output[0];
-        result[count + 1] = output[1];
-        result[count + 2] = output[2];
-        result[count + 3] = output[3];
-        result[count + 4] = output[4];
-        result[count + 5] = output[5];
-        result[count + 6] = output[6];
-        result[count + 7] = output[7];
-        count += 8;
-        ++hash;
-    }
+static size_t _cria_objeto(char *target, 
+        char *header, size_t headerLen,
+        char *arg1, size_t arg1Len,
+        char *arg2, size_t arg2Len
+    ) {
+    size_t offset = 0;
+    _move_memoria(target, header, &offset, headerLen);
+    _move_memoria(target, arg1, &offset, arg1Len);
+    target[offset] = '\0';                           // separador NULL
+    offset += 1;
+    _move_memoria(target, arg2, &offset, arg2Len);
 
-    return result;
+    return offset;
 }
 
-static int _contar_digitos(int n) {
-    if (n == 0) return 1; // Caso especial para 0
+static int _salva_objeto(char *hash, char * object, size_t objectSize) {
+    char *caminho = malloc(14);
+    sprintf(caminho, ".vsr/objects/%s", extrair_substring(hash, 0, 2));
     
-    int contador = 0;
-    // // Se quiser contar o sinal negativo, trate n < 0 separadamente
-    // if (n < 0) n = -n; 
+    int err = salva_arquivo_no_diretorio(caminho, extrair_substring(hash, 2, 62), object, objectSize); 
+    if(!err) 
+        return err;
 
-    while (n != 0) {
-        n /= 10;
-        contador++;
-    }
-    return contador;
+    printf("Erro ai salvar o arquivo no diretorio");
+    return 1;
 }
 
 static int _command_save(char *mensagem) {
@@ -70,28 +63,19 @@ static int _command_save(char *mensagem) {
         pathAtual[0] = '\0';
 
         sscanf(linha, "%s %s", hashAtual, pathAtual);
-        unsigned char *hashBinaria = (unsigned char *) _converte_hash_para_binario(hashAtual, pathAtual);
+        unsigned char *hashBinaria = (unsigned char *) converte_hash_para_binario(hashAtual, pathAtual);
         
         size_t hashSize = 32;                               // - SHA-256 - 64 caracteres hex |2 caracteres hex = 1 byte| >> 32 bytes
         size_t pathLen = strlen(pathAtual);
         size_t entrySize = 7 + pathLen + 1 + hashSize;      // - "100644 " + path + '\0' + hash
         
         unsigned char *entry = malloc(entrySize);
-        size_t offsetEntry = 0;
+        // size_t offsetEntry = 0;
 
         // 2. Cria objeto tree para cada entrada do index.
         //      - Converter hash (hex) → binário
         //      - 100644 <path>\0<hash_binario>
-        memcpy(entry + offsetEntry, "100644 ", 7);           // modo
-        offsetEntry += 7;
-        memcpy(entry + offsetEntry, pathAtual, pathLen);     // path
-        offsetEntry += pathLen;
-        entry[offsetEntry] = '\0';                           // separador NULL
-        offsetEntry += 1;
-        memcpy(entry + offsetEntry, hashBinaria, hashSize);  // hash binário
-        // O memcpy move um bloco de memorioa de um lugar para o outro
-        // Sintaxe: void *memcpy(void *dest, const void *src, size_t n);
-        // quando eu faço entry + offsetEntry eu estou movendo o "cursor" para o fim da memoria ocupada antes de inserir mais dados
+        _cria_objeto(entry, "100644 ", 7, pathAtual, pathLen, (char *)hashBinaria, hashSize);
 
         // 3. Montar conteúdo da tree
         //      - Junte tudo: <entry1><entry2><entry3>...
@@ -111,18 +95,15 @@ static int _command_save(char *mensagem) {
 
     // 4. Criar objeto tree completo
     //      - tree <tamanho>\0<conteudo>
-    size_t sizeOfTamanhoContent = _contar_digitos(tamanhoContent);
-    unsigned int treeSize = sizeOfTamanhoContent + tamanhoContent + 6;
-    unsigned char *tree = malloc(treeSize);
-    size_t offsetTree = 0;
+    char tamanhoContentStr[20];
+    sprintf(tamanhoContentStr, "%d", tamanhoContent);
 
-    memcpy(tree, "tree ", 5);
-    offsetTree += 5;
-    memcpy(tree + offsetTree, &tamanhoContent, sizeOfTamanhoContent);
-    offsetTree += sizeOfTamanhoContent;
-    tree[offsetTree] = '\0';
-    offsetTree += 1;
-    memcpy(tree + offsetTree, content, tamanhoContent);
+    size_t sizeOfTamanhoContent = contar_digitos(tamanhoContent);
+    unsigned int treeSize = sizeOfTamanhoContent + tamanhoContent + 6;
+    
+    unsigned char *tree = malloc(treeSize);
+
+    size_t offsetTree = _cria_objeto(tree, "tree ", 5, tamanhoContentStr, sizeOfTamanhoContent, content, tamanhoContent);
 
     // 5. Gerar hash da tree
     //      - hash_tree = SHA(...)
@@ -131,14 +112,15 @@ static int _command_save(char *mensagem) {
 
     // 6. Salvar tree em .vrs/objects/
     //      - Mesma lógica do blob: objects/xx/yyyy...
-    char *caminho = malloc(14);
-    sprintf(caminho, ".vsr/objects/%s", extrair_substring(treeHash, 0, 2));
+    // char *caminho = malloc(14);
+    // sprintf(caminho, ".vsr/objects/%s", extrair_substring(treeHash, 0, 2));
     
-    err = salva_arquivo_no_diretorio(caminho, extrair_substring(treeHash, 2, 62), tree); 
-    if(err) {
-        printf("Erro ai salvar o arquivo no diretorio");
-        return 1;
-    }
+    // err = salva_arquivo_no_diretorio(caminho, extrair_substring(treeHash, 2, 62), tree); 
+    // if(err) {
+    //     printf("Erro ai salvar o arquivo no diretorio");
+    //     return 1;
+    // }
+    _salva_objeto(treeHash, tree, treeSize);
 
     // 7. Criar objeto commit
     //      - Formato:
@@ -190,29 +172,31 @@ static int _command_save(char *mensagem) {
 
     size_t lenTamanhoCommit = strlen(tamanhoCommitStr);
     size_t tamanhoHeaderCommit = 7 + lenTamanhoCommit + 1 + lenCommit;
-    char *commitObject = malloc(tamanhoHeaderCommit);
-    size_t offsetCommit = 0;
+    char *commit = malloc(tamanhoHeaderCommit);
+    // size_t offsetCommit = 0;
 
-    memcpy(commitObject, "commit ", 7);
-    offsetCommit += 7;
+    // memcpy(commitObject, "commit ", 7);
+    // offsetCommit += 7;
 
-    memcpy(commitObject + offsetCommit, tamanhoCommitStr, lenTamanhoCommit);
-    offsetTree += lenTamanhoCommit;
+    // memcpy(commitObject + offsetCommit, tamanhoCommitStr, lenTamanhoCommit);
+    // offsetTree += lenTamanhoCommit;
 
-    commitObject[offsetCommit] = '\0';
-    offsetCommit += 1;
+    // commitObject[offsetCommit] = '\0';
+    // offsetCommit += 1;
 
-    memcpy(commitObject + offsetCommit, commitContent, lenCommit);
+    // memcpy(commitObject + offsetCommit, commitContent, lenCommit);
+    _cria_objeto(commit, "commit ", 7, tamanhoCommitStr, lenTamanhoCommit, commitContent, lenCommit);
     
     // 9. Gera hash do commit 
     char *commitHash;
-    commitHash = cria_hash(commitObject);
+    commitHash = cria_hash(commit);
 
     // 10. Salvar commit em .vrs/objects/
-    char *caminhoCommit = malloc(14);
-    sprintf(caminhoCommit, ".vsr/objects/%s", extrair_substring(commitHash, 0, 2));
+    // char *caminhoCommit = malloc(14);
+    // sprintf(caminhoCommit, ".vsr/objects/%s", extrair_substring(commitHash, 0, 2));
     
-    err = salva_arquivo_no_diretorio(caminhoCommit, extrair_substring(commitHash, 2, 62), commitObject); 
+    // err = salva_arquivo_no_diretorio(caminhoCommit, extrair_substring(commitHash, 2, 62), commit); 
+    _salva_objeto(commitHash, commit, tamanhoHeaderCommit);
 
     // 11. Atualizar HEAD
     //      - Criar/atualizar: .vrs/HEAD

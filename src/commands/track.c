@@ -48,7 +48,7 @@ static int _command_track_path(char *path) {
     char fileParaSerSalvo[tamanhoInput];
     snprintf(fileParaSerSalvo, tamanhoInput, "blob %ld\\0%s", zipFile.tamanhoComprimido, zipFile.conteudoComprimido);
 
-    err = salva_arquivo_no_diretorio(caminho, extrair_substring(hash, 2, 62), fileParaSerSalvo); 
+    err = salva_arquivo_no_diretorio(caminho, extrair_substring(hash, 2, 62), fileParaSerSalvo, tamanhoInput); 
     if(err) {
         printf("Erro ai salvar o arquivo no diretorio");
         return 1;
