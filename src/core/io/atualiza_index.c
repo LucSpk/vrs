@@ -28,25 +28,28 @@ static int _atualiza_index(char *hash, char *fileName) {
     char linha[1024];
     char hashAtual[128];
     char pathAtual[512];
+    char statusAtual[32];
     int existe = 0;
     
     while(fgets(linha, sizeof(linha), file)) {
         hashAtual[0] = '\0';
         pathAtual[0] = '\0';
+        statusAtual[0] = '\0';
 
-        sscanf(linha, "%s %s", hashAtual, pathAtual);
+        sscanf(linha, "%s %s %s", hashAtual, pathAtual, statusAtual);
+        // - Arquivo existe no index e sem mudanças
         if(strcmp(pathAtual, fileName) == 0) {
             printf("Arquivo existe: %s\n", fileName);
 
-            fprintf(temp, "%s %s\n", hash, fileName);
+            fprintf(temp, "%s %s staged\n", hash, fileName);
             existe = 1;
-        } else {
-            fprintf(temp, "%s %s\n", hashAtual, pathAtual);
+        } else { // - O arquivo existe no index, mas tem mudanças
+            fprintf(temp, "%s %s modified\n", hashAtual, pathAtual);
         }
     }
-
+    // - O Arquivo não existe no index
     if(!existe) {
-        fprintf(temp, "%s %s\n", hash, fileName);
+        fprintf(temp, "%s %s staged\n", hash, fileName);
     }
 
     fclose(file);
