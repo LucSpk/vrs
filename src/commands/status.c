@@ -14,17 +14,17 @@ int _command_status() {
     char path[1024];
     char status[32];
 
-    int tamanhoAtualStaged = 10;
-    char **staged = malloc(sizeof(char *) * tamanhoAtualStaged);
-    int tamanhoStaged = 0;
+    int tamanhoStaged = 10;
+    char **staged = malloc(sizeof(char *) * tamanhoStaged);
+    int tamanhoAtualStaged = 0;
 
-    int tamanhoAtualModified = 10;
-    char **modified = malloc(sizeof(char *) * tamanhoAtualModified);
-    int tamanhoModified = 0;
+    int tamanhoModified = 10;
+    char **modified = malloc(sizeof(char *) * tamanhoModified);
+    int tamanhoAtualModified = 0;
     
-    int tamanhoAtualUntracked = 10;
-    char **untracked = malloc(sizeof(char *) * tamanhoAtualUntracked); 
-    int tamanhoUntracked = 0;
+    int tamanhoUntracked = 10;
+    char **untracked = malloc(sizeof(char *) * tamanhoUntracked); 
+    int tamanhoAtualUntracked = 0;
 
     while (fgets(linha, sizeof(linha), fileIndex)) {
         hash[0] = '\0';
@@ -38,15 +38,15 @@ int _command_status() {
                 tamanhoStaged *= 2;
                 char **temp = realloc(staged, sizeof(char *) * tamanhoStaged);
                 if (!temp) {
-                    perror("Erro no realloc");
+                    printf("Erro no realloc de staged.\n");
                     return 1;
                 }
                 staged = temp;
             }
 
-            int tamanhoResult = strlen(path) + 13;    // - "modified:   + <path> + \0"
+            int tamanhoResult = strlen(path) + 11;    // - "staged:   + <path> + \0"
             char result[tamanhoResult]; 
-            sprintf(result, "modified:   %s", path);
+            sprintf(result, "staged:   %s", path);
 
             staged[tamanhoAtualStaged] = malloc(sizeof(char *) * tamanhoResult);
             if(!(*staged)) {
@@ -57,8 +57,42 @@ int _command_status() {
             strcpy(staged[tamanhoAtualStaged], result);
             tamanhoAtualStaged++;
         }
+
+        if(strcmp(status, "modified") == 0) {
+            if(tamanhoAtualModified >= tamanhoModified) {
+                tamanhoModified *= 2;
+                char **temp = realloc(modified, sizeof(char *) * tamanhoModified);
+                if (!temp) {
+                    printf("Erro no realloc de modified.\n");
+                    return 1;
+                }
+                modified = temp;
+
+            }
+
+            int tamanhoResult = strlen(path) + 13;    // - "modified:   + <path> + \0"
+            char result[tamanhoResult]; 
+            sprintf(result, "modified:   %s", path);
+
+            modified[tamanhoAtualModified] = malloc(sizeof(char *) * tamanhoResult);
+            if(!(*modified)) {
+                printf("ERRO: Falha na alocação de memória (malloc retornou NULL)\n");
+                return 1;
+            }
+
+            strcpy(modified[tamanhoAtualModified], result);
+        
+            tamanhoAtualModified++;
+        }
     }
-    
+
+    for(int i = 0; i < tamanhoAtualStaged; i++) {
+        printf("%s\n", staged[i]);
+    }
+
+    for(int i = 0; i < tamanhoAtualModified; i++) {
+        printf("%s\n", modified[i]);
+    }
 
     return 0;
 }
