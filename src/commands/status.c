@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "../../includes/core/identifica_arquivos.h"
+
 int _command_status() {
     FILE *fileIndex = fopen(".vsr/index", "r");
     if(!fileIndex) {
@@ -93,6 +95,10 @@ int _command_status() {
     for(int i = 0; i < tamanhoAtualModified; i++) {
         printf("%s\n", modified[i]);
     }
+
+    char **filePaths = NULL;
+    int totalArquivos = 0;
+    identifica_arquivos(".", 0, &filePaths, &totalArquivos);
 
     return 0;
 }
