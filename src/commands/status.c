@@ -44,10 +44,10 @@ int _command_status() {
 
             int tamanhoResult = strlen(path) + 11;    // - "staged:   + <path> + \0"
             char result[tamanhoResult]; 
-            sprintf(result, "staged:   %s", path);
+            snprintf(result, tamanhoResult, "staged:   %s", path);
 
             staged[tamanhoAtualStaged] = malloc(sizeof(char) * tamanhoResult);
-            if(*staged == NULL) {
+            if(staged[tamanhoAtualStaged] == NULL) {
                 printf("ERRO: Falha na alocação de memória (malloc retornou NULL)\n");
                 return 1;
             }
@@ -69,10 +69,10 @@ int _command_status() {
 
             int tamanhoResult = strlen(path) + 13;    // - "modified:   + <path> + \0"
             char result[tamanhoResult]; 
-            sprintf(result, "modified:   %s", path);
+            snprintf(result, tamanhoResult, "modified:   %s", path);
 
             modified[tamanhoAtualModified] = malloc(sizeof(char) * tamanhoResult);
-            if(*modified == NULL) {
+            if(modified[tamanhoAtualModified] == NULL) {
                 printf("ERRO: Falha na alocação de memória (malloc retornou NULL)\n");
                 return 1;
             }
