@@ -4,6 +4,15 @@
 
 #include "../../includes/core/identifica_arquivos.h"
 
+int deve_ignorar(const char *path) {
+    if(strstr(path, ".vsr/") != NULL) return 1;
+    if(strstr(path, "builds/") != NULL) return 1;
+    if(strstr(path, "bin/") != NULL) return 1;
+    if(strstr(path, ".o") != NULL) return 1;
+
+    return 0;
+}
+
 int _command_status() {
     FILE *fileIndex = fopen(".vsr/index", "r");
     if(!fileIndex) {
@@ -99,6 +108,9 @@ int _command_status() {
     int tamanhoAtualUntracked = 0;
 
     for(int i = 0; i < totalArquivos; i++) {
+        if(deve_ignorar(filePaths[i])) 
+            continue;
+
         rewind(fileIndex);
 
         int existe = 0;
