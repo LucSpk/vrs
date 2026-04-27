@@ -36,14 +36,12 @@ static int _atualiza_index(char *hash, char *fileName) {
         pathAtual[0] = '\0';
         statusAtual[0] = '\0';
 
-        printf("passou por aqui!\n");
         sscanf(linha, "%s %s %s", hashAtual, pathAtual, statusAtual);
         // - Arquivo existe no index e sem mudanças
         if(strcmp(pathAtual, fileName) == 0) {
-            printf("Arquivo existe: %s\n", fileName);
+            existe = 1;
             if(strcmp(hashAtual, hash) == 0) {
                 fprintf(temp, "%s %s staged\n", hash, fileName);
-                existe = 1;
             } else { // - O arquivo existe no index, mas tem mudanças
                 fprintf(temp, "%s %s modified\n", hashAtual, pathAtual);
             }

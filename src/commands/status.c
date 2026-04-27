@@ -2,6 +2,17 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "../../includes/core/identifica_arquivos.h"
+
+int deve_ignorar(const char *path) {
+    if(strstr(path, ".vsr/") != NULL) return 1;
+    if(strstr(path, "builds/") != NULL) return 1;
+    if(strstr(path, "bin/") != NULL) return 1;
+    if(strstr(path, ".o") != NULL) return 1;
+
+    return 0;
+}
+
 int _command_status() {
     FILE *fileIndex = fopen(".vsr/index", "r");
     if(!fileIndex) {
@@ -21,10 +32,6 @@ int _command_status() {
     int tamanhoModified = 10;
     char **modified = malloc(sizeof(char *) * tamanhoModified);
     int tamanhoAtualModified = 0;
-    
-    int tamanhoUntracked = 10;
-    char **untracked = malloc(sizeof(char *) * tamanhoUntracked); 
-    int tamanhoAtualUntracked = 0;
 
     while (fgets(linha, sizeof(linha), fileIndex)) {
         hash[0] = '\0';
@@ -46,10 +53,10 @@ int _command_status() {
 
             int tamanhoResult = strlen(path) + 11;    // - "staged:   + <path> + \0"
             char result[tamanhoResult]; 
-            sprintf(result, "staged:   %s", path);
+            snprintf(result, tamanhoResult, "staged:   %s", path);
 
-            staged[tamanhoAtualStaged] = malloc(sizeof(char *) * tamanhoResult);
-            if(!(*staged)) {
+            staged[tamanhoAtualStaged] = malloc(sizeof(char) * tamanhoResult);
+            if(staged[tamanhoAtualStaged] == NULL) {
                 printf("ERRO: Falha na alocação de memória (malloc retornou NULL)\n");
                 return 1;
             }
@@ -67,21 +74,19 @@ int _command_status() {
                     return 1;
                 }
                 modified = temp;
-
             }
 
             int tamanhoResult = strlen(path) + 13;    // - "modified:   + <path> + \0"
             char result[tamanhoResult]; 
-            sprintf(result, "modified:   %s", path);
+            snprintf(result, tamanhoResult, "modified:   %s", path);
 
-            modified[tamanhoAtualModified] = malloc(sizeof(char *) * tamanhoResult);
-            if(!(*modified)) {
+            modified[tamanhoAtualModified] = malloc(sizeof(char) * tamanhoResult);
+            if(modified[tamanhoAtualModified] == NULL) {
                 printf("ERRO: Falha na alocação de memória (malloc retornou NULL)\n");
                 return 1;
             }
 
             strcpy(modified[tamanhoAtualModified], result);
-        
             tamanhoAtualModified++;
         }
     }
@@ -94,6 +99,65 @@ int _command_status() {
         printf("%s\n", modified[i]);
     }
 
+    char **filePaths = NULL;
+    int totalArquivos = 0;
+    identifica_arquivos(".", 0, &filePaths, &totalArquivos);
+    
+    int tamanhoUntracked = 10;
+    char **untracked = malloc(sizeof(char *) * tamanhoUntracked); 
+    int tamanhoAtualUntracked = 0;
+
+    for(int i = 0; i < totalArquivos; i++) {
+        if(deve_ignorar(filePaths[i])) 
+            continue;
+
+        rewind(fileIndex);
+
+        int existe = 0;
+        while (fgets(linha, sizeof(linha), fileIndex)) {
+            hash[0] = '\0';
+            path[0] = '\0';
+            status[0] = '\0';
+            
+            sscanf(linha, "%s %s %s", hash, path, status);
+            if(strcmp(filePaths[i], path) == 0) {
+                existe = 1;
+                break;
+            }
+        }
+
+        if(!existe) {
+            if(tamanhoAtualUntracked >= tamanhoUntracked) {
+                tamanhoUntracked *= 2;
+                char **temp = realloc(untracked, sizeof(char *) * tamanhoUntracked);
+                if (!temp) {
+                    printf("Erro no realloc de untracked.\n");
+                    return 1;
+                }
+
+                untracked = temp;
+            }
+
+            int tamanhoResult = strlen(filePaths[i]) + 14;    // - "untracked:   + <path> + \0"
+            char result[tamanhoResult]; 
+            snprintf(result, tamanhoResult, "untracked:   %s", filePaths[i]);
+
+            untracked[tamanhoAtualUntracked] = malloc(sizeof(char) * tamanhoResult);
+            if(untracked[tamanhoAtualUntracked] == NULL) {
+                printf("ERRO: Falha na alocação de memória (malloc retornou NULL)\n");
+                return 1;
+            }
+
+            strcpy(untracked[tamanhoAtualUntracked], result);
+            tamanhoAtualUntracked++;
+        }
+    }
+
+    for(int i = 0; i < tamanhoAtualUntracked; i++) {
+        printf("%s\n", untracked[i]);
+    }
+
+    fclose(fileIndex);
     return 0;
 }
 

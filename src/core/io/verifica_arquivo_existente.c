@@ -5,7 +5,6 @@ static int _verifica(char *path) {
 
     file = fopen(path, "r");
     if (file) {
-        printf("O arquivo %s existe.\n", path);
         fclose(file); // Essencial fechar se abrir
         return 0;
     } 
