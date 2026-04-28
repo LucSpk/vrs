@@ -16,7 +16,7 @@ static int _cria_diretorios(char *dir) {
 int command_start(void) {
     printf("Inicializando repositório VSR...\n");
 
-    char *dir[3] = {".vsr", ".vsr/objects", ".vsr/logs"};
+    char *dir[3] = {".vsr", ".vsr/objects", ".vsr/logs", ".vsr/refs", ".vsr/refs/heads"};
     int err = 0;
 
     for(int i = 0; i < 3; i++) {
