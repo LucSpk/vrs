@@ -15,8 +15,6 @@ static int _cria_diretorios(char *dir) {
 }
 
 int command_start(void) {
-    printf("Inicializando repositório VSR...\n");
-
     char *dir[5] = {".vsr", ".vsr/objects", ".vsr/logs", ".vsr/refs", ".vsr/refs/heads"};
     int err = 0;
 
@@ -25,22 +23,18 @@ int command_start(void) {
         if(err) return 1;
     }
 
-    printf("cria arquivos\n");
+    // - Cria main
+    FILE *main = fopen("./.vsr/refs/heads/main", "w");
+    fclose(main);
 
     // - Cria HEAD e aponta para a "main"
-    FILE *head = fopen(".vrs/HEAD", "w");
+    FILE *head = fopen("./.vsr/HEAD", "w");
     fprintf(head, "ref: refs/heads/main\n");
     fclose(head);
 
-    // - Cria main
-    FILE *main = fopen(".vsr/refs/heads/main", "w");
-    fclose(main);
-
     // - Cria index
-    FILE *index = fopen(".vrs/index", "w");
+    FILE *index = fopen("./.vsr/index", "w");
     fclose(index);
-
-    printf("Repositório iniciado com sucesso.\n");
 
     return 0;
 }
