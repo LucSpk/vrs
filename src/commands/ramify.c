@@ -1,8 +1,22 @@
 #include <stdio.h>
+#include <string.h>
+
+#include "../../includes/core/io.h"
 
 static int _command_ramify(char branchName[]) {
     // 1. Verifica se ramificação ja existe nos refs
-    // 2. Caso exista dê um erro "Ramificação ja existe"
+    
+    char path[] = "./.vsr/refs/heads/";
+    strcat(path, branchName);
+
+    int err = 0;
+    err = verifica(path);
+    if(!err) {
+        // 2. Caso exista dê um erro "Ramificação ja existe"
+        printf("Ramificação ja existe");
+        return 1;
+    }
+
     // 3. Caso não exista crie a ref com o nome da nova branch e o commit anterior da branch atual
     // 4. Muda o ref para qual o HEAD aponta
 
