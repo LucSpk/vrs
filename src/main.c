@@ -10,6 +10,7 @@
 #include "../includes/commands/track.h"
 #include "../includes/commands/save.h"
 #include "../includes/commands/status.h"
+#include "../includes/commands/ramify.h"
 
 void identifica_arquivos(char *caminho, int exibeOcultos, char ***arr, int *tamanhoFinal); 
 char *cria_hash_de_arquivo(const char *conteudo);
@@ -112,7 +113,12 @@ int main(int argc, char *argv[]) {
     }
 
     if(strcmp(argv[1], "ramify") == 0) {
-        printf("Iniciando nova ramificação\n");
+         if(!argv[2]) {
+            printf("ERRO: Comando não obedece a estrutura da função ramify: vrs ramify <nome da branch>.\n");
+            return 1;
+        }
+        
+        command_ramify(argv[2]);
     }
     
     // printf("Inicio.\n");
