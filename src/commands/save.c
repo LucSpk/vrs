@@ -152,9 +152,18 @@ static int _command_save(char *mensagem) {
     strcat(completeRefPath, refPath);
 
     printf("%s\n", completeRefPath);
-    
-    char parentHash[128];
+    FILE *refFile = fopen(completeRefPath, "r");
+    if(refFile == NULL) {
+        printf("Erro: Falha ao abrir arquivo ref");
+        return 1;
+    }
 
+    char parentHash[128];
+    fgets(parentHash, sizeof(parentHash), headFile);
+    parentHash[strcspn(parentHash, "\n")] = '\0'; // remove \n
+    fclose(refFile);
+
+    printf("%s\n", parentHash);
 
     return 1;
     // - Pega timeStamp do momento
