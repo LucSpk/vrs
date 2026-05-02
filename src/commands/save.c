@@ -130,13 +130,35 @@ static int _command_save(char *mensagem) {
     //          | date timestamp
     //          |
     //          | mensagem do commit
-    char parentHash[128];
+    
     FILE *headFile = fopen("./.vsr/HEAD", "r");
-    if(headFile != NULL) {
-        fgets(parentHash, sizeof(parentHash), headFile);
-        parentHash[strcspn(parentHash, "\n")] = '\0'; // remove \n
-        fclose(headFile);
+    if(headFile == NULL) {
+        printf("Erro: Falha ao abrir arquivo HEAD");
+        return 1;
     }
+    
+    char ref[128];
+    fgets(ref, sizeof(ref), headFile);
+    ref[strcspn(ref, "\n")] = '\0'; // remove \n
+    
+    char refPath[128];
+    // %*s: Lê e ignora a primeira string
+    sscanf(ref, "%*s %s", refPath);
+    fclose(headFile);
+    
+    char completeRefPath[] = "./.vsr/";
+    strcat(completeRefPath, refPath);
+
+    FILE *refFile = fopen(completeRefPath, "r");
+    if(refFile == NULL) {
+        printf("Erro: Falha ao abrir arquivo ref");
+        return 1;
+    }
+
+    char parentHash[128];
+    fgets(parentHash, sizeof(parentHash), refFile);
+    parentHash[strcspn(parentHash, "\n")] = '\0'; // remove \n
+    fclose(refFile);
 
     // - Pega timeStamp do momento
     time_t timeStamp = time(NULL);
@@ -163,6 +185,8 @@ static int _command_save(char *mensagem) {
             mensagem
         );
     }
+
+    printf(commitContent);
 
     // 8. Cria objeto commit
     //      - commit <tamanho>\0<conteudo>
@@ -201,14 +225,14 @@ static int _command_save(char *mensagem) {
     // 11. Atualizar HEAD
     //      - Criar/atualizar: .vrs/HEAD
     //      - Conteúdo: <hash_do_commit>
-    FILE *headFileWrite = fopen("./.vsr/HEAD", "w");
-    if (headFileWrite == NULL) {
+    FILE *refFileWrite = fopen(completeRefPath, "w");
+    if (refFileWrite == NULL) {
         printf("Erro ao abrir HEAD\n");
         return 1;
     }
 
-    fprintf(headFileWrite, "%s", commitHash);
-    fclose(headFileWrite);
+    fprintf(refFileWrite, "%s", commitHash);
+    fclose(refFileWrite);
 
     fclose(fileIndex);
 }
