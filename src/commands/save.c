@@ -145,6 +145,13 @@ static int _command_save(char *mensagem) {
     // %*s: Lê e ignora a primeira string
     sscanf(ref, "%*s %s", refPath);
     fclose(headFile);
+
+    printf("%s\n", refPath);
+    
+    char completeRefPath[] = "./.vsr/";
+    strcat(completeRefPath, refPath);
+
+    printf("%s\n", completeRefPath);
     
     char parentHash[128];
 
