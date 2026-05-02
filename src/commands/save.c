@@ -130,14 +130,22 @@ static int _command_save(char *mensagem) {
     //          | date timestamp
     //          |
     //          | mensagem do commit
-    char parentHash[128];
+    
+    char refPath[128];
     FILE *headFile = fopen("./.vsr/HEAD", "r");
     if(headFile != NULL) {
-        fgets(parentHash, sizeof(parentHash), headFile);
-        parentHash[strcspn(parentHash, "\n")] = '\0'; // remove \n
+        char ref[128];
+        fgets(ref, sizeof(ref), headFile);
+        ref[strcspn(ref, "\n")] = '\0'; // remove \n
+        printf(ref);
         fclose(headFile);
     }
+    
+    
+    char parentHash[128];
 
+
+    return 1;
     // - Pega timeStamp do momento
     time_t timeStamp = time(NULL);
 
