@@ -131,16 +131,20 @@ static int _command_save(char *mensagem) {
     //          |
     //          | mensagem do commit
     
-    char refPath[128];
     FILE *headFile = fopen("./.vsr/HEAD", "r");
-    if(headFile != NULL) {
-        char ref[128];
-        fgets(ref, sizeof(ref), headFile);
-        ref[strcspn(ref, "\n")] = '\0'; // remove \n
-        printf(ref);
-        fclose(headFile);
+    if(headFile == NULL) {
+        printf("Erro: Falha ao abrir arquivo HEAD");
+        return 1;
     }
     
+    char ref[128];
+    fgets(ref, sizeof(ref), headFile);
+    ref[strcspn(ref, "\n")] = '\0'; // remove \n
+    
+    char refPath[128];
+    // %*s: Lê e ignora a primeira string
+    sscanf(ref, "%*s %s", refPath);
+    fclose(headFile);
     
     char parentHash[128];
 
