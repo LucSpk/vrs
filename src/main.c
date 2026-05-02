@@ -110,6 +110,10 @@ int main(int argc, char *argv[]) {
     if(strcmp(argv[1], "status") == 0) {
         command_status();
     }
+
+    if(strcmp(argv[1], "ramify") == 0) {
+        printf("Iniciando nova ramificação\n");
+    }
     
     // printf("Inicio.\n");
     // printf("Arg: %d\n", argc);
