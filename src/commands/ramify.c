@@ -55,7 +55,10 @@ static int _command_ramify(char branchName[]) {
     fclose(newBranchFile);
 
     // 4. Muda o ref para qual o HEAD aponta
+    FILE *headWriteFile = fopen("./.vsr/HEAD", "w");
+    fprintf(headWriteFile, "ref: refs/heads/%s\n", branchName);
 
+    fclose(headWriteFile);
     return 0;
 }
 
