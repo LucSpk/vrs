@@ -17,6 +17,13 @@ static int _command_ramify(char branchName[]) {
         return 1;
     }
 
+    printf("%s\n", path);
+    FILE *newBranchFile = fopen(path, "w");
+    if(newBranchFile == NULL) {
+        printf("Erro: Não foi possível criar o arquivo: %s\n", path);
+        return 1;
+    }
+
     // 3. Caso não exista crie a ref com o nome da nova branch e o commit anterior da branch atual
     // 4. Muda o ref para qual o HEAD aponta
 
