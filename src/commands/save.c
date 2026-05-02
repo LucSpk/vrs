@@ -160,7 +160,6 @@ static int _command_save(char *mensagem) {
     parentHash[strcspn(parentHash, "\n")] = '\0'; // remove \n
     fclose(refFile);
 
-    return 1;
     // - Pega timeStamp do momento
     time_t timeStamp = time(NULL);
 
@@ -226,14 +225,14 @@ static int _command_save(char *mensagem) {
     // 11. Atualizar HEAD
     //      - Criar/atualizar: .vrs/HEAD
     //      - Conteúdo: <hash_do_commit>
-    FILE *headFileWrite = fopen("./.vsr/HEAD", "w");
-    if (headFileWrite == NULL) {
+    FILE *refFileWrite = fopen(completeRefPath, "w");
+    if (refFileWrite == NULL) {
         printf("Erro ao abrir HEAD\n");
         return 1;
     }
 
-    fprintf(headFileWrite, "%s", commitHash);
-    fclose(headFileWrite);
+    fprintf(refFileWrite, "%s", commitHash);
+    fclose(refFileWrite);
 
     fclose(fileIndex);
 }
