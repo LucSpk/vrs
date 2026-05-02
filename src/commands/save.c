@@ -145,13 +145,10 @@ static int _command_save(char *mensagem) {
     // %*s: Lê e ignora a primeira string
     sscanf(ref, "%*s %s", refPath);
     fclose(headFile);
-
-    printf("%s\n", refPath);
     
     char completeRefPath[] = "./.vsr/";
     strcat(completeRefPath, refPath);
 
-    printf("%s\n", completeRefPath);
     FILE *refFile = fopen(completeRefPath, "r");
     if(refFile == NULL) {
         printf("Erro: Falha ao abrir arquivo ref");
@@ -162,8 +159,6 @@ static int _command_save(char *mensagem) {
     fgets(parentHash, sizeof(parentHash), headFile);
     parentHash[strcspn(parentHash, "\n")] = '\0'; // remove \n
     fclose(refFile);
-
-    printf("%s\n", parentHash);
 
     return 1;
     // - Pega timeStamp do momento
