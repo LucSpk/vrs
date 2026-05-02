@@ -156,7 +156,7 @@ static int _command_save(char *mensagem) {
     }
 
     char parentHash[128];
-    fgets(parentHash, sizeof(parentHash), headFile);
+    fgets(parentHash, sizeof(parentHash), refFile);
     parentHash[strcspn(parentHash, "\n")] = '\0'; // remove \n
     fclose(refFile);
 

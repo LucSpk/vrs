@@ -17,7 +17,6 @@ static int _command_ramify(char branchName[]) {
         return 1;
     }
 
-    printf("%s\n", path);
     FILE *newBranchFile = fopen(path, "w");
     if(newBranchFile == NULL) {
         printf("Erro: Não foi possível criar o arquivo: %s\n", path);
@@ -25,6 +24,36 @@ static int _command_ramify(char branchName[]) {
     }
 
     // 3. Caso não exista crie a ref com o nome da nova branch e o commit anterior da branch atual
+    FILE *headFile = fopen("./.vsr/HEAD", "r");
+    if(headFile == NULL) {
+        printf("Erro: Falha ao abrir arquivo HEAD\n");
+        return 1;
+    }
+
+    char ref[128];
+    fgets(ref, sizeof(ref), headFile);
+    ref[strcspn(ref, "\n")] = '\0';
+
+    char refPath[128];
+    sscanf(ref, "%*s %s", refPath);
+    fclose(headFile);
+
+    char completeRefPath[] = "./.vsr/";
+    strcat(completeRefPath, refPath);
+    FILE *refFile = fopen(completeRefPath, "r");
+    if(refFile == NULL) {
+        printf("Erro: Falha ao abrir arquivo ref.\n");
+        return 1;
+    }
+
+    char parentHash[128];
+    fgets(parentHash, sizeof(parentHash), refFile);
+    parentHash[strcspn(parentHash, "\n")] = '\0';
+    fclose(refFile);
+
+    fprintf(newBranchFile, "%s", parentHash);
+    fclose(newBranchFile);
+
     // 4. Muda o ref para qual o HEAD aponta
 
     return 0;
