@@ -11,6 +11,7 @@
 #include "../includes/commands/save.h"
 #include "../includes/commands/status.h"
 #include "../includes/commands/ramify.h"
+#include "../includes/commands/change.h"
 
 void identifica_arquivos(char *caminho, int exibeOcultos, char ***arr, int *tamanhoFinal); 
 char *cria_hash_de_arquivo(const char *conteudo);
@@ -119,6 +120,15 @@ int main(int argc, char *argv[]) {
         }
         
         command_ramify(argv[2]);
+    }
+
+    if(strcmp(argv[1], "change") == 0) {
+         if(!argv[2]) {
+            printf("ERRO: Comando não obedece a estrutura da função ramify: vrs change <nome da branch>.\n");
+            return 1;
+        }
+        
+        command_change(argv[2]);
     }
     
     // printf("Inicio.\n");
