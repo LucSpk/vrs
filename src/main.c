@@ -144,7 +144,14 @@ int main(int argc, char *argv[]) {
             return 1;
         }
 
-        command_compare(argv[2], argv[3]);
+        if(!argv[3]) {
+            // - TODO: Caso não exista o terceiro fazer compare simples com a HEAD
+            return 1;
+        }
+
+        // - TODO: verificar se há flag de opção
+
+        command_compare_simples_dois_objetos(argv[2], argv[3]);
         return 0; 
     }
     
