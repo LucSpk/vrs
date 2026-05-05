@@ -16,8 +16,14 @@ static int _command_compare_simples_dois_objetos(char objeto_a[], char objeto_b[
     FILE *commit_b = fopen(caminho_hash_b, "");
 
     // 2. Extrair suas trees
-    // 3. Comparar arquivos (path + hash)
-    // 4. Mostrar:
+    //          Objeto commit: 		"commit <tamanho>\0<conteúdo do commit>"
+    //          Conteúdo do commit: 	"tree <hash da tree>\nparent <hash_commit_anterior>\nauthor <nome>\ndate <timestamp>\n\n<mensagem do commit>"
+    //          Objeto tree: 		    "tree <tamanho>\0<conteudo da tree>"
+    //          Conteúdo tree: 		"<entry1><entry2><entry3>..."
+    //          Entry: 			    "100644 <path>\0<hash_binario>"
+    // 3. Converte hash para hex
+    // 4. Comparar arquivos (path + hash)
+    // 5. Mostrar:
     //      - added
     //      - removed
     //      - modified
