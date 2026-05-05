@@ -91,6 +91,7 @@ int main(int argc, char *argv[]) {
     if(strcmp(argv[1], "start") == 0) {
         char **filePaths = NULL;
         command_start();
+        return 0; 
     }
 
     if(strcmp(argv[1], "track") == 0) {
@@ -99,6 +100,7 @@ int main(int argc, char *argv[]) {
             return 1;
         }
         command_track_path(argv[2]);
+        return 0; 
     }
 
     if(strcmp(argv[1], "save") == 0) {
@@ -108,10 +110,12 @@ int main(int argc, char *argv[]) {
         }
 
         command_save(argv[2]);
+        return 0; 
     }
 
     if(strcmp(argv[1], "status") == 0) {
         command_status();
+        return 0; 
     }
 
     if(strcmp(argv[1], "ramify") == 0) {
@@ -121,6 +125,7 @@ int main(int argc, char *argv[]) {
         }
         
         command_ramify(argv[2]);
+        return 0; 
     }
 
     if(strcmp(argv[1], "change") == 0) {
@@ -130,6 +135,7 @@ int main(int argc, char *argv[]) {
         }
         
         command_change(argv[2]);
+        return 0; 
     }
 
     if(strcmp(argv[1], "compare") == 0) {
