@@ -12,6 +12,7 @@
 #include "../includes/commands/status.h"
 #include "../includes/commands/ramify.h"
 #include "../includes/commands/change.h"
+#include "../includes/commands/compare.h"
 
 void identifica_arquivos(char *caminho, int exibeOcultos, char ***arr, int *tamanhoFinal); 
 char *cria_hash_de_arquivo(const char *conteudo);
@@ -129,6 +130,16 @@ int main(int argc, char *argv[]) {
         }
         
         command_change(argv[2]);
+    }
+
+    if(strcmp(argv[1], "compare") == 0) {
+        if(!argv[2]) {
+            printf("ERRO: Comando não obedece a estrutura da função ramify: vrs compare <objeto>.\n");
+            return 1;
+        }
+
+        command_compare(argv[2], argv[3]);
+        return 0; 
     }
     
     // printf("Inicio.\n");

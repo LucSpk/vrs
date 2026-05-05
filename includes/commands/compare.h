@@ -1,6 +1,6 @@
 #ifndef COMMAND_COMPARE
 #define COMMAND_COMPARE
 
-int command_compare(char commit_a[], char commit_b[]);
+int command_compare(char objeto_a[], char objeto_b[]);
 
 #endif
