@@ -169,7 +169,7 @@ static int _command_save(char *mensagem) {
         sprintf(
             commitContent, 
             "tree %s\nparent %s\nauthor %s\nDate %ld\n\n%s",
-            tree,
+            treeHash,
             parentHash,
             "", // TODO: Implementar melhoria para considerar o author
             timeStamp,
@@ -179,7 +179,7 @@ static int _command_save(char *mensagem) {
         sprintf(
             commitContent, 
             "tree %s\nauthor %s\nDate %ld\n\n%s",
-            tree,
+            treeHash,
             "", // TODO: Implementar melhoria para considerar o author
             timeStamp,
             mensagem
