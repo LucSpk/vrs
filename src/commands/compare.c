@@ -17,7 +17,20 @@ static int _command_compare_simples_dois_objetos(char objeto_a[], char objeto_b[
 
     // 2. Extrair suas trees
     //          Objeto commit: 		    "commit <tamanho>\0<conteúdo do commit>"
-    
+    fseek(fileCommitA, 0, SEEK_END);    // Move o cursor para o fim do file
+    long tamanhoA = ftell(fileCommitA);  // Retorna posição atual do cursor, medida em bytes a partir do início do arquivo (tamanho do arquivo).
+    rewind(fileCommitA);                // Retorna o cursor para o começo
+
+    unsigned char *bufferA = malloc(tamanhoA);
+    fread(bufferA, 1, tamanhoA, fileCommitA);
+
+    // Repete para o objeto B
+    fseek(fileCommitB, 0, SEEK_END);
+    long tamanhoB = ftell(fileCommitB);
+    rewind(fileCommitB);
+
+    unsigned char *bufferB = malloc(tamanhoB);
+    fread(bufferB, 1, tamanhoB, fileCommitB);
 
     //          Conteúdo do commit: 	"tree <hash da tree>\nparent <hash_commit_anterior>\nauthor <nome>\ndate <timestamp>\n\n<mensagem do commit>"
     //          Objeto tree: 		    "tree <tamanho>\0<conteudo da tree>"
