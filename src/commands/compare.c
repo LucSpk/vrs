@@ -32,6 +32,20 @@ static int _command_compare_simples_dois_objetos(char objeto_a[], char objeto_b[
     unsigned char *bufferB = malloc(tamanhoB);
     fread(bufferB, 1, tamanhoB, fileCommitB);
 
+
+    // Pular header "commit <size>\0" 
+    unsigned char *conteudoCommitA = bufferA;
+
+    // achar o \0
+    while (*conteudoCommitA != '\0') conteudoCommitA++;
+        conteudoCommitA++; // pula o \0
+
+    unsigned char *conteudoCommitB = bufferB;
+
+    // achar o \0
+    while (*conteudoCommitB != '\0') conteudoCommitB++;
+        conteudoCommitB++; // pula o \0
+
     //          Conteúdo do commit: 	"tree <hash da tree>\nparent <hash_commit_anterior>\nauthor <nome>\ndate <timestamp>\n\n<mensagem do commit>"
     //          Objeto tree: 		    "tree <tamanho>\0<conteudo da tree>"
     //          Conteúdo tree: 		    "<entry1><entry2><entry3>..."
