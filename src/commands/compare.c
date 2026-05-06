@@ -1,9 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "../../includes/core/utils.h"
 
 static int _command_compare_simples_dois_objetos(char objeto_a[], char objeto_b[]) {
+
+    printf("Objeto a: %s\n", objeto_a);
+    printf("Objeto b: %s\n", objeto_b);
+    printf("\n");
     
     // 1. Lê os dois commits
     
@@ -14,6 +19,10 @@ static int _command_compare_simples_dois_objetos(char objeto_a[], char objeto_b[
     char *caminho_hash_b = malloc(76);
     sprintf(caminho_hash_b, ".vsr/objects/%s/%s", extrair_substring(objeto_b, 0, 2), extrair_substring(objeto_b, 2, 62));
     FILE *fileCommitB = fopen(caminho_hash_b, "rb");
+
+    printf("caminho_hash_a: %s\n", caminho_hash_a);
+    printf("caminho_hash_b: %s\n", caminho_hash_b);
+    printf("\n");
 
     // 2. Extrair suas trees
     //          Objeto commit: 		    "commit <tamanho>\0<conteúdo do commit>"
@@ -32,6 +41,10 @@ static int _command_compare_simples_dois_objetos(char objeto_a[], char objeto_b[
     unsigned char *bufferB = malloc(tamanhoB);
     fread(bufferB, 1, tamanhoB, fileCommitB);
 
+    printf("Buffer a: %s\n", bufferA);
+    printf("Buffer b: %s\n", bufferB);
+    printf("\n");
+
 
     // Pular header "commit <size>\0" 
     unsigned char *conteudoCommitA = bufferA;
@@ -45,6 +58,20 @@ static int _command_compare_simples_dois_objetos(char objeto_a[], char objeto_b[
     // achar o \0
     while (*conteudoCommitB != '\0') conteudoCommitB++;
         conteudoCommitB ++; // pula o \0
+
+    
+    printf("Conteudo do commit a: \n%s\n", conteudoCommitA);
+    printf("Conteudo do commit b: \n%s\n", conteudoCommitB);
+    printf("\n");
+
+    char treeHashA[128];
+    sscanf((char *)conteudoCommitA, "tree %s", treeHashA);
+    printf("Tree hash A: %s\n", treeHashA);
+
+    char treeHashB[128];
+    sscanf((char *)conteudoCommitB, "tree %s", treeHashB);
+    printf("Tree hash B: %s\n", treeHashB);
+
 
     //          Conteúdo do commit: 	"tree <hash da tree>\nparent <hash_commit_anterior>\nauthor <nome>\ndate <timestamp>\n\n<mensagem do commit>"
     //          Objeto tree: 		    "tree <tamanho>\0<conteudo da tree>"

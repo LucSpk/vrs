@@ -108,7 +108,7 @@ static int _command_save(char *mensagem) {
     // 5. Gerar hash da tree
     //      - hash_tree = SHA(...)
     char *treeHash;
-    treeHash = cria_hash(tree);
+    treeHash = cria_hash_de_arquivo_com_tamanho(tree, treeSize);
 
     // 6. Salvar tree em .vrs/objects/
     //      - Mesma lógica do blob: objects/xx/yyyy...
@@ -213,7 +213,7 @@ static int _command_save(char *mensagem) {
     
     // 9. Gera hash do commit 
     char *commitHash;
-    commitHash = cria_hash(commit);
+    commitHash = cria_hash_de_arquivo_com_tamanho(commit, lenCommit);
 
     // 10. Salvar commit em .vrs/objects/
     // char *caminhoCommit = malloc(14);
