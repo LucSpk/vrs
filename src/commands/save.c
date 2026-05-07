@@ -35,11 +35,12 @@ static int _salva_objeto(char *hash, char * object, size_t objectSize) {
     sprintf(caminho, ".vsr/objects/%s", extrair_substring(hash, 0, 2));
     
     int err = salva_arquivo_no_diretorio(caminho, extrair_substring(hash, 2, 62), object, objectSize); 
-    if(!err) 
-        return err;
+    if(err) {
+        printf("Erro ao salvar objeto\n");
+        return 1;
+    }
 
-    printf("Erro ai salvar o arquivo no diretorio");
-    return 1;
+    return 0;
 }
 
 static int _command_save(char *mensagem) {
@@ -105,10 +106,11 @@ static int _command_save(char *mensagem) {
 
     size_t offsetTree = _cria_objeto(tree, "tree ", 5, tamanhoContentStr, sizeOfTamanhoContent, content, tamanhoContent);
 
+    size_t finalTreeSize = offsetTree;
     // 5. Gerar hash da tree
     //      - hash_tree = SHA(...)
     char *treeHash;
-    treeHash = cria_hash_de_arquivo_com_tamanho(tree, treeSize);
+    treeHash = cria_hash_de_arquivo_com_tamanho(tree, finalTreeSize);
 
     // 6. Salvar tree em .vrs/objects/
     //      - Mesma lógica do blob: objects/xx/yyyy...
@@ -213,7 +215,10 @@ static int _command_save(char *mensagem) {
     
     // 9. Gera hash do commit 
     char *commitHash;
-    commitHash = cria_hash_de_arquivo_com_tamanho(commit, lenCommit);
+        commitHash = cria_hash_de_arquivo_com_tamanho(
+        (unsigned char *)commit,
+        tamanhoHeaderCommit
+    );
 
     // 10. Salvar commit em .vrs/objects/
     // char *caminhoCommit = malloc(14);
