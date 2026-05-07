@@ -44,12 +44,28 @@ static int _atualiza_estado_arquivo(char *hash, char *path) {
 static int _comprime_salva(Arquivo arquivo, char *caminho, char *hash) {
     ZipperFile zipFile = compactador_de_arquivos(arquivo.conteudo);
 
-    //     - Salvar como blob em .git/objects
-    int tamanhoInput = (7 + 10 + zipFile.tamanhoComprimido);                 // - blob <size>\0dados
-    char fileParaSerSalvo[tamanhoInput];
-    snprintf(fileParaSerSalvo, tamanhoInput, "blob %ld\\0%s", zipFile.tamanhoComprimido, zipFile.conteudoComprimido);
+    // - Cria o header do blob
+    char header[64];
+    int headerSize = snprintf(
+        header,
+        sizeof(header),
+        "blob %ld",
+        zipFile.tamanhoComprimido
+    ) + 1; // inclui \0
+
+    int tamanhoInput = headerSize + zipFile.tamanhoComprimido;
+    unsigned char *fileParaSerSalvo = malloc(tamanhoInput);
+
+    memcpy(fileParaSerSalvo, header, headerSize);       // - Adiciona o header
+    memcpy(fileParaSerSalvo + headerSize,               // - Adiciona o conteudo do arquivo comprimido
+        zipFile.conteudoComprimido,
+        zipFile.tamanhoComprimido
+    );
     
-    return salva_arquivo_no_diretorio(caminho, extrair_substring(hash, 2, 62), fileParaSerSalvo, tamanhoInput); 
+    //     - Salvar como blob em .git/objects
+    int err =  salva_arquivo_no_diretorio(caminho, extrair_substring(hash, 2, 62), fileParaSerSalvo, tamanhoInput); 
+    free(fileParaSerSalvo);
+    return err;
 }
 
 static int _command_track_path(char *path) {
@@ -83,7 +99,7 @@ static int _command_track_path(char *path) {
     // 7. Se não existir:
     //     - Comprimir conteúdo (zlib)
     //     - Salvar como blob em .git/objects
-    _comprime_salva(arquivo, caminho, hash);
+    err =_comprime_salva(arquivo, caminho, hash);
     if(err) {
         printf("Erro: Falha ao salvar o arquivo no diretorio.\n");
         return 1;
