@@ -43,6 +43,58 @@ static int _salva_objeto(char *hash, char * object, size_t objectSize) {
     return 0;
 }
 
+static int _prepara_tree(FILE *fileIndex, unsigned char **content, size_t *tamanhoContent) {
+    
+    char linha[1024];
+    char hashAtual[128];
+    char pathAtual[1024];
+
+    while (fgets(linha, sizeof(linha), fileIndex)) {
+
+        hashAtual[0] = '\0';
+        pathAtual[0] = '\0';
+
+        sscanf(linha, "%s %[^\n]", hashAtual, pathAtual);
+        
+        unsigned char *hashBinaria = (unsigned char *) converte_hash_para_binario(hashAtual);
+        
+        size_t hashSize = 32;                               // - SHA-256 - 64 caracteres hex |2 caracteres hex = 1 byte| >> 32 bytes
+        size_t pathLen = strlen(pathAtual);
+        size_t entrySize = 7 + pathLen + 1 + hashSize;      // - "100644 " + path + '\0' + hash
+        
+        unsigned char *entry = malloc(entrySize);
+        if(!entry) {
+            free(hashBinaria);
+            return 1;
+        }
+        // size_t offsetEntry = 0;
+
+        // 2. Cria objeto tree para cada entrada do index.
+        //      - Converter hash (hex) → binário
+        //      - 100644 <path>\0<hash_binario>
+        _cria_objeto(entry, "100644 ", 7, pathAtual, pathLen, (char *) hashBinaria, hashSize);
+
+        // 3. Montar conteúdo da tree
+        //      - Junte tudo: <entry1><entry2><entry3>...
+        unsigned char *tempContent = realloc(*content, *tamanhoContent + entrySize);
+        if(!tempContent) {
+            free(tempContent);
+            free(entry);
+            return 1;
+        }
+
+        *content = tempContent;
+
+        memcpy(*content + *tamanhoContent, entry, entrySize);
+        *tamanhoContent += entrySize;
+
+        free(entry);
+        free(hashBinaria);
+    }
+
+    return 0;
+}
+
 static int _command_save(char *mensagem) {
     int err = 0;
     
@@ -53,54 +105,18 @@ static int _command_save(char *mensagem) {
         return 1;
     }
 
-    char linha[1024];
-    char hashAtual[128];
-    char pathAtual[1024];
-
-    int tamanhoContent = 0;
+    size_t tamanhoContent = 0;
     unsigned char *content = NULL;
-    while (fgets(linha, sizeof(linha), fileIndex)) {
-        hashAtual[0] = '\0';
-        pathAtual[0] = '\0';
 
-        sscanf(linha, "%s %s", hashAtual, pathAtual);
-        unsigned char *hashBinaria = (unsigned char *) converte_hash_para_binario(hashAtual);
-        
-        size_t hashSize = 32;                               // - SHA-256 - 64 caracteres hex |2 caracteres hex = 1 byte| >> 32 bytes
-        size_t pathLen = strlen(pathAtual);
-        size_t entrySize = 7 + pathLen + 1 + hashSize;      // - "100644 " + path + '\0' + hash
-        
-        unsigned char *entry = malloc(entrySize);
-        // size_t offsetEntry = 0;
-
-        // 2. Cria objeto tree para cada entrada do index.
-        //      - Converter hash (hex) → binário
-        //      - 100644 <path>\0<hash_binario>
-        _cria_objeto(entry, "100644 ", 7, pathAtual, pathLen, (char *)hashBinaria, hashSize);
-
-        // 3. Montar conteúdo da tree
-        //      - Junte tudo: <entry1><entry2><entry3>...
-        unsigned char *tempContent = realloc(content, tamanhoContent + entrySize);
-        if(!tempContent) {
-            free(tempContent);
-            free(entry);
-            return 1;
-        }
-
-        content = tempContent;
-        memcpy(content + tamanhoContent, entry, entrySize);
-        tamanhoContent += entrySize;
-
-        free(entry);
-    }
+    _prepara_tree(fileIndex, &content, &tamanhoContent);
 
     // 4. Criar objeto tree completo
     //      - tree <tamanho>\0<conteudo>
     char tamanhoContentStr[20];
-    sprintf(tamanhoContentStr, "%d", tamanhoContent);
+    sprintf(tamanhoContentStr, "%zu", tamanhoContent);
 
     size_t sizeOfTamanhoContent = contar_digitos(tamanhoContent);
-    unsigned int treeSize = sizeOfTamanhoContent + tamanhoContent + 6;
+    size_t treeSize = 5 + sizeOfTamanhoContent + 1 + tamanhoContent;
     
     unsigned char *tree = malloc(treeSize);
 
@@ -148,8 +164,13 @@ static int _command_save(char *mensagem) {
     sscanf(ref, "%*s %s", refPath);
     fclose(headFile);
     
-    char completeRefPath[] = "./.vsr/";
-    strcat(completeRefPath, refPath);
+    char completeRefPath[256];
+    snprintf(
+        completeRefPath,
+        sizeof(completeRefPath),
+        "./.vsr/%s",
+        refPath
+    );
 
     FILE *refFile = fopen(completeRefPath, "r");
     if(refFile == NULL) {
