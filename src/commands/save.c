@@ -64,7 +64,7 @@ static int _command_save(char *mensagem) {
         pathAtual[0] = '\0';
 
         sscanf(linha, "%s %s", hashAtual, pathAtual);
-        unsigned char *hashBinaria = (unsigned char *) converte_hash_para_binario(hashAtual, pathAtual);
+        unsigned char *hashBinaria = (unsigned char *) converte_hash_para_binario(hashAtual);
         
         size_t hashSize = 32;                               // - SHA-256 - 64 caracteres hex |2 caracteres hex = 1 byte| >> 32 bytes
         size_t pathLen = strlen(pathAtual);

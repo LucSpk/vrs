@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include "../../../includes/core/utils.h"
 
-static char *_converte_hash_para_binario(char *hash, char *path) {
+static char *_converte_hash_para_binario(char *hash) {
     char *result = malloc((strlen(hash) * 8) + 1);
     
     char output[sizeof(char *) + 1];
@@ -25,6 +25,6 @@ static char *_converte_hash_para_binario(char *hash, char *path) {
     return result;
 }
 
-char *converte_hash_para_binario(char *hash, char *path) {
-    return _converte_hash_para_binario(hash, path);
+char *converte_hash_para_binario(char *hash) {
+    return _converte_hash_para_binario(hash);
 }
