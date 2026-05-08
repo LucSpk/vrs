@@ -46,7 +46,7 @@ static int _salva_objeto(char *hash, char * object, size_t objectSize) {
 static int _command_save(char *mensagem) {
     int err = 0;
     
-    // 1. Lê arquivo indexbrad
+    // 1. Lê arquivo index
     FILE *fileIndex = fopen("./.vsr/index", "r");
     if(fileIndex == NULL) {
         printf("Erro: Algo deu errado para ao abrir o arquivo index.");
@@ -235,6 +235,8 @@ static int _command_save(char *mensagem) {
         printf("Erro ao abrir HEAD\n");
         return 1;
     }
+
+    printf("%s\n", commitHash);
 
     fprintf(refFileWrite, "%s", commitHash);
     fclose(refFileWrite);
