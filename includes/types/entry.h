@@ -2,8 +2,9 @@
 #define ENTRY_TYPE
 
 typedef struct {
-    char path[512];
-    char hash[65];
+    char modo[8];
+    char path[1024];
+    unsigned char hash[32];
 } Entry;
 
 #endif
