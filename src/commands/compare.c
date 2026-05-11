@@ -38,6 +38,15 @@ static unsigned char *_ler_objeto(char *hash, long *tamanho) {
 static int _command_compare_simples_dois_objetos(char objeto_a[], char objeto_b[]) {
     
     // 1. Lê os dois commits
+    long tamanhoCommitA;
+    unsigned char *bufferCommitA =
+        _ler_objeto(objeto_a, &tamanhoCommitA);
+
+    long tamanhoCommitB;
+    unsigned char *bufferCommitB =
+        _ler_objeto(objeto_b, &tamanhoCommitB);
+
+    
     
     char *caminho_hash_a = malloc(76);
     sprintf(caminho_hash_a, ".vsr/objects/%s/%s", extrair_substring(objeto_a, 0, 2), extrair_substring(objeto_a, 2, 62));
