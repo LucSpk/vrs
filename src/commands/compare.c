@@ -144,7 +144,21 @@ static int _command_compare_simples_dois_objetos(char objeto_a[], char objeto_b[
     size_t headerTreeBLen = conteudoTreeB - bufferTreeB;
     size_t tamanhoRealTreeB = tamanhoTreeB - headerTreeBLen;
 
+    // 5. Faz o parse das entrys
+    Entry *entriesA = NULL;
+    Entry *entriesB = NULL;
 
+    int qtdA = _parse_tree(
+        conteudoTreeA,
+        tamanhoRealTreeA,
+        &entriesA
+    );
+
+    int qtdB = _parse_tree(
+        conteudoTreeB,
+        tamanhoRealTreeB,
+        &entriesB
+    );
 
 
     char *caminho_hash_a = malloc(76);
