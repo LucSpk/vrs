@@ -72,6 +72,8 @@ static int _command_compare_simples_dois_objetos(char objeto_a[], char objeto_b[
     sscanf((char *)conteudoCommitB, "tree %s", treeHashB);
     printf("Tree hash B: %s\n", treeHashB);
 
+    
+
 
     //          Conteúdo do commit: 	"tree <hash da tree>\nparent <hash_commit_anterior>\nauthor <nome>\ndate <timestamp>\n\n<mensagem do commit>"
     //          Objeto tree: 		    "tree <tamanho>\0<conteudo da tree>"
