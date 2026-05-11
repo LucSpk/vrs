@@ -10,5 +10,6 @@ gcc builds/main.o builds/identifica_arquivos.o builds/le_arquivo.o builds/cria_h
 
 clear && make clean && make && ./bin/vsr start
 clear && make clean && make && ./bin/vsr track ./teste/arquivo_de_teste.txt 
+clear && make clean && make && ./bin/vsr compare 7cdcbfa459aefcf3e78aeb828148bd98da00b768ae59041869275d66b01fbb59 9334f54c3f50efa861721eafef2782dbaec6254f2ef3ca75b17206a6f2794696
 
 b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2a3f9c1d4e7b2f6a8c9d0e1f2a3

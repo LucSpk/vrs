@@ -4,11 +4,38 @@
 
 #include "../../includes/core/utils.h"
 
-static int _command_compare_simples_dois_objetos(char objeto_a[], char objeto_b[]) {
+static unsigned char *_ler_objeto(char *hash, long *tamanho) {
 
-    printf("Objeto a: %s\n", objeto_a);
-    printf("Objeto b: %s\n", objeto_b);
-    printf("\n");
+    char caminho[128];
+
+    snprintf(
+        caminho,
+        sizeof(caminho),
+        ".vsr/objects/%s/%s",
+        extrair_substring(hash, 0, 2),
+        extrair_substring(hash, 2, 62)
+    );
+
+    FILE *file = fopen(caminho, "rb");
+    if (!file) {
+        printf("Erro ao abrir objeto: %s\n", caminho);
+        return NULL;
+    }
+
+    fseek(file, 0, SEEK_END);
+    *tamanho = ftell(file);
+    rewind(file);
+
+    unsigned char *buffer = malloc(*tamanho);
+
+    fread(buffer, 1, *tamanho, file);
+
+    fclose(file);
+
+    return buffer;
+}
+
+static int _command_compare_simples_dois_objetos(char objeto_a[], char objeto_b[]) {
     
     // 1. Lê os dois commits
     

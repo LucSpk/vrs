@@ -114,7 +114,7 @@ static int _command_track_path(char *path) {
         printf("Erro: Arquivo ao atualizar o estado do arquivo.\n");
         return 1;
     }
-    
+    printf("Hash: %s\n", hash);
     // 10. Atualizar estado interno para comparação futura (git status)
     return 0;
 }
