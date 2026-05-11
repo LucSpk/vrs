@@ -57,6 +57,9 @@ static int _command_compare_simples_dois_objetos(char objeto_a[], char objeto_b[
         return 1;
     }
     
+    unsigned char *conteudoCommitA = _pular_header(bufferCommitA);
+    unsigned char *conteudoCommitB = _pular_header(bufferCommitB);
+    
     char *caminho_hash_a = malloc(76);
     sprintf(caminho_hash_a, ".vsr/objects/%s/%s", extrair_substring(objeto_a, 0, 2), extrair_substring(objeto_a, 2, 62));
     FILE *fileCommitA = fopen(caminho_hash_a, "rb");
