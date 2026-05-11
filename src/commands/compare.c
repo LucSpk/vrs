@@ -3,6 +3,7 @@
 #include <string.h>
 
 #include "../../includes/core/utils.h"
+#include "../../includes/types/entry.h"
 
 static unsigned char *_ler_objeto(char *hash, long *tamanho) {
 
@@ -43,6 +44,61 @@ static unsigned char *_pular_header(unsigned char *buffer) {
     return buffer + 1;
 }
 
+static int _parse_tree(
+    unsigned char *conteudoTree,
+    size_t tamanhoTree,
+    Entry **entries
+) {
+
+    size_t offset = 0;
+    int quantidade = 0;
+
+    *entries = NULL;
+
+    while (offset < tamanhoTree) {
+
+        *entries = realloc(
+            *entries,
+            sizeof(Entry) * (quantidade + 1)
+        );
+
+        Entry *entry = &(*entries)[quantidade];
+
+        memset(entry, 0, sizeof(Entry));
+
+        // 1. Ler modo
+        int i = 0;
+
+        while (conteudoTree[offset] != ' ') {
+            entry->modo[i++] = conteudoTree[offset++];
+        }
+
+        entry->modo[i] = '\0';
+
+        offset++; // pula espaço
+
+        // 2. Ler path
+        i = 0;
+
+        while (conteudoTree[offset] != '\0') {
+            entry->path[i++] = conteudoTree[offset++];
+        }
+
+        entry->path[i] = '\0';
+
+        offset++; // pula \0
+
+        // 3. Ler hash binário
+        memcpy(entry->hash, conteudoTree + offset, 32);
+
+        offset += 32;
+
+        quantidade++;
+    }
+
+    return quantidade;
+}
+
 static int _command_compare_simples_dois_objetos(char objeto_a[], char objeto_b[]) {
     
     // 1. Lê os dois commits
@@ -79,10 +135,17 @@ static int _command_compare_simples_dois_objetos(char objeto_a[], char objeto_b[
     }
 
     unsigned char *conteudoTreeA = _pular_header(bufferTreeA);
-
     unsigned char *conteudoTreeB = _pular_header(bufferTreeB);
 
-    
+    // 4. Extrai tamanho real da tree
+    size_t headerTreeALen = conteudoTreeA - bufferTreeA;
+    size_t tamanhoRealTreeA = tamanhoTreeA - headerTreeALen;
+
+    size_t headerTreeBLen = conteudoTreeB - bufferTreeB;
+    size_t tamanhoRealTreeB = tamanhoTreeB - headerTreeBLen;
+
+
+
 
     char *caminho_hash_a = malloc(76);
     sprintf(caminho_hash_a, ".vsr/objects/%s/%s", extrair_substring(objeto_a, 0, 2), extrair_substring(objeto_a, 2, 62));
