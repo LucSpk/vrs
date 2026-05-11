@@ -46,7 +46,11 @@ static int _command_compare_simples_dois_objetos(char objeto_a[], char objeto_b[
     unsigned char *bufferCommitB =
         _ler_objeto(objeto_b, &tamanhoCommitB);
 
-    
+    if (!bufferCommitA || !bufferCommitB) {
+        printf("Erro: Falha ao ler algum commit.\n");
+        return 1;
+    }
+
     
     char *caminho_hash_a = malloc(76);
     sprintf(caminho_hash_a, ".vsr/objects/%s/%s", extrair_substring(objeto_a, 0, 2), extrair_substring(objeto_a, 2, 62));
