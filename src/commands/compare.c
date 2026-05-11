@@ -72,7 +72,13 @@ static int _command_compare_simples_dois_objetos(char objeto_a[], char objeto_b[
     sscanf((char *)conteudoCommitB, "tree %s", treeHashB);
     printf("Tree hash B: %s\n", treeHashB);
 
-    
+    char *caminho_tree_a = malloc(76);
+    sprintf(caminho_tree_a, ".vsr/objects/%s/%s", extrair_substring(treeHashA, 0, 2), extrair_substring(treeHashA, 2, 62));
+    FILE *fileTreeA = fopen(caminho_tree_a, "rb");
+
+    char *caminho_tree_b = malloc(76);
+    sprintf(caminho_tree_b, ".vsr/objects/%s/%s", extrair_substring(treeHashB, 0, 2), extrair_substring(treeHashB, 2, 62));
+    FILE *fileTreeB = fopen(caminho_tree_b, "rb");
 
 
     //          Conteúdo do commit: 	"tree <hash da tree>\nparent <hash_commit_anterior>\nauthor <nome>\ndate <timestamp>\n\n<mensagem do commit>"
