@@ -4,14 +4,14 @@
 #include <openssl/sha.h>
 #include "../../../includes/types/arquivo.h"
 
-char *_cria_hash_de_arquivo(const char *conteudo) {
+static char *_cria_hash_de_arquivo_com_tamanho(const unsigned char *conteudo, size_t tamanho) {
     unsigned char hash[SHA256_DIGEST_LENGTH]; // - SHA256_DIGEST_LENGTH = 32
     SHA256_CTX sha256;
 
     // Inicializa a estrutura de contexto
     SHA256_Init(&sha256);
     // Atualiza o contexto com os dados da string
-    SHA256_Update(&sha256, conteudo, strlen(conteudo));
+    SHA256_Update(&sha256, conteudo, tamanho);
     // Finaliza e calcula o hash
     SHA256_Final(hash, &sha256);
 
@@ -31,11 +31,15 @@ char *_cria_hash_de_arquivo(const char *conteudo) {
 }
 
 char * cria_hash(const char *conteudo) {
-    return _cria_hash_de_arquivo(conteudo);
+    return _cria_hash_de_arquivo_com_tamanho(conteudo,  strlen(conteudo));
 }
 
 char * cria_hash_de_arquivo(const Arquivo arq) {
     char *objeto = malloc(28 + arq.tamanho);
     sprintf(objeto, "blob %ld\\0%s", arq.tamanho, arq.conteudo);
-    return _cria_hash_de_arquivo(objeto);
+    return _cria_hash_de_arquivo_com_tamanho(objeto, strlen(objeto));
+}
+
+char *cria_hash_de_arquivo_com_tamanho(const unsigned char *conteudo, size_t tamanho) {
+    return _cria_hash_de_arquivo_com_tamanho(conteudo, tamanho);
 }

@@ -12,6 +12,7 @@
 #include "../includes/commands/status.h"
 #include "../includes/commands/ramify.h"
 #include "../includes/commands/change.h"
+#include "../includes/commands/compare.h"
 
 void identifica_arquivos(char *caminho, int exibeOcultos, char ***arr, int *tamanhoFinal); 
 char *cria_hash_de_arquivo(const char *conteudo);
@@ -90,6 +91,7 @@ int main(int argc, char *argv[]) {
     if(strcmp(argv[1], "start") == 0) {
         char **filePaths = NULL;
         command_start();
+        return 0; 
     }
 
     if(strcmp(argv[1], "track") == 0) {
@@ -98,6 +100,7 @@ int main(int argc, char *argv[]) {
             return 1;
         }
         command_track_path(argv[2]);
+        return 0; 
     }
 
     if(strcmp(argv[1], "save") == 0) {
@@ -107,10 +110,12 @@ int main(int argc, char *argv[]) {
         }
 
         command_save(argv[2]);
+        return 0; 
     }
 
     if(strcmp(argv[1], "status") == 0) {
         command_status();
+        return 0; 
     }
 
     if(strcmp(argv[1], "ramify") == 0) {
@@ -120,6 +125,7 @@ int main(int argc, char *argv[]) {
         }
         
         command_ramify(argv[2]);
+        return 0; 
     }
 
     if(strcmp(argv[1], "change") == 0) {
@@ -129,6 +135,24 @@ int main(int argc, char *argv[]) {
         }
         
         command_change(argv[2]);
+        return 0; 
+    }
+
+    if(strcmp(argv[1], "compare") == 0) {
+        if(!argv[2]) {
+            printf("ERRO: Comando não obedece a estrutura da função ramify: vrs compare <objeto>.\n");
+            return 1;
+        }
+
+        if(!argv[3]) {
+            // - TODO: Caso não exista o terceiro fazer compare simples com a HEAD
+            return 1;
+        }
+
+        // - TODO: verificar se há flag de opção
+
+        command_compare_simples_dois_objetos(argv[2], argv[3]);
+        return 0; 
     }
     
     // printf("Inicio.\n");
