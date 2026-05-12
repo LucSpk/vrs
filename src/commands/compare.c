@@ -99,7 +99,6 @@ static int _parse_tree(
     return quantidade;
 }
 
-
 static Entry *_buscar_entry_por_path(Entry *entries, int quantidade, char *path) {
 
     for (int i = 0; i < quantidade; i++) {
@@ -190,8 +189,19 @@ static int _command_compare_simples_dois_objetos(char objeto_a[], char objeto_b[
             continue;
         }
 
-        
+        if (memcmp(entriesA[i].hash, entryB->hash, 32) != 0) {
 
+            char hashA[65];
+            char hashB[65];
+
+            _hash_binario_para_hex(entriesA[i].hash, hashA);
+            _hash_binario_para_hex(entryB->hash, hashB);
+
+            printf("MODIFIED: %s\n", entriesA[i].path);
+
+            printf("  OLD: %s\n", hashA);
+            printf("  NEW: %s\n", hashB);
+        }
     }
     
     
