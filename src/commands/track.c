@@ -91,18 +91,19 @@ static int _command_track_path(char *path) {
     sprintf(caminho, ".vsr/objects/%s", extrair_substring(hash, 0, 2));
 
     err = _arquivo_traqueado(hash, caminho);
+    /*
+        Se o arquivo NÃO existir,
+        precisamos salvar o blob.
+    */
     if(err) {
-        printf("Erro: Arquivo indicado ja está salvo.\n");
-        return 1;
-    }
-
-    // 7. Se não existir:
-    //     - Comprimir conteúdo (zlib)
-    //     - Salvar como blob em .git/objects
-    err =_comprime_salva(arquivo, caminho, hash);
-    if(err) {
-        printf("Erro: Falha ao salvar o arquivo no diretorio.\n");
-        return 1;
+        // 7. Se não existir:
+        //     - Comprimir conteúdo (zlib)
+        //     - Salvar como blob em .git/objects
+        err = _comprime_salva(arquivo, caminho, hash);
+        if(err) {
+            printf("Erro: Falha ao salvar o arquivo no diretorio.\n");
+            return 1;
+        }
     }
 
     // 8. Criar/atualizar entrada no index (staging area):

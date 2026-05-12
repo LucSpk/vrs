@@ -257,7 +257,7 @@ static int _command_save(char *mensagem) {
         return 1;
     }
 
-    printf("%s\n", commitHash);
+    printf("\nHash do Commit: %s\n", commitHash);
 
     fprintf(refFileWrite, "%s", commitHash);
     fclose(refFileWrite);
