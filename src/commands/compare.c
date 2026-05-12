@@ -44,11 +44,7 @@ static unsigned char *_pular_header(unsigned char *buffer) {
     return buffer + 1;
 }
 
-static int _parse_tree(
-    unsigned char *conteudoTree,
-    size_t tamanhoTree,
-    Entry **entries
-) {
+static int _parse_tree(unsigned char *conteudoTree, size_t tamanhoTree, Entry **entries) {
 
     size_t offset = 0;
     int quantidade = 0;
@@ -57,10 +53,12 @@ static int _parse_tree(
 
     while (offset < tamanhoTree) {
 
-        *entries = realloc(
-            *entries,
-            sizeof(Entry) * (quantidade + 1)
-        );
+        // precisa existir ao menos hash SHA256
+        if ((offset + 32) > tamanhoTree) {
+            break;
+        }
+
+        *entries = realloc(*entries, sizeof(Entry) * (quantidade + 1));
 
         Entry *entry = &(*entries)[quantidade];
 
@@ -69,26 +67,36 @@ static int _parse_tree(
         // 1. Ler modo
         int i = 0;
 
-        while (conteudoTree[offset] != ' ') {
+        while (offset < tamanhoTree && conteudoTree[offset] != ' ') {
             entry->modo[i++] = conteudoTree[offset++];
         }
 
         entry->modo[i] = '\0';
+        if (offset >= tamanhoTree) {
+            break;
+        }
 
         offset++; // pula espaço
 
         // 2. Ler path
         i = 0;
 
-        while (conteudoTree[offset] != '\0') {
+        while (offset < tamanhoTree && conteudoTree[offset] != '\0') {
             entry->path[i++] = conteudoTree[offset++];
         }
 
         entry->path[i] = '\0';
+        if (offset >= tamanhoTree) {
+            break;
+        }
 
         offset++; // pula \0
 
         // 3. Ler hash binário
+        if ((offset + 32) > tamanhoTree) {
+            break;
+        }
+        
         memcpy(entry->hash, conteudoTree + offset, 32);
 
         offset += 32;
@@ -158,11 +166,8 @@ static int _command_compare_simples_dois_objetos(char objeto_a[], char objeto_b[
     unsigned char *conteudoTreeB = _pular_header(bufferTreeB);
 
     // 4. Extrai tamanho real da tree
-    size_t headerTreeALen = conteudoTreeA - bufferTreeA;
-    size_t tamanhoRealTreeA = tamanhoTreeA - headerTreeALen;
-
-    size_t headerTreeBLen = conteudoTreeB - bufferTreeB;
-    size_t tamanhoRealTreeB = tamanhoTreeB - headerTreeBLen;
+    size_t tamanhoRealTreeA = tamanhoTreeA - (conteudoTreeA - bufferTreeA);
+    size_t tamanhoRealTreeB = tamanhoTreeB - (conteudoTreeB - bufferTreeB);
 
     // 5. Faz o parse das entrys
     Entry *entriesA = NULL;
