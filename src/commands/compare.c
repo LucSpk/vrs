@@ -204,6 +204,18 @@ static int _command_compare_simples_dois_objetos(char objeto_a[], char objeto_b[
         }
     }
     
+    for (int i = 0; i < qtdB; i++) {
+
+        Entry *entryA = _buscar_entry_por_path(
+            entriesA,
+            qtdA,
+            entriesB[i].path
+        );
+
+        if (!entryA) {
+            printf("ADDED: %s\n", entriesB[i].path);
+        }
+    }
     
     printf("Fim do compare\n");
     return 0;
