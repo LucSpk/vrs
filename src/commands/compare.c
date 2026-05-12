@@ -96,7 +96,7 @@ static int _parse_tree(unsigned char *conteudoTree, size_t tamanhoTree, Entry **
         if ((offset + 32) > tamanhoTree) {
             break;
         }
-        
+
         memcpy(entry->hash, conteudoTree + offset, 32);
 
         offset += 32;
@@ -203,9 +203,6 @@ static int _command_compare_simples_dois_objetos(char objeto_a[], char objeto_b[
             _hash_binario_para_hex(entryB->hash, hashB);
 
             printf("MODIFIED: %s\n", entriesA[i].path);
-
-            printf("  OLD: %s\n", hashA);
-            printf("  NEW: %s\n", hashB);
         }
     }
     
