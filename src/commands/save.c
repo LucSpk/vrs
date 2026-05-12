@@ -48,13 +48,16 @@ static int _prepara_tree(FILE *fileIndex, unsigned char **content, size_t *taman
     char linha[1024];
     char hashAtual[128];
     char pathAtual[1024];
+    char statusAtual[32];
+
 
     while (fgets(linha, sizeof(linha), fileIndex)) {
 
         hashAtual[0] = '\0';
         pathAtual[0] = '\0';
+        statusAtual[0] = '\0';
 
-        sscanf(linha, "%s %[^\n]", hashAtual, pathAtual);
+        sscanf(linha, "%s %s %s", hashAtual, pathAtual, statusAtual);
         
         unsigned char *hashBinaria = (unsigned char *) converte_hash_para_binario(hashAtual);
         
