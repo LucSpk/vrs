@@ -44,11 +44,7 @@ static unsigned char *_pular_header(unsigned char *buffer) {
     return buffer + 1;
 }
 
-static Entry *_buscar_entry_por_path(
-    Entry *entries,
-    int quantidade,
-    char *path
-) {
+static Entry *_buscar_entry_por_path(Entry *entries, int quantidade, char *path) {
 
     for (int i = 0; i < quantidade; i++) {
 
@@ -178,7 +174,12 @@ static int _command_compare_simples_dois_objetos(char objeto_a[], char objeto_b[
 
     // 6. Faz a comparação
     for (int i = 0; i < qtdA; i++) {
-        
+        Entry *entryB = _buscar_entry_por_path(entriesB, qtdB, entriesA[i].path);
+
+        if (!entryB) {
+            printf("REMOVED: %s\n", entriesA[i].path);
+            continue;
+        }
 
     }
     
