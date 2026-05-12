@@ -217,6 +217,16 @@ static int _command_compare_simples_dois_objetos(char objeto_a[], char objeto_b[
         }
     }
     
+    // 7. Free
+    free(bufferCommitA);
+    free(bufferCommitB);
+
+    free(bufferTreeA);
+    free(bufferTreeB);
+
+    free(entriesA);
+    free(entriesB);
+
     printf("Fim do compare\n");
     return 0;
 }
