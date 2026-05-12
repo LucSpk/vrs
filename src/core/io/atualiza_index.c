@@ -5,8 +5,7 @@
 
 static int _atualiza_index(char *hash, char *fileName) {
     if(verifica("./.vsr/index")) {
-        int err = 0;
-        err = salva_arquivo_no_diretorio(".vsr/", "index", " ", 1); 
+        int err = salva_arquivo_no_diretorio(".vsr/", "index", "", 0);
         if(err) {
             printf("Erro ao criar arquivo index.\n");
             return 1;
@@ -15,12 +14,13 @@ static int _atualiza_index(char *hash, char *fileName) {
 
     FILE *file = fopen(".vsr/index", "r");
     if (file == NULL) {
-        printf("Erro ao criar arquivo temporário.\n");
+        printf("Erro ao abrir index.\n");
         return 1;
     }
 
     FILE *temp = fopen(".vsr/index-tmp", "w");
     if (temp == NULL) {
+        fclose(file);
         printf("Erro ao criar arquivo temporário.\n");
         return 1;
     }
@@ -29,25 +29,35 @@ static int _atualiza_index(char *hash, char *fileName) {
     char hashAtual[128];
     char pathAtual[512];
     char statusAtual[32];
+
     int existe = 0;
-    
+
     while(fgets(linha, sizeof(linha), file)) {
+
         hashAtual[0] = '\0';
         pathAtual[0] = '\0';
         statusAtual[0] = '\0';
 
         sscanf(linha, "%s %s %s", hashAtual, pathAtual, statusAtual);
-        // - Arquivo existe no index e sem mudanças
+
         if(strcmp(pathAtual, fileName) == 0) {
+
             existe = 1;
+
+            // hash igual
             if(strcmp(hashAtual, hash) == 0) {
                 fprintf(temp, "%s %s staged\n", hash, fileName);
             } else { // - O arquivo existe no index, mas tem mudanças
-                fprintf(temp, "%s %s modified\n", hashAtual, pathAtual);
+                fprintf(temp,"%s %s modified\n", hash, fileName);
             }
-        } 
+
+        } else {
+            // preserva outras entradas
+            fprintf(temp, "%s %s %s\n", hashAtual, pathAtual, statusAtual);
+        }
     }
-    // - O Arquivo não existe no index
+
+    // arquivo novo
     if(!existe) {
         fprintf(temp, "%s %s staged\n", hash, fileName);
     }
