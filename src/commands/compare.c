@@ -44,18 +44,6 @@ static unsigned char *_pular_header(unsigned char *buffer) {
     return buffer + 1;
 }
 
-static Entry *_buscar_entry_por_path(Entry *entries, int quantidade, char *path) {
-
-    for (int i = 0; i < quantidade; i++) {
-
-        if (strcmp(entries[i].path, path) == 0) {
-            return &entries[i];
-        }
-    }
-
-    return NULL;
-}
-
 static int _parse_tree(
     unsigned char *conteudoTree,
     size_t tamanhoTree,
@@ -109,6 +97,27 @@ static int _parse_tree(
     }
 
     return quantidade;
+}
+
+
+static Entry *_buscar_entry_por_path(Entry *entries, int quantidade, char *path) {
+
+    for (int i = 0; i < quantidade; i++) {
+
+        if (strcmp(entries[i].path, path) == 0) {
+            return &entries[i];
+        }
+    }
+
+    return NULL;
+}
+
+static void _hash_binario_para_hex(unsigned char hash[32], char hex[65]) {
+    for (int i = 0; i < 32; i++) {
+        sprintf(hex + (i * 2), "%02x", hash[i]);
+    }
+
+    hex[64] = '\0';
 }
 
 static int _command_compare_simples_dois_objetos(char objeto_a[], char objeto_b[]) {
@@ -180,6 +189,8 @@ static int _command_compare_simples_dois_objetos(char objeto_a[], char objeto_b[
             printf("REMOVED: %s\n", entriesA[i].path);
             continue;
         }
+
+        
 
     }
     
