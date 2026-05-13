@@ -233,6 +233,14 @@ static int _command_compare_simples_dois_objetos(char objeto_a[], char objeto_b[
     return 0;
 }
 
+static int _command_compare_simples_um_objeto(objeto_a) {
+    
+}
+
 int command_compare_simples_dois_objetos(char objeto_a[], char objeto_b[]) {
     return _command_compare_simples_dois_objetos(objeto_a, objeto_b);
+}
+
+int command_compare_simples_um_objeto(char objeto_a[]) {
+    return _command_compare_simples_um_objeto(objeto_a);
 }
