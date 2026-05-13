@@ -146,6 +146,7 @@ int main(int argc, char *argv[]) {
 
         if(!argv[3]) {
             // - TODO: Caso não exista o terceiro fazer compare simples com a HEAD
+            command_compare_simples_um_objeto(argv[2]);
             return 1;
         }
 
