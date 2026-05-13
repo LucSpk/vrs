@@ -233,7 +233,7 @@ static int _command_compare_simples_dois_objetos(char objeto_a[], char objeto_b[
     return 0;
 }
 
-static int _command_compare_simples_um_objeto(objeto_a) {
+static int _command_compare_simples_um_objeto(char objeto_a[]) {
     FILE *headFile = fopen("./.vsr/HEAD", "r");
     if(headFile == NULL) {
         printf("Erro: Falha ao abrir arquivo HEAD\n");
