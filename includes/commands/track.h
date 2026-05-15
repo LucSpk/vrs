@@ -2,5 +2,6 @@
 #define COMMAND_TRACK
 
 int command_track_path(char *path);
+int command_track_all();
 
 #endif
