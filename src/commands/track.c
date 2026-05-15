@@ -6,6 +6,7 @@
 #include "../../includes/core/arquivos.h"
 #include "../../includes/core/zipper.h"
 #include "../../includes/core/utils.h"
+#include "../../includes/core/identifica_arquivos.h"
 
 static int _arquivo_existe(char *path) {
     return verifica(path); 
@@ -120,6 +121,18 @@ static int _command_track_path(char *path) {
     return 0;
 }
 
+static int _command_track_all() {
+    char **filePaths = NULL;
+    int totalArquivos = 0;
+    identifica_arquivos(".", 0, &filePaths, &totalArquivos); 
+
+    return 0;
+}
+
 int command_track_path(char *path) {
     return _command_track_path(path);
+}
+
+int command_track_all() {
+    return _command_track_all();
 }
