@@ -129,6 +129,12 @@ static int _command_track_all() {
     identifica_arquivos(".", 0, &filePaths, &totalArquivos); 
 
     // 2. Le arquivo index
+    FILE *fileIndex = fopen(".vsr/index", "r");
+    if(!fileIndex) {
+        printf("ERRO: Erro ao abrir o arquivo index.");
+        return 1;
+    }
+    
     // 3. Identifica os arquivos untracked
     // 4. Trankea todos os arquivos com untraked
 
