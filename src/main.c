@@ -161,6 +161,16 @@ int main(int argc, char *argv[]) {
         command_compare_simples_dois_objetos(argv[2], argv[3]);
         return 0; 
     }
+
+    if(strcmp(argv[1], "join") == 0) {
+         if(!argv[2]) {
+            printf("ERRO: Comando não obedece a estrutura da função ramify: vrs join <branch destino>.\n");
+            return 1;
+        }
+        
+        command_join(argv[2]);
+        return 0; 
+    }
     
     // printf("Inicio.\n");
     // printf("Arg: %d\n", argc);
