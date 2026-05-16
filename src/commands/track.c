@@ -122,9 +122,15 @@ static int _command_track_path(char *path) {
 }
 
 static int _command_track_all() {
+
+    // 1. Reconhece todos os arquivos do diretório
     char **filePaths = NULL;
     int totalArquivos = 0;
     identifica_arquivos(".", 0, &filePaths, &totalArquivos); 
+
+    // 2. Le arquivo index
+    // 3. Identifica os arquivos untracked
+    // 4. Trankea todos os arquivos com untraked
 
     return 0;
 }
