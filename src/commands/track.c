@@ -8,7 +8,7 @@
 #include "../../includes/core/utils.h"
 #include "../../includes/core/identifica_arquivos.h"
 
-int deve_ignorar(const char *path) {
+static int _deve_ignorar(const char *path) {
     if(strstr(path, ".vsr/") != NULL) return 1;
     if(strstr(path, "builds/") != NULL) return 1;
     if(strstr(path, "bin/") != NULL) return 1;
@@ -155,7 +155,7 @@ static int _command_track_all() {
     char status[32];
 
     for(int i = 0; i < totalArquivos; i++) {
-        if(deve_ignorar(filePaths[i])) 
+        if(_deve_ignorar(filePaths[i])) 
             continue;
 
         rewind(fileIndex);

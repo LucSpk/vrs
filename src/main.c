@@ -99,6 +99,12 @@ int main(int argc, char *argv[]) {
             printf("ERRO: Comando não obedece a estrutura da função track: vrs track <fileName>.\n");
             return 1;
         }
+
+        if(strcmp(argv[2], ".") == 0) {
+            command_track_all();
+            return 0;
+         }
+
         command_track_path(argv[2]);
         return 0; 
     }
