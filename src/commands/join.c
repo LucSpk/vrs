@@ -45,7 +45,8 @@ static unsigned char *_pular_header(unsigned char *buffer) {
 
 static int _command_join(char *destino) {
     // 1. Verifica se a branch destino existe
-    char path[] = "./.vsr/refs/heads/";
+    char path[256];
+    snprintf(path, sizeof(path), "./.vsr/refs/heads/%s", destino);
     strcat(path, destino);
 
     int err = verifica(path);
@@ -56,7 +57,7 @@ static int _command_join(char *destino) {
     printf("Erro: Branch destino existe.\n");
 
     // 2. Pega o hash do ultimo commit da branch destino
-    FILE *branchDestino = fopen(path, "w");
+    FILE *branchDestino = fopen(path, "r");
     if(branchDestino == NULL) {
         printf("Erro: Não foi possível aobri o arquivo: %s\n", path);
         return 1;
@@ -82,8 +83,13 @@ static int _command_join(char *destino) {
     sscanf(ref, "%*s %s", refPath);
     fclose(headFile);
 
-    char completeRefPath[] = "./.vsr/";
-    strcat(completeRefPath, refPath);
+    char completeRefPath[256];
+    snprintf(
+        completeRefPath,
+        sizeof(completeRefPath),
+        "./.vsr/%s",
+        refPath
+    );
     FILE *refFile = fopen(completeRefPath, "r");
     if(refFile == NULL) {
         printf("Erro: Falha ao abrir arquivo ref.\n");
