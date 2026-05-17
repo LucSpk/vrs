@@ -51,6 +51,11 @@ static int _command_join(char *destino) {
     }
 
     // 4. Pega o hash do ultimo commit da HEAD
+    char headHash[128];
+    fgets(headHash, sizeof(headHash), refFile);
+    headHash[strcspn(headHash, "\n")] = '\0';
+    fclose(refFile);
+    
     // 5. Le os commits das branches
     // 6. Le as trees dos commits
     // 7. Compara os arquivos: novo, alterado e deletado
