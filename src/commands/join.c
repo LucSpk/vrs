@@ -14,7 +14,19 @@ static int _command_join(char *destino) {
         return 1;
     }
     printf("Erro: Branch destino existe.\n");
-    // 2. Pega o hash do ultimo commit da brancg destino
+
+    // 2. Pega o hash do ultimo commit da branch destino
+    FILE *branchDestino = fopen(path, "w");
+    if(branchDestino == NULL) {
+        printf("Erro: Não foi possível aobri o arquivo: %s\n", path);
+        return 1;
+    }
+
+    char hashCommitBranchDestino[128];
+    fgets(hashCommitBranchDestino, sizeof(hashCommitBranchDestino), branchDestino);
+    hashCommitBranchDestino[strcspn(hashCommitBranchDestino, "\n")] = '\0';
+    fclose(branchDestino);
+
     // 3. Le o HEAD
     // 4. Pega o hash do ultimo commit da HEAD
     // 5. Le os commits das branches
