@@ -34,6 +34,22 @@ static int _command_join(char *destino) {
         return 1;
     }
 
+    char ref[128];
+    fgets(ref, sizeof(ref), headFile);
+    ref[strcspn(ref, "\n")] = '\0';
+
+    char refPath[128];
+    sscanf(ref, "%*s %s", refPath);
+    fclose(headFile);
+
+    char completeRefPath[] = "./.vsr/";
+    strcat(completeRefPath, refPath);
+    FILE *refFile = fopen(completeRefPath, "r");
+    if(refFile == NULL) {
+        printf("Erro: Falha ao abrir arquivo ref.\n");
+        return 1;
+    }
+
     // 4. Pega o hash do ultimo commit da HEAD
     // 5. Le os commits das branches
     // 6. Le as trees dos commits
