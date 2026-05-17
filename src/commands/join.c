@@ -28,6 +28,12 @@ static int _command_join(char *destino) {
     fclose(branchDestino);
 
     // 3. Le o HEAD
+    FILE *headFile = fopen("./.vsr/HEAD", "r");
+    if(headFile == NULL) {
+        printf("Erro: Falha ao abrir arquivo HEAD\n");
+        return 1;
+    }
+
     // 4. Pega o hash do ultimo commit da HEAD
     // 5. Le os commits das branches
     // 6. Le as trees dos commits
