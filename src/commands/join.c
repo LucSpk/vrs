@@ -59,7 +59,6 @@ static int _command_join(char *destino) {
     // 1. Verifica se a branch destino existe
     char path[256];
     snprintf(path, sizeof(path), "./.vsr/refs/heads/%s", destino);
-    strcat(path, destino);
 
     int err = verifica(path);
     if(err) {
