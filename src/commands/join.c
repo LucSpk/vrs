@@ -179,7 +179,7 @@ static int _command_join(char *destino) {
     for (int i = 0; i < qtdA; i++) {
         Entry *entryB = _buscar_entry_por_path(entriesB, qtdB, entriesA[i].path);
 
-        if(!entriesB) {
+        if(!entryB) {
             // Arquivo deletado em B
             printf("REMOVIDO em branch atual: %s\n", entriesA[i].path);
             continue;
