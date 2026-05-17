@@ -3,6 +3,45 @@
 
 #include "../../includes/core/io.h"
 
+static unsigned char *_ler_objeto(char *hash, long *tamanho) {
+
+    char caminho[128];
+
+    snprintf(
+        caminho,
+        sizeof(caminho),
+        ".vsr/objects/%s/%s",
+        extrair_substring(hash, 0, 2),
+        extrair_substring(hash, 2, 62)
+    );
+
+    FILE *file = fopen(caminho, "rb");
+    if (!file) {
+        printf("Erro ao abrir objeto: %s\n", caminho);
+        return NULL;
+    }
+
+    fseek(file, 0, SEEK_END);
+    *tamanho = ftell(file);
+    rewind(file);
+
+    unsigned char *buffer = malloc(*tamanho);
+
+    fread(buffer, 1, *tamanho, file);
+
+    fclose(file);
+
+    return buffer;
+}
+
+static unsigned char *_pular_header(unsigned char *buffer) {
+
+    while (*buffer != '\0')
+        buffer++;
+
+    return buffer + 1;
+}
+
 static int _command_join(char *destino) {
     // 1. Verifica se a branch destino existe
     char path[] = "./.vsr/refs/heads/";
@@ -55,8 +94,22 @@ static int _command_join(char *destino) {
     fgets(headHash, sizeof(headHash), refFile);
     headHash[strcspn(headHash, "\n")] = '\0';
     fclose(refFile);
-    
+
     // 5. Le os commits das branches
+    long tamanhoCommitA;
+    unsigned char *bufferCommitA = _ler_objeto(hashCommitBranchDestino, &tamanhoCommitA);
+
+    long tamanhoCommitB;
+    unsigned char *bufferCommitB = _ler_objeto(headHash, &tamanhoCommitB);
+    
+    if (!bufferCommitA || !bufferCommitB) {
+        printf("Erro: Falha ao ler algum commit.\n");
+        return 1;
+    }
+
+    unsigned char *conteudoCommitA = _pular_header(bufferCommitA);
+    unsigned char *conteudoCommitB = _pular_header(bufferCommitB);
+
     // 6. Le as trees dos commits
     // 7. Compara os arquivos: novo, alterado e deletado
     //       arquivo novo	                    adiciona
