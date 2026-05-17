@@ -13,6 +13,7 @@
 #include "../includes/commands/ramify.h"
 #include "../includes/commands/change.h"
 #include "../includes/commands/compare.h"
+#include "../includes/commands/join.h"
 
 void identifica_arquivos(char *caminho, int exibeOcultos, char ***arr, int *tamanhoFinal); 
 char *cria_hash_de_arquivo(const char *conteudo);

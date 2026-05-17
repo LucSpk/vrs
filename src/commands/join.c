@@ -1,5 +1,19 @@
+#include <stdio.h>
+#include <string.h>
+
+#include "../../includes/core/io.h"
+
 static int _command_join(char *destino) {
     // 1. Verifica se a branch destino existe
+    char path[] = "./.vsr/refs/heads/";
+    strcat(path, destino);
+
+    int err = verifica(path);
+    if(err) {
+        printf("Erro: Branch destino não existe.\n");
+        return 1;
+    }
+    printf("Erro: Branch destino existe.\n");
     // 2. Pega o hash do ultimo commit da brancg destino
     // 3. Le o HEAD
     // 4. Pega o hash do ultimo commit da HEAD
