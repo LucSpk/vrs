@@ -43,6 +43,18 @@ static unsigned char *_pular_header(unsigned char *buffer) {
     return buffer + 1;
 }
 
+static Entry *_buscar_entry_por_path(Entry *entries, int quantidade, char *path) {
+
+    for (int i = 0; i < quantidade; i++) {
+
+        if (strcmp(entries[i].path, path) == 0) {
+            return &entries[i];
+        }
+    }
+
+    return NULL;
+}
+
 static int _command_join(char *destino) {
     // 1. Verifica se a branch destino existe
     char path[256];
@@ -164,6 +176,33 @@ static int _command_join(char *destino) {
     //       arquivo deletado                   apaga
     //       arquivo alterado só numa branch	aceita
     //       arquivo alterado nas duas	        conflito
+    for (int i = 0; i < qtdA; i++) {
+        Entry *entryB = _buscar_entry_por_path(entriesB, qtdB, entriesA[i].path);
+
+        if(!entriesB) {
+            // Arquivo deletado em B
+            printf("REMOVIDO em branch atual: %s\n", entriesA[i].path);
+            continue;
+        }
+
+        if (memcmp(entriesA[i].hash, entryB->hash, 32) != 0) {
+            // Arquivo alterado nas duas branches?
+            // Aqui, para merge real, seria necessário buscar o ancestral comum para detectar conflito real.
+            // Para simplificação: se diferente nas duas, marcamos como conflito.
+            printf("CONFLITO: %s\n", entriesA[i].path);
+        }
+    }
+
+    // Para cada entry em B (branch atual)
+    for (int i = 0; i < qtdB; i++) {
+        Entry *entryA = _buscar_entry_por_path(entriesA, qtdA, entriesB[i].path);
+        if (!entryA) {
+            // Arquivo novo em B
+            printf("NOVO em branch atual: %s\n", entriesB[i].path);
+        }
+        // Se já existe em A, já foi tratado acima
+    }
+
     // 8. Criar novo commit merge
     //        |  tree <nova_tree>
     //        |  parent <commit_main>
