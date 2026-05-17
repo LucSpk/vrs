@@ -2,6 +2,7 @@
 #include <string.h>
 
 #include "../../includes/core/io.h"
+#include "../../includes/types/entry.h"
 
 static unsigned char *_ler_objeto(char *hash, long *tamanho) {
 
@@ -111,6 +112,47 @@ static int _command_join(char *destino) {
     unsigned char *conteudoCommitB = _pular_header(bufferCommitB);
 
     // 6. Le as trees dos commits
+    //    - Extrai hash das trees
+    char treeHashA[65];
+    char treeHashB[65];
+
+    sscanf((char *)conteudoCommitA, "tree %64s", treeHashA);
+    sscanf((char *)conteudoCommitB, "tree %64s", treeHashB);
+    
+    //    - Ler trees
+    long tamanhoTreeA;
+    unsigned char *bufferTreeA = _ler_objeto(treeHashA, &tamanhoTreeA);
+
+    long tamanhoTreeB;
+    unsigned char *bufferTreeB = _ler_objeto(treeHashB, &tamanhoTreeB);
+
+    if (!bufferTreeA || !bufferTreeB) {
+        return 1;
+    }
+
+    unsigned char *conteudoTreeA = _pular_header(bufferTreeA);
+    unsigned char *conteudoTreeB = _pular_header(bufferTreeB);
+
+    //    - Extrai tamanho real da tree
+    size_t tamanhoRealTreeA = tamanhoTreeA - (conteudoTreeA - bufferTreeA);
+    size_t tamanhoRealTreeB = tamanhoTreeB - (conteudoTreeB - bufferTreeB);
+
+    //    - Faz o parse das entrys
+    Entry *entriesA = NULL;
+    Entry *entriesB = NULL;
+
+    int qtdA = _parse_tree(
+        conteudoTreeA,
+        tamanhoRealTreeA,
+        &entriesA
+    );
+
+    int qtdB = _parse_tree(
+        conteudoTreeB,
+        tamanhoRealTreeB,
+        &entriesB
+    );
+
     // 7. Compara os arquivos: novo, alterado e deletado
     //       arquivo novo	                    adiciona
     //       arquivo deletado                   apaga
