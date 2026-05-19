@@ -6,6 +6,16 @@
 #include "../../includes/core/arquivos.h"
 #include "../../includes/core/zipper.h"
 #include "../../includes/core/utils.h"
+#include "../../includes/core/identifica_arquivos.h"
+
+static int _deve_ignorar(const char *path) {
+    if(strstr(path, ".vsr/") != NULL) return 1;
+    if(strstr(path, "builds/") != NULL) return 1;
+    if(strstr(path, "bin/") != NULL) return 1;
+    if(strstr(path, ".o") != NULL) return 1;
+
+    return 0;
+}
 
 static int _arquivo_existe(char *path) {
     return verifica(path); 
@@ -120,6 +130,63 @@ static int _command_track_path(char *path) {
     return 0;
 }
 
+static int _command_track_all() {
+
+    // 1. Reconhece todos os arquivos do diretório
+    char **filePaths = NULL;
+    int totalArquivos = 0;
+    identifica_arquivos(".", 0, &filePaths, &totalArquivos); 
+
+    // 2. Le arquivo index
+    FILE *fileIndex = fopen(".vsr/index", "r");
+    if(!fileIndex) {
+        printf("ERRO: Erro ao abrir o arquivo index.");
+        return 1;
+    }
+
+    // 3. Identifica os arquivos untracked
+    int tamanhoUntracked = 10;
+    char **untracked = malloc(sizeof(char *) * tamanhoUntracked); 
+    int tamanhoAtualUntracked = 0;
+
+    char linha[1024];
+    char hash[128];
+    char path[1024];
+    char status[32];
+
+    for(int i = 0; i < totalArquivos; i++) {
+        if(_deve_ignorar(filePaths[i])) 
+            continue;
+
+        rewind(fileIndex);
+
+        int existe = 0;
+        while (fgets(linha, sizeof(linha), fileIndex)) {
+            hash[0] = '\0';
+            path[0] = '\0';
+            status[0] = '\0';
+            
+            sscanf(linha, "%s %s %s", hash, path, status);
+            if(strcmp(filePaths[i], path) == 0) {
+                existe = 1;
+                break;
+            }
+        }
+
+        if(!existe) {
+            _command_track_path(filePaths[i]);
+        }
+    }
+
+    // 4. Trankea todos os arquivos com untraked
+
+    return 0;
+}
+
 int command_track_path(char *path) {
     return _command_track_path(path);
+}
+
+int command_track_all() {
+    return _command_track_all();
 }

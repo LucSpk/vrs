@@ -233,6 +233,41 @@ static int _command_compare_simples_dois_objetos(char objeto_a[], char objeto_b[
     return 0;
 }
 
+static int _command_compare_simples_um_objeto(char objeto_a[]) {
+    FILE *headFile = fopen("./.vsr/HEAD", "r");
+    if(headFile == NULL) {
+        printf("Erro: Falha ao abrir arquivo HEAD\n");
+        return 1;
+    }
+
+    char ref[128];
+    fgets(ref, sizeof(ref), headFile);
+    ref[strcspn(ref, "\n")] = '\0';
+
+    char refPath[128];
+    sscanf(ref, "%*s %s", refPath);
+    fclose(headFile);
+
+    char completeRefPath[] = "./.vsr/";
+    strcat(completeRefPath, refPath);
+    FILE *refFile = fopen(completeRefPath, "r");
+    if(refFile == NULL) {
+        printf("Erro: Falha ao abrir arquivo ref.\n");
+        return 1;
+    }
+
+    char headHash[128];
+    fgets(headHash, sizeof(headHash), refFile);
+    headHash[strcspn(headHash, "\n")] = '\0';
+    fclose(refFile);
+
+    return _command_compare_simples_dois_objetos(objeto_a, headHash);
+}
+
 int command_compare_simples_dois_objetos(char objeto_a[], char objeto_b[]) {
     return _command_compare_simples_dois_objetos(objeto_a, objeto_b);
+}
+
+int command_compare_simples_um_objeto(char objeto_a[]) {
+    return _command_compare_simples_um_objeto(objeto_a);
 }

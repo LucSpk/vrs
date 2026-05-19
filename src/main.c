@@ -13,6 +13,7 @@
 #include "../includes/commands/ramify.h"
 #include "../includes/commands/change.h"
 #include "../includes/commands/compare.h"
+#include "../includes/commands/join.h"
 
 void identifica_arquivos(char *caminho, int exibeOcultos, char ***arr, int *tamanhoFinal); 
 char *cria_hash_de_arquivo(const char *conteudo);
@@ -99,6 +100,12 @@ int main(int argc, char *argv[]) {
             printf("ERRO: Comando não obedece a estrutura da função track: vrs track <fileName>.\n");
             return 1;
         }
+
+        if(strcmp(argv[2], ".") == 0) {
+            command_track_all();
+            return 0;
+         }
+
         command_track_path(argv[2]);
         return 0; 
     }
@@ -146,12 +153,23 @@ int main(int argc, char *argv[]) {
 
         if(!argv[3]) {
             // - TODO: Caso não exista o terceiro fazer compare simples com a HEAD
+            command_compare_simples_um_objeto(argv[2]);
             return 1;
         }
 
         // - TODO: verificar se há flag de opção
 
         command_compare_simples_dois_objetos(argv[2], argv[3]);
+        return 0; 
+    }
+
+    if(strcmp(argv[1], "join") == 0) {
+         if(!argv[2]) {
+            printf("ERRO: Comando não obedece a estrutura da função ramify: vrs join <branch destino>.\n");
+            return 1;
+        }
+        
+        command_join(argv[2]);
         return 0; 
     }
     
