@@ -1,7 +1,9 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 
 #include "../../includes/core/io.h"
+#include "../../includes/core/utils.h"
 #include "../../includes/types/entry.h"
 
 static unsigned char *_ler_objeto(char *hash, long *tamanho) {
@@ -53,6 +55,74 @@ static Entry *_buscar_entry_por_path(Entry *entries, int quantidade, char *path)
     }
 
     return NULL;
+}
+
+static int _parse_tree(unsigned char *conteudoTree, size_t tamanhoTree, Entry **entries) {
+
+    size_t offset = 0;
+    int quantidade = 0;
+
+    *entries = NULL;
+
+    while (offset < tamanhoTree) {
+
+        // precisa existir ao menos hash SHA256
+        if ((offset + 32) > tamanhoTree) {
+            break;
+        }
+
+        *entries = realloc(*entries, sizeof(Entry) * (quantidade + 1));
+
+        Entry *entry = &(*entries)[quantidade];
+
+        memset(entry, 0, sizeof(Entry));
+
+        // 1. Ler modo
+        int i = 0;
+
+        while (offset < tamanhoTree && conteudoTree[offset] != ' ') {
+            entry->modo[i++] = conteudoTree[offset++];
+        }
+
+        entry->modo[i] = '\0';
+        if (offset >= tamanhoTree) {
+            break;
+        }
+
+        offset++; // pula espaço
+
+        // 2. Ler path
+        i = 0;
+
+        while (offset < tamanhoTree && conteudoTree[offset] != '\0') {
+            entry->path[i++] = conteudoTree[offset++];
+        }
+
+        entry->path[i] = '\0';
+        if (offset >= tamanhoTree) {
+            break;
+        }
+
+        offset++; // pula \0
+
+        // 3. Ler hash binário
+        if ((offset + 32) > tamanhoTree) {
+            break;
+        }
+
+        memcpy(entry->hash, conteudoTree + offset, 32);
+
+        offset += 32;
+
+        quantidade++;
+    }
+
+    return quantidade;
+}
+
+static char *_buscar_merge_base(char *commitA, char *commitB) {
+
+    return "";
 }
 
 static int _command_join(char *destino) {
@@ -127,6 +197,9 @@ static int _command_join(char *destino) {
 
     unsigned char *conteudoCommitA = _pular_header(bufferCommitA);
     unsigned char *conteudoCommitB = _pular_header(bufferCommitB);
+
+    printf("%s\n", conteudoCommitA);
+    printf("%s\n", conteudoCommitB);
 
     // 6. Le as trees dos commits
     //    - Extrai hash das trees
