@@ -120,10 +120,38 @@ static int _parse_tree(unsigned char *conteudoTree, size_t tamanhoTree, Entry **
     return quantidade;
 }
 
-static int _buscar_merge_base(char *commitA, char *commitB, char baseHash[]) {
-    
-    printf("\n\nHash commit Branch de Destino: %s\n", commitA);
-    printf("Hash commit HEAD: %s\n", commitB);
+static int _buscar_merge_base(char *commitA, char *commitB, char **baseHash) {
+    if(strcmp(commitA, commitB) == 0) {
+        *baseHash = commitA;
+        return 0;
+    }
+
+    char currentParentB[65];
+    do {
+        long tamanhoCommitB;
+        unsigned char *bufferCommitB = _ler_objeto(commitB, &tamanhoCommitB);
+        if (!bufferCommitB) {
+            break;
+        }
+
+        unsigned char *conteudoCommitB = _pular_header(bufferCommitB);
+
+        char *parentLineB = strstr((char *)conteudoCommitB, "parent ");
+        if (parentLineB == NULL) {
+            free(bufferCommitB);
+            break;
+        } 
+        sscanf(parentLineB, "parent %64s", currentParentB);
+        free(bufferCommitB);
+
+        if (strcmp(commitA, currentParentB) == 0) {
+            printf("Merge base encontrada: %s\n", currentParentB);
+            break;
+        }
+
+        strcpy(commitB, currentParentB);
+
+    } while (1);
 
     long tamanhoCommitA;
     unsigned char *bufferCommitA = _ler_objeto(commitA, &tamanhoCommitA);
@@ -221,8 +249,8 @@ static int _command_join(char *destino) {
     fclose(refFile);
 
     // - Pegar hash do commit base
-    char baseHash[128];
-    _buscar_merge_base(hashCommitBranchDestino, headHash, baseHash);
+    char *baseHash;
+    _buscar_merge_base(hashCommitBranchDestino, headHash, &baseHash);
 
     // 5. Le os commits das branches
     long tamanhoCommitA;
