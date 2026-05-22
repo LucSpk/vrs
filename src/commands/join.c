@@ -122,7 +122,7 @@ static int _parse_tree(unsigned char *conteudoTree, size_t tamanhoTree, Entry **
 
 static int _buscar_merge_base(char *commitA, char *commitB, char **baseHash) {
     if(strcmp(commitA, commitB) == 0) {
-        *baseHash = commitA;
+        strcpy(*baseHash, commitA);
         return 0;
     }
     
