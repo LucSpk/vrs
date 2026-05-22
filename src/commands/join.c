@@ -120,9 +120,12 @@ static int _parse_tree(unsigned char *conteudoTree, size_t tamanhoTree, Entry **
     return quantidade;
 }
 
-static char *_buscar_merge_base(char *commitA, char *commitB) {
+static int _buscar_merge_base(char *commitA, char *commitB, char baseHash[]) {
+    
+    printf("\n\nConteudo commit Branch de Destino: %s\n", commitA);
+    printf("Conteudo commit HEAD: %s\n", commitB);
 
-    return "";
+    return 0;
 }
 
 static int _command_join(char *destino) {
@@ -183,6 +186,10 @@ static int _command_join(char *destino) {
     headHash[strcspn(headHash, "\n")] = '\0';
     fclose(refFile);
 
+    // - Pegar hash do commit base
+    char baseHash[128];
+    _buscar_merge_base(hashCommitBranchDestino, headHash, baseHash);
+
     // 5. Le os commits das branches
     long tamanhoCommitA;
     unsigned char *bufferCommitA = _ler_objeto(hashCommitBranchDestino, &tamanhoCommitA);
@@ -198,8 +205,7 @@ static int _command_join(char *destino) {
     unsigned char *conteudoCommitA = _pular_header(bufferCommitA);
     unsigned char *conteudoCommitB = _pular_header(bufferCommitB);
 
-    printf("%s\n", conteudoCommitA);
-    printf("%s\n", conteudoCommitB);
+    return 0;
 
     // 6. Le as trees dos commits
     //    - Extrai hash das trees
