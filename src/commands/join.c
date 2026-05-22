@@ -122,9 +122,43 @@ static int _parse_tree(unsigned char *conteudoTree, size_t tamanhoTree, Entry **
 
 static int _buscar_merge_base(char *commitA, char *commitB, char baseHash[]) {
     
-    printf("\n\nConteudo commit Branch de Destino: %s\n", commitA);
-    printf("Conteudo commit HEAD: %s\n", commitB);
+    printf("\n\nHash commit Branch de Destino: %s\n", commitA);
+    printf("Hash commit HEAD: %s\n", commitB);
 
+    long tamanhoCommitA;
+    unsigned char *bufferCommitA = _ler_objeto(commitA, &tamanhoCommitA);
+
+    long tamanhoCommitB;
+    unsigned char *bufferCommitB = _ler_objeto(commitB, &tamanhoCommitB);
+
+    printf("\nConteudo commit Branch de Destino: %s\n", bufferCommitA);
+    printf("Conteudo commit HEAD: %s\n", bufferCommitB);
+    
+    if (!bufferCommitA || !bufferCommitB) {
+        printf("Erro: Falha ao ler algum commit.\n");
+        return 1;
+    }
+
+    unsigned char *conteudoCommitA = _pular_header(bufferCommitA);
+    unsigned char *conteudoCommitB = _pular_header(bufferCommitB);
+
+    printf("\n\nConteudo commit Branch de Destino sem o header: \n%s\n", conteudoCommitA);
+    printf("\nConteudo commit HEAD sem o header:\n%s\n", conteudoCommitB);
+
+    char parentHashA[65] = {0};
+    char *parentLineA = strstr(conteudoCommitA, "parent ");
+    if (parentLineA != NULL) {
+        sscanf(parentLineA, "parent %64s", parentHashA);
+    }
+
+    char parentHashB[65] = {0};
+    char *parentLineB = strstr(conteudoCommitB, "parent ");
+    if (parentLineB != NULL) {
+        sscanf(parentLineB, "parent %64s", parentHashB);
+    }
+
+    printf("\nparent hash A: %s\n", parentHashA);
+    printf("parent hash B: %s\n", parentHashB);
     return 0;
 }
 
