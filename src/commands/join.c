@@ -154,16 +154,12 @@ static int _buscar_merge_base(char *commitA, char *commitB, char **baseHash) {
             if (strcmp(currentCommitA, currentParentB) == 0) {
                 printf("Merge base encontrada: %s\n", currentParentB);
                 strcpy(*baseHash, currentParentB);
-                commitBaseEncontrado = 1;
-                break;
+                return 0;
             }
 
             strcpy(currentB, currentParentB);
 
         }
-
-        if(commitBaseEncontrado == 1) 
-            break;
 
         long tamanhoCommitA;
         unsigned char *bufferCommitA = _ler_objeto(currentCommitA, &tamanhoCommitA);
@@ -183,48 +179,10 @@ static int _buscar_merge_base(char *commitA, char *commitB, char **baseHash) {
         sscanf(parentLineA, "parent %64s", currentCommitA);
         free(bufferCommitA);
 
-    } while(commitBaseEncontrado == 0);
-
-    if(commitBaseEncontrado < 0) {
-        printf("Commit base não encontrado.\n");
-        return 1;
-    }
-
-    long tamanhoCommitA;
-    unsigned char *bufferCommitA = _ler_objeto(commitA, &tamanhoCommitA);
-
-    long tamanhoCommitB;
-    unsigned char *bufferCommitB = _ler_objeto(commitB, &tamanhoCommitB);
-
-    printf("\nConteudo commit Branch de Destino: %s\n", bufferCommitA);
-    printf("Conteudo commit HEAD: %s\n", bufferCommitB);
+    } while(commitBaseEncontrado >= 0);
     
-    if (!bufferCommitA || !bufferCommitB) {
-        printf("Erro: Falha ao ler algum commit.\n");
-        return 1;
-    }
-
-    unsigned char *conteudoCommitA = _pular_header(bufferCommitA);
-    unsigned char *conteudoCommitB = _pular_header(bufferCommitB);
-
-    printf("\n\nConteudo commit Branch de Destino sem o header: \n%s\n", conteudoCommitA);
-    printf("\nConteudo commit HEAD sem o header:\n%s\n", conteudoCommitB);
-
-    char parentHashA[65] = {0};
-    char *parentLineA = strstr(conteudoCommitA, "parent ");
-    if (parentLineA != NULL) {
-        sscanf(parentLineA, "parent %64s", parentHashA);
-    }
-
-    char parentHashB[65] = {0};
-    char *parentLineB = strstr(conteudoCommitB, "parent ");
-    if (parentLineB != NULL) {
-        sscanf(parentLineB, "parent %64s", parentHashB);
-    }
-
-    printf("\nparent hash A: %s\n", parentHashA);
-    printf("parent hash B: %s\n", parentHashB);
-    return 0;
+    printf("Commit base não encontrado.\n");
+    return 1;
 }
 
 static int _command_join(char *destino) {
