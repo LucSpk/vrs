@@ -121,6 +121,11 @@ static int _parse_tree(unsigned char *conteudoTree, size_t tamanhoTree, Entry **
 }
 
 static int _buscar_merge_base(char *commitA, char *commitB, char **baseHash) {
+    if (!baseHash || !*baseHash) {
+        printf("Erro: baseHash é NULL\n");
+        return 1;
+    }
+    
     if(strcmp(commitA, commitB) == 0) {
         strcpy(*baseHash, commitA);
         return 0;
