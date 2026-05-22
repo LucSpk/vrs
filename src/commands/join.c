@@ -125,33 +125,70 @@ static int _buscar_merge_base(char *commitA, char *commitB, char **baseHash) {
         *baseHash = commitA;
         return 0;
     }
-
-    char currentParentB[65];
+    
+    char currentCommitA[65];
+    strcpy(currentCommitA, commitA);
+    int commitBaseEncontrado = 0;
     do {
-        long tamanhoCommitB;
-        unsigned char *bufferCommitB = _ler_objeto(commitB, &tamanhoCommitB);
-        if (!bufferCommitB) {
+
+        char currentParentB[65];
+        char currentB[65];
+        strcpy(currentB, commitB);
+        while (1) {
+            long tamanhoCommitB;
+            unsigned char *bufferCommitB = _ler_objeto(currentB, &tamanhoCommitB);
+            if (!bufferCommitB) {
+                break;
+            }
+
+            unsigned char *conteudoCommitB = _pular_header(bufferCommitB);
+
+            char *parentLineB = strstr((char *)conteudoCommitB, "parent ");
+            if (parentLineB == NULL) {
+                free(bufferCommitB);
+                break;
+            } 
+            sscanf(parentLineB, "parent %64s", currentParentB);
+            free(bufferCommitB);
+
+            if (strcmp(currentCommitA, currentParentB) == 0) {
+                printf("Merge base encontrada: %s\n", currentParentB);
+                strcpy(*baseHash, currentParentB);
+                commitBaseEncontrado = 1;
+                break;
+            }
+
+            strcpy(currentB, currentParentB);
+
+        }
+
+        if(commitBaseEncontrado == 1) 
+            break;
+
+        long tamanhoCommitA;
+        unsigned char *bufferCommitA = _ler_objeto(currentCommitA, &tamanhoCommitA);
+        if (!bufferCommitA) {
             break;
         }
 
-        unsigned char *conteudoCommitB = _pular_header(bufferCommitB);
-
-        char *parentLineB = strstr((char *)conteudoCommitB, "parent ");
-        if (parentLineB == NULL) {
-            free(bufferCommitB);
+        unsigned char *conteudoCommitA = _pular_header(bufferCommitA);
+        
+        char *parentLineA = strstr((char *)conteudoCommitA, "parent ");
+        if (parentLineA == NULL) {
+            free(bufferCommitA);
+            commitBaseEncontrado = -1;
             break;
         } 
-        sscanf(parentLineB, "parent %64s", currentParentB);
-        free(bufferCommitB);
 
-        if (strcmp(commitA, currentParentB) == 0) {
-            printf("Merge base encontrada: %s\n", currentParentB);
-            break;
-        }
+        sscanf(parentLineA, "parent %64s", currentCommitA);
+        free(bufferCommitA);
 
-        strcpy(commitB, currentParentB);
+    } while(commitBaseEncontrado == 0);
 
-    } while (1);
+    if(commitBaseEncontrado < 0) {
+        printf("Commit base não encontrado.\n");
+        return 1;
+    }
 
     long tamanhoCommitA;
     unsigned char *bufferCommitA = _ler_objeto(commitA, &tamanhoCommitA);
@@ -249,7 +286,7 @@ static int _command_join(char *destino) {
     fclose(refFile);
 
     // - Pegar hash do commit base
-    char *baseHash;
+    char *baseHash = malloc(65); 
     _buscar_merge_base(hashCommitBranchDestino, headHash, &baseHash);
 
     // 5. Le os commits das branches
