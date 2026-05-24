@@ -157,7 +157,7 @@ static int _buscar_merge_base(char *commitA, char *commitB, char **baseHash) {
             free(bufferCommitB);
 
             if (strcmp(currentCommitA, currentParentB) == 0) {
-                printf("Merge base encontrada: %s\n", currentParentB);
+                printf("Commit base encontrado: %s\n", currentParentB);
                 strcpy(*baseHash, currentParentB);
                 return 0;
             }
@@ -258,14 +258,18 @@ static int _command_join(char *destino) {
 
     long tamanhoCommitB;
     unsigned char *bufferCommitB = _ler_objeto(headHash, &tamanhoCommitB);
+
+    long tamanhoCommitBase;
+    unsigned char *bufferCommitBase = _ler_objeto(baseHash, &tamanhoCommitBase);
     
-    if (!bufferCommitA || !bufferCommitB) {
+    if (!bufferCommitA || !bufferCommitB || !bufferCommitBase) {
         printf("Erro: Falha ao ler algum commit.\n");
         return 1;
     }
 
     unsigned char *conteudoCommitA = _pular_header(bufferCommitA);
     unsigned char *conteudoCommitB = _pular_header(bufferCommitB);
+    unsigned char *conteudoCommitBase = _pular_header(bufferCommitBase);
 
     return 0;
 
@@ -273,9 +277,11 @@ static int _command_join(char *destino) {
     //    - Extrai hash das trees
     char treeHashA[65];
     char treeHashB[65];
+    char treeHashBase[65];
 
     sscanf((char *)conteudoCommitA, "tree %64s", treeHashA);
     sscanf((char *)conteudoCommitB, "tree %64s", treeHashB);
+    sscanf((char *)conteudoCommitB, "tree %64s", treeHashBase);
     
     //    - Ler trees
     long tamanhoTreeA;
@@ -284,20 +290,26 @@ static int _command_join(char *destino) {
     long tamanhoTreeB;
     unsigned char *bufferTreeB = _ler_objeto(treeHashB, &tamanhoTreeB);
 
-    if (!bufferTreeA || !bufferTreeB) {
+    long tamanhoTreeBase;
+    unsigned char *bufferTreeBase = _ler_objeto(treeHashBase, &tamanhoTreeBase);
+
+    if (!bufferTreeA || !bufferTreeB || !baseHash) {
         return 1;
     }
 
     unsigned char *conteudoTreeA = _pular_header(bufferTreeA);
     unsigned char *conteudoTreeB = _pular_header(bufferTreeB);
+    unsigned char *conteudoTreeBase = _pular_header(bufferTreeBase);
 
     //    - Extrai tamanho real da tree
     size_t tamanhoRealTreeA = tamanhoTreeA - (conteudoTreeA - bufferTreeA);
     size_t tamanhoRealTreeB = tamanhoTreeB - (conteudoTreeB - bufferTreeB);
+    size_t tamanhoRealTreeBase = tamanhoTreeBase - (conteudoTreeBase - bufferTreeBase);
 
     //    - Faz o parse das entrys
     Entry *entriesA = NULL;
     Entry *entriesB = NULL;
+    Entry *entriesBase = NULL;
 
     int qtdA = _parse_tree(
         conteudoTreeA,
@@ -309,6 +321,12 @@ static int _command_join(char *destino) {
         conteudoTreeB,
         tamanhoRealTreeB,
         &entriesB
+    );
+
+    int qtdBase = _parse_tree(
+        conteudoTreeBase,
+        tamanhoRealTreeBase,
+        &entriesBase
     );
 
     // 7. Compara os arquivos: novo, alterado e deletado
