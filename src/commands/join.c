@@ -392,8 +392,21 @@ static int _command_join(char *destino) {
     // - Novo na branch de destino
     for (int i = 0; i < qtdA; i++) {
         Entry *entryBase = _buscar_entry_por_path(entriesBase, qtdBase, entriesA[i].path);
-        if(entriesBase)
+        if(entryBase)
             continue;
+
+        // - Novo na branch Atual
+        for (int i = 0; i < qtdB; i++) {
+            Entry *entryBase = _buscar_entry_por_path(entriesBase, qtdBase, entriesB[i].path);
+            if(entryBase)
+                continue;
+
+            Entry *entryA = _buscar_entry_por_path(entriesA, qtdA, entriesB[i].path);
+            if(!entryA) {
+                printf("CRIADO só em B, adiciona B: %s\n", entriesB[i].path);
+            }
+        }
+        
 
         Entry *entryB = _buscar_entry_por_path(entriesB, qtdB, entriesA[i].path);
         if(!entryB) {
@@ -401,25 +414,13 @@ static int _command_join(char *destino) {
             continue;
         }
 
-        if(_hashes_iguais(entriesA[i].path, entryB->hash)) {
+        if(_hashes_iguais(entriesA[i].hash, entryB->hash)) {
             printf("CRIADO IGUAL, aceita: %s\n", entriesA[i].path);
             continue;
         }
 
         printf("CRIADO DIFERENTE, conflito: %s\n", entriesA[i].path);
     }
-
-    // - Novo na branch Atual
-    for (int i = 0; i < qtdB; i++) {
-        Entry *entryBase = _buscar_entry_por_path(entriesBase, qtdBase, entriesB[i].path);
-        if(entriesBase)
-            continue;
-
-        Entry *entryA = _buscar_entry_por_path(entriesA, qtdA, entriesBase[i].path);
-        if(!entryA) {
-            printf("CRIADO só em B, adiciona B: %s\n", entriesA[i].path);
-        }
-     }
 
     // 8. Criar novo commit merge
     //        |  tree <nova_tree>
