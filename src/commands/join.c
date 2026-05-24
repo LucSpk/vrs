@@ -190,6 +190,10 @@ static int _buscar_merge_base(char *commitA, char *commitB, char **baseHash) {
     return 1;
 }
 
+static int _hashes_iguais(unsigned char a[32], unsigned char b[32]) {
+    return memcmp(a, b, 32) == 0;
+}
+
 static int _command_join(char *destino) {
     // 1. Verifica se a branch destino existe
     char path[256];
@@ -271,8 +275,6 @@ static int _command_join(char *destino) {
     unsigned char *conteudoCommitB = _pular_header(bufferCommitB);
     unsigned char *conteudoCommitBase = _pular_header(bufferCommitBase);
 
-    return 0;
-
     // 6. Le as trees dos commits
     //    - Extrai hash das trees
     char treeHashA[65];
@@ -281,7 +283,7 @@ static int _command_join(char *destino) {
 
     sscanf((char *)conteudoCommitA, "tree %64s", treeHashA);
     sscanf((char *)conteudoCommitB, "tree %64s", treeHashB);
-    sscanf((char *)conteudoCommitB, "tree %64s", treeHashBase);
+    sscanf((char *)conteudoCommitBase, "tree %64s", treeHashBase);
     
     //    - Ler trees
     long tamanhoTreeA;
@@ -293,7 +295,7 @@ static int _command_join(char *destino) {
     long tamanhoTreeBase;
     unsigned char *bufferTreeBase = _ler_objeto(treeHashBase, &tamanhoTreeBase);
 
-    if (!bufferTreeA || !bufferTreeB || !baseHash) {
+    if (!bufferTreeA || !bufferTreeB || !bufferTreeBase) {
         return 1;
     }
 
@@ -334,6 +336,32 @@ static int _command_join(char *destino) {
     //       arquivo deletado                   apaga
     //       arquivo alterado só numa branch	aceita
     //       arquivo alterado nas duas	        conflito
+    for(int i = 0; i < qtdBase; i++) {
+        // A é o destino, B o atual, Base é o da intersecção 
+        Entry *entryA = _buscar_entry_por_path(entriesA, qtdA, entriesBase[i].path);
+        Entry *entryB = _buscar_entry_por_path(entriesB, qtdB, entriesBase[i].path);
+
+        if(!_hashes_iguais(entriesBase[i].hash, entryA->hash) 
+            && _hashes_iguais(entriesBase[i].hash, entryB->hash)) {
+            
+            printf("Alterado só em A, aceita A");    
+        }
+
+        if(_hashes_iguais(entriesBase[i].hash, entryA->hash) 
+            && !_hashes_iguais(entriesBase[i].hash, entryB->hash)) {
+            
+            printf("Alterado só em B, aceita B");    
+        }
+
+        if(!_hashes_iguais(entriesBase[i].hash, entryA->hash)
+            && !_hashes_iguais(entriesBase[i].hash, entryB->hash)
+            && !_hashes_iguais(entryA->hash, entryB->hash)) {
+            
+            printf("Alterado nos dois, conflito"); 
+        }
+    }
+
+
     for (int i = 0; i < qtdA; i++) {
         Entry *entryB = _buscar_entry_por_path(entriesB, qtdB, entriesA[i].path);
 
@@ -343,7 +371,7 @@ static int _command_join(char *destino) {
             continue;
         }
 
-        if (memcmp(entriesA[i].hash, entryB->hash, 32) != 0) {
+        if (!_hashes_iguais(entriesA[i].hash, entryB->hash)) {
             // Arquivo alterado nas duas branches?
             // Aqui, para merge real, seria necessário buscar o ancestral comum para detectar conflito real.
             // Para simplificação: se diferente nas duas, marcamos como conflito.
