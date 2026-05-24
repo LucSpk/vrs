@@ -395,19 +395,6 @@ static int _command_join(char *destino) {
         if(entryBase)
             continue;
 
-        // - Novo na branch Atual
-        for (int i = 0; i < qtdB; i++) {
-            Entry *entryBase = _buscar_entry_por_path(entriesBase, qtdBase, entriesB[i].path);
-            if(entryBase)
-                continue;
-
-            Entry *entryA = _buscar_entry_por_path(entriesA, qtdA, entriesB[i].path);
-            if(!entryA) {
-                printf("CRIADO só em B, adiciona B: %s\n", entriesB[i].path);
-            }
-        }
-        
-
         Entry *entryB = _buscar_entry_por_path(entriesB, qtdB, entriesA[i].path);
         if(!entryB) {
             printf("CRIADO só em A, adiciona A: %s\n", entriesA[i].path);
@@ -421,6 +408,18 @@ static int _command_join(char *destino) {
 
         printf("CRIADO DIFERENTE, conflito: %s\n", entriesA[i].path);
     }
+
+    // - Novo na branch Atual
+    for (int i = 0; i < qtdB; i++) {
+        Entry *entryBase = _buscar_entry_por_path(entriesBase, qtdBase, entriesB[i].path);
+        if(entryBase)
+            continue;
+
+        Entry *entryA = _buscar_entry_por_path(entriesA, qtdA, entriesB[i].path);
+        if(!entryA) {
+            printf("CRIADO só em B, adiciona B: %s\n", entriesB[i].path);
+        }
+     }
 
     // 8. Criar novo commit merge
     //        |  tree <nova_tree>
