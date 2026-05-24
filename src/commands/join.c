@@ -341,53 +341,85 @@ static int _command_join(char *destino) {
         Entry *entryA = _buscar_entry_por_path(entriesA, qtdA, entriesBase[i].path);
         Entry *entryB = _buscar_entry_por_path(entriesB, qtdB, entriesBase[i].path);
 
-        if(!_hashes_iguais(entriesBase[i].hash, entryA->hash) 
-            && _hashes_iguais(entriesBase[i].hash, entryB->hash)) {
+        if(entryA && entryB) {
+            if(_hashes_iguais(entriesBase[i].hash, entryA->hash)) {
+                if(_hashes_iguais(entriesBase[i].hash, entryB->hash)) {
+                    printf("IDENTICO em A e B - Ignora: %s\n", entriesBase[i].path);
+                    continue;
+                }
+
+                printf("ALTERADO só em B, aceita B: %s\n", entriesBase[i].path);
+                continue;
+            }
             
-            printf("Alterado só em A, aceita A");    
-        }
+            if(_hashes_iguais(entriesBase[i].hash, entryB->hash)) {
+                printf("ALTERADO só em A, aceita A: %s\n", entriesBase[i].path);
+                continue;
+            }
 
-        if(_hashes_iguais(entriesBase[i].hash, entryA->hash) 
-            && !_hashes_iguais(entriesBase[i].hash, entryB->hash)) {
-            
-            printf("Alterado só em B, aceita B");    
-        }
+            if(_hashes_iguais(entryA->hash, entryB->hash)) {
+                printf("ALTERADO IGUAL, aceita: %s\n", entriesBase[i].path);
+                continue;
+            }
 
-        if(!_hashes_iguais(entriesBase[i].hash, entryA->hash)
-            && !_hashes_iguais(entriesBase[i].hash, entryB->hash)
-            && !_hashes_iguais(entryA->hash, entryB->hash)) {
-            
-            printf("Alterado nos dois, conflito"); 
-        }
-    }
-
-
-    for (int i = 0; i < qtdA; i++) {
-        Entry *entryB = _buscar_entry_por_path(entriesB, qtdB, entriesA[i].path);
-
-        if(!entryB) {
-            // Arquivo deletado em B
-            printf("REMOVIDO em branch atual: %s\n", entriesA[i].path);
+            printf("ALTERADO DIFERENTE em A e em B, Conflito: %s\n", entriesBase[i].path);
             continue;
         }
 
-        if (!_hashes_iguais(entriesA[i].hash, entryB->hash)) {
-            // Arquivo alterado nas duas branches?
-            // Aqui, para merge real, seria necessário buscar o ancestral comum para detectar conflito real.
-            // Para simplificação: se diferente nas duas, marcamos como conflito.
-            printf("CONFLITO: %s\n", entriesA[i].path);
+        if(entryA) {
+            if(_hashes_iguais(entriesBase[i].hash, entryA->hash)) {
+                printf("DELETADO só em B - Deleta: %s\n", entriesBase[i].path);
+                continue;
+            }
+
+            printf("DELETADO em B e ALTERADO em A - Conflito: %s\n", entriesBase[i].path);
+            continue;
         }
+
+        if(entryB) {
+            if(_hashes_iguais(entriesBase[i].hash, entryB->hash)) {
+                printf("DELETADO só em A - Deleta: %s\n", entriesBase[i].path);
+                continue;
+            }
+
+            printf("DELETADO em A e ALTERADO em B - Conflito: %s\n", entriesBase[i].path);
+            continue;
+        }
+
+        printf("DELETADO em A e em B - Deleta: %s\n", entriesBase[i].path);
     }
 
-    // Para cada entry em B (branch atual)
-    for (int i = 0; i < qtdB; i++) {
-        Entry *entryA = _buscar_entry_por_path(entriesA, qtdA, entriesB[i].path);
-        if (!entryA) {
-            // Arquivo novo em B
-            printf("NOVO em branch atual: %s\n", entriesB[i].path);
+    // - Novo na branch de destino
+    for (int i = 0; i < qtdA; i++) {
+        Entry *entryBase = _buscar_entry_por_path(entriesBase, qtdBase, entriesA[i].path);
+        if(entriesBase)
+            continue;
+
+        Entry *entryB = _buscar_entry_por_path(entriesB, qtdB, entriesA[i].path);
+        if(!entryB) {
+            printf("CRIADO só em A, adiciona A: %s\n", entriesA[i].path);
+            continue;
         }
-        // Se já existe em A, já foi tratado acima
+
+        if(_hashes_iguais(entriesA[i].path, entryB->hash)) {
+            printf("CRIADO IGUAL, aceita: %s\n", entriesA[i].path);
+            continue;
+        }
+
+        printf("CRIADO DIFERENTE, conflito: %s\n", entriesA[i].path);
     }
+
+    // - Novo na branch Atual
+    for (int i = 0; i < qtdB; i++) {
+        Entry *entryBase = _buscar_entry_por_path(entriesBase, qtdBase, entriesB[i].path);
+        if(entriesBase)
+            continue;
+
+        Entry *entryA = _buscar_entry_por_path(entriesA, qtdA, entriesBase[i].path);
+        if(!entryA) {
+            printf("CRIADO só em B, adiciona B: %s\n", entriesA[i].path);
+        }
+     }
 
     // 8. Criar novo commit merge
     //        |  tree <nova_tree>
