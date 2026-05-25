@@ -477,6 +477,7 @@ static int _command_join(char *destino) {
         return 1;
     }
 
+    int resultado = 0;
     for(int i = 0; i < qtdBase; i++) {
         // A é o destino, B o atual, Base é o da intersecção 
         Entry *entryA = _buscar_entry_por_path(entriesA, qtdA, entriesBase[i].path);
@@ -492,7 +493,8 @@ static int _command_join(char *destino) {
                 printf("ALTERADO só em B, aceita B: %s\n", entriesBase[i].path);
                 if(_addEntry(&aceitar, &tamanhoAtualAceitar, &tamanhoAceitar, *entryB)) {
                     printf("Erro ao adicionar entry na lista de aceitar.\n");
-                    return 1; 
+                    resultado = 1;
+                    goto cleanup;
                 }
                 
                 continue;
@@ -502,7 +504,8 @@ static int _command_join(char *destino) {
                 printf("ALTERADO só em A, aceita A: %s\n", entriesBase[i].path);
                 if(_addEntry(&aceitar, &tamanhoAtualAceitar, &tamanhoAceitar, *entryA)) {
                     printf("Erro ao adicionar entry na lista de aceitar.\n");
-                    return 1; 
+                    resultado = 1;
+                    goto cleanup;
                 }
                 continue;
             }
@@ -511,7 +514,8 @@ static int _command_join(char *destino) {
                 printf("ALTERADO IGUAL, aceita: %s\n", entriesBase[i].path);
                 if(_addEntry(&aceitar, &tamanhoAtualAceitar, &tamanhoAceitar, *entryA)) {
                     printf("Erro ao adicionar entry na lista de aceitar.\n");
-                    return 1; 
+                    resultado = 1;
+                    goto cleanup;
                 }
                 continue;
             }
@@ -519,7 +523,8 @@ static int _command_join(char *destino) {
             printf("ALTERADO DIFERENTE em A e em B, Conflito: %s\n", entriesBase[i].path);
             if(_addEntry(&conflitos, &tamanhoAtualConflitos, &tamanhoConflitos, *entryA)) {
                 printf("Erro ao adicionar entry na lista de aceitar.\n");
-                return 1; 
+                resultado = 1;
+                goto cleanup;
             }
             continue;
         }
@@ -529,7 +534,8 @@ static int _command_join(char *destino) {
                 printf("DELETADO só em B - Deleta: %s\n", entriesBase[i].path);
                 if(_addEntry(&remover, &tamanhoAtualRemover, &tamanhoRemover, *entryA)) {
                     printf("Erro ao adicionar entry na lista de aceitar.\n");
-                    return 1; 
+                    resultado = 1;
+                    goto cleanup; 
                 }
                 continue;
             }
@@ -537,7 +543,8 @@ static int _command_join(char *destino) {
             printf("DELETADO em B e ALTERADO em A - Conflito: %s\n", entriesBase[i].path);
             if(_addEntry(&conflitos, &tamanhoAtualConflitos, &tamanhoConflitos, *entryA)) {
                 printf("Erro ao adicionar entry na lista de aceitar.\n");
-                return 1; 
+                resultado = 1;
+                goto cleanup;
             }
             continue;
         }
@@ -547,7 +554,8 @@ static int _command_join(char *destino) {
                 printf("DELETADO só em A - Deleta: %s\n", entriesBase[i].path);
                 if(_addEntry(&remover, &tamanhoAtualRemover, &tamanhoRemover, *entryB)) {
                     printf("Erro ao adicionar entry na lista de aceitar.\n");
-                    return 1; 
+                    resultado = 1;
+                    goto cleanup;
                 }
                 continue;
             }
@@ -555,7 +563,8 @@ static int _command_join(char *destino) {
             printf("DELETADO em A e ALTERADO em B - Conflito: %s\n", entriesBase[i].path);
             if(_addEntry(&conflitos, &tamanhoAtualConflitos, &tamanhoConflitos, *entryB)) {
                 printf("Erro ao adicionar entry na lista de aceitar.\n");
-                return 1; 
+                resultado = 1;
+                goto cleanup;
             }
             continue;
         }
@@ -563,7 +572,8 @@ static int _command_join(char *destino) {
         printf("DELETADO em A e em B - Deleta: %s\n", entriesBase[i].path);
         if(_addEntry(&remover, &tamanhoAtualRemover, &tamanhoRemover, *entryB)) {
             printf("Erro ao adicionar entry na lista de aceitar.\n");
-            return 1; 
+            resultado = 1;
+            goto cleanup;
         }
     }
 
@@ -578,7 +588,8 @@ static int _command_join(char *destino) {
             printf("CRIADO só em A, adiciona A: %s\n", entriesA[i].path);
             if(_addEntry(&adicionar, &tamanhoAtualAdicionar, &tamanhoAdicionar, entriesA[i])) {
                 printf("Erro ao adicionar entry na lista de aceitar.\n");
-                return 1; 
+                resultado = 1;
+                goto cleanup; 
             }
             continue;
         }
@@ -587,7 +598,8 @@ static int _command_join(char *destino) {
             printf("CRIADO IGUAL, aceita: %s\n", entriesA[i].path);
             if(_addEntry(&adicionar, &tamanhoAtualAdicionar, &tamanhoAdicionar, entriesA[i])) {
                 printf("Erro ao adicionar entry na lista de aceitar.\n");
-                return 1; 
+                resultado = 1;
+                goto cleanup;
             }
             continue;
         }
@@ -595,7 +607,8 @@ static int _command_join(char *destino) {
         printf("CRIADO DIFERENTE, conflito: %s\n", entriesA[i].path);
         if(_addEntry(&conflitos, &tamanhoAtualConflitos, &tamanhoConflitos, entriesA[i])) {
             printf("Erro ao adicionar entry na lista de aceitar.\n");
-            return 1; 
+            resultado = 1;
+            goto cleanup;
         }
     }
 
@@ -610,7 +623,8 @@ static int _command_join(char *destino) {
             printf("CRIADO só em B, adiciona B: %s\n", entriesB[i].path);
             if(_addEntry(&adicionar, &tamanhoAtualAdicionar, &tamanhoAdicionar, entriesB[i])) {
                 printf("Erro ao adicionar entry na lista de aceitar.\n");
-                return 1; 
+                resultado = 1;
+                goto cleanup;
             }
         }
     }
@@ -621,6 +635,8 @@ static int _command_join(char *destino) {
     //        |  parent <commit_branch>
     //      merge commit possui 2 parents
     // 9. Atualizar main
+
+cleanup:
 
     free(aceitar);
     free(adicionar);
@@ -641,7 +657,7 @@ static int _command_join(char *destino) {
 
     free(baseHash);
 
-    return 0;
+    return resultado;
 }
 
 int command_join(char *destino) {
