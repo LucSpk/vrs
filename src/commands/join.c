@@ -202,18 +202,20 @@ static int _hashes_iguais(unsigned char a[32], unsigned char b[32]) {
 }
 
 static int _addEntry(Entry **array, int *tamanhoAtual, int *capacidade, Entry nova) {
-    *capacidade = (*capacidade == 0) ? 1 : (*capacidade * 2);
     if (*tamanhoAtual >= *capacidade) {
-        *capacidade *= 2;
-        Entry *temp = realloc(*array, (*capacidade) * sizeof(Entry));
+        int novaCapacidade = (*capacidade == 0) ? 1 : (*capacidade * 2);
+
+        Entry *temp = realloc(*array, novaCapacidade * sizeof(Entry));
         if (!temp) {
             printf("Erro no realloc de aceitar.\n");
             return 1;
         }
+
         *array = temp;
+        *capacidade = novaCapacidade;
     }
 
-    (*array)[*tamanhoAtual] = nova; // copia a struct inteira
+    (*array)[*tamanhoAtual] = nova;
     (*tamanhoAtual)++;
     return 0;
 }
