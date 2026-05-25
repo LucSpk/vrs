@@ -101,7 +101,7 @@ static int _parse_tree(unsigned char *conteudoTree, size_t tamanhoTree, Entry **
         // 2. Ler path
         i = 0;
 
-        while (offset < tamanhoTree && conteudoTree[offset] != '\0') {
+        while (offset < tamanhoTree && conteudoTree[offset] != '\0' && i < sizeof(entry->path) - 1) {
             entry->path[i++] = conteudoTree[offset++];
         }
 
