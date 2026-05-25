@@ -202,6 +202,7 @@ static int _hashes_iguais(unsigned char a[32], unsigned char b[32]) {
 }
 
 static int _addEntry(Entry **array, int *tamanhoAtual, int *capacidade, Entry nova) {
+    *capacidade = (*capacidade == 0) ? 1 : (*capacidade * 2);
     if (*tamanhoAtual >= *capacidade) {
         *capacidade *= 2;
         Entry *temp = realloc(*array, (*capacidade) * sizeof(Entry));
