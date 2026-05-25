@@ -389,7 +389,7 @@ static int _command_join(char *destino) {
                 }
 
                 printf("ALTERADO só em B, aceita B: %s\n", entriesBase[i].path);
-                if (addEntry(&aceitar, &tamanhoAtualAceitar, &tamanhoAceitar, *entryA)) {
+                if (addEntry(&aceitar, &tamanhoAtualAceitar, &tamanhoAceitar, *entryB)) {
                     printf("Erro ao adicionar entry na lista de aceitar.\n");
                     return 1; 
                 }
@@ -399,6 +399,10 @@ static int _command_join(char *destino) {
             
             if(_hashes_iguais(entriesBase[i].hash, entryB->hash)) {
                 printf("ALTERADO só em A, aceita A: %s\n", entriesBase[i].path);
+                if (addEntry(&aceitar, &tamanhoAtualAceitar, &tamanhoAceitar, *entryA)) {
+                    printf("Erro ao adicionar entry na lista de aceitar.\n");
+                    return 1; 
+                }
                 continue;
             }
 
