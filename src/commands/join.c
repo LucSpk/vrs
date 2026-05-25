@@ -389,7 +389,7 @@ static int _command_join(char *destino) {
                 }
 
                 printf("ALTERADO só em B, aceita B: %s\n", entriesBase[i].path);
-                if (addEntry(&aceitar, &tamanhoAtualAceitar, &tamanhoAceitar, *entryB)) {
+                if(addEntry(&aceitar, &tamanhoAtualAceitar, &tamanhoAceitar, *entryB)) {
                     printf("Erro ao adicionar entry na lista de aceitar.\n");
                     return 1; 
                 }
@@ -399,7 +399,7 @@ static int _command_join(char *destino) {
             
             if(_hashes_iguais(entriesBase[i].hash, entryB->hash)) {
                 printf("ALTERADO só em A, aceita A: %s\n", entriesBase[i].path);
-                if (addEntry(&aceitar, &tamanhoAtualAceitar, &tamanhoAceitar, *entryA)) {
+                if(addEntry(&aceitar, &tamanhoAtualAceitar, &tamanhoAceitar, *entryA)) {
                     printf("Erro ao adicionar entry na lista de aceitar.\n");
                     return 1; 
                 }
@@ -408,34 +408,62 @@ static int _command_join(char *destino) {
 
             if(_hashes_iguais(entryA->hash, entryB->hash)) {
                 printf("ALTERADO IGUAL, aceita: %s\n", entriesBase[i].path);
+                if(addEntry(&aceitar, &tamanhoAtualAceitar, &tamanhoAceitar, *entryA)) {
+                    printf("Erro ao adicionar entry na lista de aceitar.\n");
+                    return 1; 
+                }
                 continue;
             }
 
             printf("ALTERADO DIFERENTE em A e em B, Conflito: %s\n", entriesBase[i].path);
+            if(addEntry(&conflitos, &tamanhoAtualConflitos, &tamanhoConflitos, *entryA)) {
+                printf("Erro ao adicionar entry na lista de aceitar.\n");
+                return 1; 
+            }
             continue;
         }
 
         if(entryA) {
             if(_hashes_iguais(entriesBase[i].hash, entryA->hash)) {
                 printf("DELETADO só em B - Deleta: %s\n", entriesBase[i].path);
+                if(addEntry(&remover, &tamanhoAtualRemover, &tamanhoRemover, *entryA)) {
+                    printf("Erro ao adicionar entry na lista de aceitar.\n");
+                    return 1; 
+                }
                 continue;
             }
 
             printf("DELETADO em B e ALTERADO em A - Conflito: %s\n", entriesBase[i].path);
+            if(addEntry(&conflitos, &tamanhoAtualConflitos, &tamanhoConflitos, *entryA)) {
+                printf("Erro ao adicionar entry na lista de aceitar.\n");
+                return 1; 
+            }
             continue;
         }
 
         if(entryB) {
             if(_hashes_iguais(entriesBase[i].hash, entryB->hash)) {
                 printf("DELETADO só em A - Deleta: %s\n", entriesBase[i].path);
+                if(addEntry(&remover, &tamanhoAtualRemover, &tamanhoRemover, *entryA)) {
+                    printf("Erro ao adicionar entry na lista de aceitar.\n");
+                    return 1; 
+                }
                 continue;
             }
 
             printf("DELETADO em A e ALTERADO em B - Conflito: %s\n", entriesBase[i].path);
+            if(addEntry(&conflitos, &tamanhoAtualConflitos, &tamanhoConflitos, *entryA)) {
+                printf("Erro ao adicionar entry na lista de aceitar.\n");
+                return 1; 
+            }
             continue;
         }
 
         printf("DELETADO em A e em B - Deleta: %s\n", entriesBase[i].path);
+        if(addEntry(&remover, &tamanhoAtualRemover, &tamanhoRemover, *entryA)) {
+            printf("Erro ao adicionar entry na lista de aceitar.\n");
+            return 1; 
+        }
     }
 
     // - Novo na branch de destino
@@ -447,15 +475,27 @@ static int _command_join(char *destino) {
         Entry *entryB = _buscar_entry_por_path(entriesB, qtdB, entriesA[i].path);
         if(!entryB) {
             printf("CRIADO só em A, adiciona A: %s\n", entriesA[i].path);
+            if(addEntry(&adicionar, &tamanhoAtualAdicionar, &tamanhoAdicionar, entriesA[i])) {
+                printf("Erro ao adicionar entry na lista de aceitar.\n");
+                return 1; 
+            }
             continue;
         }
 
         if(_hashes_iguais(entriesA[i].hash, entryB->hash)) {
             printf("CRIADO IGUAL, aceita: %s\n", entriesA[i].path);
+            if(addEntry(&adicionar, &tamanhoAtualAdicionar, &tamanhoAdicionar, entriesA[i])) {
+                printf("Erro ao adicionar entry na lista de aceitar.\n");
+                return 1; 
+            }
             continue;
         }
 
         printf("CRIADO DIFERENTE, conflito: %s\n", entriesA[i].path);
+        if(addEntry(&conflitos, &tamanhoAtualConflitos, &tamanhoConflitos, entriesA[i])) {
+            printf("Erro ao adicionar entry na lista de aceitar.\n");
+            return 1; 
+        }
     }
 
     // - Novo na branch Atual
@@ -467,6 +507,10 @@ static int _command_join(char *destino) {
         Entry *entryA = _buscar_entry_por_path(entriesA, qtdA, entriesB[i].path);
         if(!entryA) {
             printf("CRIADO só em B, adiciona B: %s\n", entriesB[i].path);
+            if(addEntry(&adicionar, &tamanhoAtualAdicionar, &tamanhoAdicionar, entriesB[i])) {
+                printf("Erro ao adicionar entry na lista de aceitar.\n");
+                return 1; 
+            }
         }
     }
 
