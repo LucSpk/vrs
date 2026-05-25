@@ -277,6 +277,10 @@ static int _command_join(char *destino) {
 
     // - Pegar hash do commit base
     char *baseHash = malloc(65); 
+    if (!baseHash) {
+        printf("Erro malloc baseHash\n");
+        return 1;
+    }
     _buscar_merge_base(hashCommitBranchDestino, headHash, &baseHash);
 
     // 5. Le os commits das branches
@@ -363,18 +367,34 @@ static int _command_join(char *destino) {
     int tamanhoAceitar = 10;
     int tamanhoAtualAceitar = 0;
     Entry *aceitar = malloc(sizeof(Entry) * tamanhoAceitar);
+    if (!aceitar) {
+        printf("Erro malloc aceitar\n");
+        return 1;
+    }
 
     int tamanhoAdicionar = 10;
     int tamanhoAtualAdicionar = 0;
     Entry *adicionar = malloc(sizeof(Entry) * tamanhoAdicionar);
+    if (!adicionar) {
+        printf("Erro malloc adicionar\n");
+        return 1;
+    }
 
     int tamanhoRemover = 10;
     int tamanhoAtualRemover = 0;
     Entry *remover = malloc(sizeof(Entry) * tamanhoRemover);
+    if (!remover) {
+        printf("Erro malloc remover\n");
+        return 1;
+    }
 
     int tamanhoConflitos = 10;
     int tamanhoAtualConflitos = 0;
     Entry *conflitos = malloc(sizeof(Entry) * tamanhoConflitos);
+    if (!conflitos) {
+        printf("Erro malloc conflitos\n");
+        return 1;
+    }
 
     for(int i = 0; i < qtdBase; i++) {
         // A é o destino, B o atual, Base é o da intersecção 
@@ -389,7 +409,7 @@ static int _command_join(char *destino) {
                 }
 
                 printf("ALTERADO só em B, aceita B: %s\n", entriesBase[i].path);
-                if(addEntry(&aceitar, &tamanhoAtualAceitar, &tamanhoAceitar, *entryB)) {
+                if(_addEntry(&aceitar, &tamanhoAtualAceitar, &tamanhoAceitar, *entryB)) {
                     printf("Erro ao adicionar entry na lista de aceitar.\n");
                     return 1; 
                 }
@@ -399,7 +419,7 @@ static int _command_join(char *destino) {
             
             if(_hashes_iguais(entriesBase[i].hash, entryB->hash)) {
                 printf("ALTERADO só em A, aceita A: %s\n", entriesBase[i].path);
-                if(addEntry(&aceitar, &tamanhoAtualAceitar, &tamanhoAceitar, *entryA)) {
+                if(_addEntry(&aceitar, &tamanhoAtualAceitar, &tamanhoAceitar, *entryA)) {
                     printf("Erro ao adicionar entry na lista de aceitar.\n");
                     return 1; 
                 }
@@ -408,7 +428,7 @@ static int _command_join(char *destino) {
 
             if(_hashes_iguais(entryA->hash, entryB->hash)) {
                 printf("ALTERADO IGUAL, aceita: %s\n", entriesBase[i].path);
-                if(addEntry(&aceitar, &tamanhoAtualAceitar, &tamanhoAceitar, *entryA)) {
+                if(_addEntry(&aceitar, &tamanhoAtualAceitar, &tamanhoAceitar, *entryA)) {
                     printf("Erro ao adicionar entry na lista de aceitar.\n");
                     return 1; 
                 }
@@ -416,7 +436,7 @@ static int _command_join(char *destino) {
             }
 
             printf("ALTERADO DIFERENTE em A e em B, Conflito: %s\n", entriesBase[i].path);
-            if(addEntry(&conflitos, &tamanhoAtualConflitos, &tamanhoConflitos, *entryA)) {
+            if(_addEntry(&conflitos, &tamanhoAtualConflitos, &tamanhoConflitos, *entryA)) {
                 printf("Erro ao adicionar entry na lista de aceitar.\n");
                 return 1; 
             }
@@ -426,7 +446,7 @@ static int _command_join(char *destino) {
         if(entryA) {
             if(_hashes_iguais(entriesBase[i].hash, entryA->hash)) {
                 printf("DELETADO só em B - Deleta: %s\n", entriesBase[i].path);
-                if(addEntry(&remover, &tamanhoAtualRemover, &tamanhoRemover, *entryA)) {
+                if(_addEntry(&remover, &tamanhoAtualRemover, &tamanhoRemover, *entryA)) {
                     printf("Erro ao adicionar entry na lista de aceitar.\n");
                     return 1; 
                 }
@@ -434,7 +454,7 @@ static int _command_join(char *destino) {
             }
 
             printf("DELETADO em B e ALTERADO em A - Conflito: %s\n", entriesBase[i].path);
-            if(addEntry(&conflitos, &tamanhoAtualConflitos, &tamanhoConflitos, *entryA)) {
+            if(_addEntry(&conflitos, &tamanhoAtualConflitos, &tamanhoConflitos, *entryA)) {
                 printf("Erro ao adicionar entry na lista de aceitar.\n");
                 return 1; 
             }
@@ -444,7 +464,7 @@ static int _command_join(char *destino) {
         if(entryB) {
             if(_hashes_iguais(entriesBase[i].hash, entryB->hash)) {
                 printf("DELETADO só em A - Deleta: %s\n", entriesBase[i].path);
-                if(addEntry(&remover, &tamanhoAtualRemover, &tamanhoRemover, *entryA)) {
+                if(_addEntry(&remover, &tamanhoAtualRemover, &tamanhoRemover, *entryB)) {
                     printf("Erro ao adicionar entry na lista de aceitar.\n");
                     return 1; 
                 }
@@ -452,7 +472,7 @@ static int _command_join(char *destino) {
             }
 
             printf("DELETADO em A e ALTERADO em B - Conflito: %s\n", entriesBase[i].path);
-            if(addEntry(&conflitos, &tamanhoAtualConflitos, &tamanhoConflitos, *entryA)) {
+            if(_addEntry(&conflitos, &tamanhoAtualConflitos, &tamanhoConflitos, *entryB)) {
                 printf("Erro ao adicionar entry na lista de aceitar.\n");
                 return 1; 
             }
@@ -460,7 +480,7 @@ static int _command_join(char *destino) {
         }
 
         printf("DELETADO em A e em B - Deleta: %s\n", entriesBase[i].path);
-        if(addEntry(&remover, &tamanhoAtualRemover, &tamanhoRemover, *entryA)) {
+        if(_addEntry(&remover, &tamanhoAtualRemover, &tamanhoRemover, *entryB)) {
             printf("Erro ao adicionar entry na lista de aceitar.\n");
             return 1; 
         }
@@ -475,7 +495,7 @@ static int _command_join(char *destino) {
         Entry *entryB = _buscar_entry_por_path(entriesB, qtdB, entriesA[i].path);
         if(!entryB) {
             printf("CRIADO só em A, adiciona A: %s\n", entriesA[i].path);
-            if(addEntry(&adicionar, &tamanhoAtualAdicionar, &tamanhoAdicionar, entriesA[i])) {
+            if(_addEntry(&adicionar, &tamanhoAtualAdicionar, &tamanhoAdicionar, entriesA[i])) {
                 printf("Erro ao adicionar entry na lista de aceitar.\n");
                 return 1; 
             }
@@ -484,7 +504,7 @@ static int _command_join(char *destino) {
 
         if(_hashes_iguais(entriesA[i].hash, entryB->hash)) {
             printf("CRIADO IGUAL, aceita: %s\n", entriesA[i].path);
-            if(addEntry(&adicionar, &tamanhoAtualAdicionar, &tamanhoAdicionar, entriesA[i])) {
+            if(_addEntry(&adicionar, &tamanhoAtualAdicionar, &tamanhoAdicionar, entriesA[i])) {
                 printf("Erro ao adicionar entry na lista de aceitar.\n");
                 return 1; 
             }
@@ -492,7 +512,7 @@ static int _command_join(char *destino) {
         }
 
         printf("CRIADO DIFERENTE, conflito: %s\n", entriesA[i].path);
-        if(addEntry(&conflitos, &tamanhoAtualConflitos, &tamanhoConflitos, entriesA[i])) {
+        if(_addEntry(&conflitos, &tamanhoAtualConflitos, &tamanhoConflitos, entriesA[i])) {
             printf("Erro ao adicionar entry na lista de aceitar.\n");
             return 1; 
         }
@@ -507,7 +527,7 @@ static int _command_join(char *destino) {
         Entry *entryA = _buscar_entry_por_path(entriesA, qtdA, entriesB[i].path);
         if(!entryA) {
             printf("CRIADO só em B, adiciona B: %s\n", entriesB[i].path);
-            if(addEntry(&adicionar, &tamanhoAtualAdicionar, &tamanhoAdicionar, entriesB[i])) {
+            if(_addEntry(&adicionar, &tamanhoAtualAdicionar, &tamanhoAdicionar, entriesB[i])) {
                 printf("Erro ao adicionar entry na lista de aceitar.\n");
                 return 1; 
             }
@@ -520,6 +540,11 @@ static int _command_join(char *destino) {
     //        |  parent <commit_branch>
     //      merge commit possui 2 parents
     // 9. Atualizar main
+
+    free(aceitar);
+    free(adicionar);
+    free(remover);
+    free(conflitos);
 
     free(bufferCommitA);
     free(bufferCommitB);
