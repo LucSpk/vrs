@@ -282,7 +282,10 @@ static int _command_join(char *destino) {
         printf("Erro malloc baseHash\n");
         return 1;
     }
-    _buscar_merge_base(hashCommitBranchDestino, headHash, &baseHash);
+    if (_buscar_merge_base(hashCommitBranchDestino, headHash, &baseHash)) {
+        free(baseHash);
+        return 1;
+    }
 
     // 5. Le os commits das branches
     long tamanhoCommitA;
@@ -296,6 +299,10 @@ static int _command_join(char *destino) {
     
     if (!bufferCommitA || !bufferCommitB || !bufferCommitBase) {
         printf("Erro: Falha ao ler algum commit.\n");
+        free(bufferCommitA);
+        free(bufferCommitB);
+        free(bufferCommitBase);
+        free(baseHash);
         return 1;
     }
 
