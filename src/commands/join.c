@@ -71,7 +71,14 @@ static int _parse_tree(unsigned char *conteudoTree, size_t tamanhoTree, Entry **
             break;
         }
 
-        *entries = realloc(*entries, sizeof(Entry) * (quantidade + 1));
+        Entry *tmp = realloc(*entries, sizeof(Entry) * (quantidade + 1));
+        if (!tmp) {
+            printf("Erro realloc\n");
+            free(*entries);
+            return -1;
+        }
+
+        *entries = tmp;
 
         Entry *entry = &(*entries)[quantidade];
 
@@ -192,6 +199,22 @@ static int _buscar_merge_base(char *commitA, char *commitB, char **baseHash) {
 
 static int _hashes_iguais(unsigned char a[32], unsigned char b[32]) {
     return memcmp(a, b, 32) == 0;
+}
+
+static int _addEntry(Entry **array, int *tamanhoAtual, int *capacidade, Entry nova) {
+    if (*tamanhoAtual >= *capacidade) {
+        *capacidade *= 2;
+        Entry *temp = realloc(*array, (*capacidade) * sizeof(Entry));
+        if (!temp) {
+            printf("Erro no realloc de aceitar.\n");
+            return 1;
+        }
+        *array = temp;
+    }
+
+    (*array)[*tamanhoAtual] = nova; // copia a struct inteira
+    (*tamanhoAtual)++;
+    return 0;
 }
 
 static int _command_join(char *destino) {
@@ -336,6 +359,23 @@ static int _command_join(char *destino) {
     //       arquivo deletado                   apaga
     //       arquivo alterado só numa branch	aceita
     //       arquivo alterado nas duas	        conflito
+
+    int tamanhoAceitar = 10;
+    int tamanhoAtualAceitar = 0;
+    Entry *aceitar = malloc(sizeof(Entry) * tamanhoAceitar);
+
+    int tamanhoAdicionar = 10;
+    int tamanhoAtualAdicionar = 0;
+    Entry *adicionar = malloc(sizeof(Entry) * tamanhoAdicionar);
+
+    int tamanhoRemover = 10;
+    int tamanhoAtualRemover = 0;
+    Entry *remover = malloc(sizeof(Entry) * tamanhoRemover);
+
+    int tamanhoConflitos = 10;
+    int tamanhoAtualConflitos = 0;
+    Entry *conflitos = malloc(sizeof(Entry) * tamanhoConflitos);
+
     for(int i = 0; i < qtdBase; i++) {
         // A é o destino, B o atual, Base é o da intersecção 
         Entry *entryA = _buscar_entry_por_path(entriesA, qtdA, entriesBase[i].path);
@@ -349,6 +389,11 @@ static int _command_join(char *destino) {
                 }
 
                 printf("ALTERADO só em B, aceita B: %s\n", entriesBase[i].path);
+                if (addEntry(&aceitar, &tamanhoAtualAceitar, &tamanhoAceitar, *entryA)) {
+                    printf("Erro ao adicionar entry na lista de aceitar.\n");
+                    return 1; 
+                }
+                
                 continue;
             }
             
@@ -419,7 +464,7 @@ static int _command_join(char *destino) {
         if(!entryA) {
             printf("CRIADO só em B, adiciona B: %s\n", entriesB[i].path);
         }
-     }
+    }
 
     // 8. Criar novo commit merge
     //        |  tree <nova_tree>
@@ -427,6 +472,21 @@ static int _command_join(char *destino) {
     //        |  parent <commit_branch>
     //      merge commit possui 2 parents
     // 9. Atualizar main
+
+    free(bufferCommitA);
+    free(bufferCommitB);
+    free(bufferCommitBase);
+
+    free(bufferTreeA);
+    free(bufferTreeB);
+    free(bufferTreeBase);
+
+    free(entriesA);
+    free(entriesB);
+    free(entriesBase);
+
+    free(baseHash);
+
     return 0;
 }
 
