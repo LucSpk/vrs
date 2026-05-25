@@ -88,7 +88,11 @@ static int _parse_tree(unsigned char *conteudoTree, size_t tamanhoTree, Entry **
         int i = 0;
 
         while (offset < tamanhoTree && conteudoTree[offset] != ' ' && i < sizeof(entry->modo) - 1) {
-            entry->modo[i++] = conteudoTree[offset++];
+            if (i < sizeof(entry->modo) - 1) {
+                entry->modo[i++] = conteudoTree[offset];
+            }
+
+            offset++;
         }
 
         entry->modo[i] = '\0';
@@ -101,8 +105,13 @@ static int _parse_tree(unsigned char *conteudoTree, size_t tamanhoTree, Entry **
         // 2. Ler path
         i = 0;
 
-        while (offset < tamanhoTree && conteudoTree[offset] != '\0' && i < sizeof(entry->path) - 1) {
-            entry->path[i++] = conteudoTree[offset++];
+        while (offset < tamanhoTree && conteudoTree[offset] != '\0') {
+
+            if (i < sizeof(entry->path) - 1) {
+                entry->path[i++] = conteudoTree[offset];
+            }
+
+            offset++;
         }
 
         entry->path[i] = '\0';
@@ -333,6 +342,16 @@ static int _command_join(char *destino) {
     unsigned char *bufferTreeBase = _ler_objeto(treeHashBase, &tamanhoTreeBase);
 
     if (!bufferTreeA || !bufferTreeB || !bufferTreeBase) {
+        free(bufferCommitA);
+        free(bufferCommitB);
+        free(bufferCommitBase);
+
+        free(bufferTreeA);
+        free(bufferTreeB);
+        free(bufferTreeBase);
+
+        free(baseHash);
+        
         return 1;
     }
 
@@ -379,6 +398,20 @@ static int _command_join(char *destino) {
     Entry *aceitar = malloc(sizeof(Entry) * tamanhoAceitar);
     if (!aceitar) {
         printf("Erro malloc aceitar\n");
+        free(bufferCommitA);
+        free(bufferCommitB);
+        free(bufferCommitBase);
+
+        free(bufferTreeA);
+        free(bufferTreeB);
+        free(bufferTreeBase);
+
+        free(entriesA);
+        free(entriesB);
+        free(entriesBase);
+
+        free(baseHash);
+        
         return 1;
     }
 
@@ -386,7 +419,20 @@ static int _command_join(char *destino) {
     int tamanhoAtualAdicionar = 0;
     Entry *adicionar = malloc(sizeof(Entry) * tamanhoAdicionar);
     if (!adicionar) {
-        printf("Erro malloc adicionar\n");
+        printf("Erro malloc adicionar\n");free(bufferCommitA);
+        free(bufferCommitB);
+        free(bufferCommitBase);
+
+        free(bufferTreeA);
+        free(bufferTreeB);
+        free(bufferTreeBase);
+
+        free(entriesA);
+        free(entriesB);
+        free(entriesBase);
+
+        free(baseHash);
+    
         return 1;
     }
 
@@ -394,7 +440,20 @@ static int _command_join(char *destino) {
     int tamanhoAtualRemover = 0;
     Entry *remover = malloc(sizeof(Entry) * tamanhoRemover);
     if (!remover) {
-        printf("Erro malloc remover\n");
+        printf("Erro malloc remover\n");free(bufferCommitA);
+        free(bufferCommitB);
+        free(bufferCommitBase);
+
+        free(bufferTreeA);
+        free(bufferTreeB);
+        free(bufferTreeBase);
+
+        free(entriesA);
+        free(entriesB);
+        free(entriesBase);
+
+        free(baseHash);
+    
         return 1;
     }
 
@@ -402,7 +461,20 @@ static int _command_join(char *destino) {
     int tamanhoAtualConflitos = 0;
     Entry *conflitos = malloc(sizeof(Entry) * tamanhoConflitos);
     if (!conflitos) {
-        printf("Erro malloc conflitos\n");
+        printf("Erro malloc conflitos\n");free(bufferCommitA);
+        free(bufferCommitB);
+        free(bufferCommitBase);
+
+        free(bufferTreeA);
+        free(bufferTreeB);
+        free(bufferTreeBase);
+
+        free(entriesA);
+        free(entriesB);
+        free(entriesBase);
+
+        free(baseHash);
+    
         return 1;
     }
 
