@@ -260,6 +260,10 @@ static int _restaurar_arquivo(Entry *entry) {
     } else {
         strcpy(diretorio, ".");
     }
+
+    // Extrai o nome do arquivo
+    char *nome_arquivo = ultima_barra != NULL ? ultima_barra + 1 : entry->path;
+
 }
 
 
