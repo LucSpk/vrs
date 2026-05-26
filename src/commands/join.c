@@ -228,6 +228,11 @@ static int _addEntry(Entry **array, int *tamanhoAtual, int *capacidade, Entry no
     return 0;
 }
 
+static int _restaurar_arquivo(Entry *entry) {
+
+}
+
+
 static int _command_join(char *destino) {
     // 1. Verifica se a branch destino existe
     char path[256];
@@ -636,10 +641,12 @@ static int _command_join(char *destino) {
 
     for(int i = 0; i < tamanhoAtualAceitar; i++) {
         printf("ACEITAR: %s %s %s\n", aceitar[i].modo, aceitar[i].hash, aceitar[i].path);
+        _restaurar_arquivo(&aceitar[i]);
     }
 
     for(int i = 0; i < tamanhoAtualAdicionar; i++) {
         printf("ADICIONAR: %s %s %s\n", adicionar[i].modo, adicionar[i].hash, adicionar[i].path);
+        _restaurar_arquivo(&adicionar[i]);
     }
 
     for(int i = 0; i < tamanhoAtualConflitos; i++) {
