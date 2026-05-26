@@ -629,6 +629,22 @@ static int _command_join(char *destino) {
         }
     }
 
+    for(int i = 0; i < tamanhoAtualRemover; i++) {
+        printf("REMOVENDO: %s %s %s\n", remover[i].modo, remover[i].hash, remover[i].path);
+    }
+
+    for(int i = 0; i < tamanhoAtualAceitar; i++) {
+        printf("ACEITAR: %s %s %s\n", aceitar[i].modo, aceitar[i].hash, aceitar[i].path);
+    }
+
+    for(int i = 0; i < tamanhoAtualAdicionar; i++) {
+        printf("ADICIONAR: %s %s %s\n", adicionar[i].modo, adicionar[i].hash, adicionar[i].path);
+    }
+
+    for(int i = 0; i < tamanhoAtualConflitos; i++) {
+        printf("ADICIONAR: %s %s %s\n", conflitos[i].modo, conflitos[i].hash, conflitos[i].path);
+    }
+
     // 8. Criar novo commit merge
     //        |  tree <nova_tree>
     //        |  parent <commit_main>
