@@ -242,6 +242,12 @@ static int _restaurar_arquivo(Entry *entry) {
         printf("Erro: Falha ao ler objeto com hash %s\n", hashStr);
         return 1;
     }
+
+    // Pula o header do objeto
+    unsigned char *conteudo = _pular_header(buffer);
+    
+    // Calcula o tamanho real do conteúdo (sem header)
+    size_t tamanhoConteudo = tamanho - (conteudo - buffer);
 }
 
 
