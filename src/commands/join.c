@@ -264,6 +264,15 @@ static int _restaurar_arquivo(Entry *entry) {
     // Extrai o nome do arquivo
     char *nome_arquivo = ultima_barra != NULL ? ultima_barra + 1 : entry->path;
 
+    // Salva o arquivo
+    if (salva_arquivo_no_diretorio(diretorio, nome_arquivo, conteudo, tamanhoConteudo)) {
+        printf("Erro: Falha ao salvar arquivo %s\n", entry->path);
+        free(buffer);
+        return 1;
+    }
+
+    free(buffer);
+    return 0;
 }
 
 
