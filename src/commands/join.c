@@ -248,6 +248,18 @@ static int _restaurar_arquivo(Entry *entry) {
     
     // Calcula o tamanho real do conteúdo (sem header)
     size_t tamanhoConteudo = tamanho - (conteudo - buffer);
+
+    // Extrai o diretório do path
+    char diretorio[1024];
+    char *ultima_barra = strrchr(entry->path, '/');
+    
+    if (ultima_barra != NULL) {
+        int tamanho_dir = ultima_barra - entry->path;
+        strncpy(diretorio, entry->path, tamanho_dir);
+        diretorio[tamanho_dir] = '\0';
+    } else {
+        strcpy(diretorio, ".");
+    }
 }
 
 
