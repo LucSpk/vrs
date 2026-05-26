@@ -631,6 +631,7 @@ static int _command_join(char *destino) {
 
     for(int i = 0; i < tamanhoAtualRemover; i++) {
         printf("REMOVENDO: %s %s %s\n", remover[i].modo, remover[i].hash, remover[i].path);
+        remove(remover[i].path);
     }
 
     for(int i = 0; i < tamanhoAtualAceitar; i++) {
