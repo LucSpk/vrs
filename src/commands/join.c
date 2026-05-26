@@ -229,7 +229,19 @@ static int _addEntry(Entry **array, int *tamanhoAtual, int *capacidade, Entry no
 }
 
 static int _restaurar_arquivo(Entry *entry) {
+    // Converte hash binário para string hex
+    char hashStr[65];
+    for (int i = 0; i < 32; i++) {
+        snprintf(hashStr + i * 2, 3, "%02x", entry->hash[i]);
+    }
 
+    // Lê o objeto do repositório
+    long tamanho = 0;
+    unsigned char *buffer = _ler_objeto(hashStr, &tamanho);
+    if (!buffer) {
+        printf("Erro: Falha ao ler objeto com hash %s\n", hashStr);
+        return 1;
+    }
 }
 
 
