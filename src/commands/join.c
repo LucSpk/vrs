@@ -286,7 +286,7 @@ static int _command_join(char *destino) {
         printf("Erro: Branch destino não existe.\n");
         return 1;
     }
-    printf("Erro: Branch destino existe.\n");
+    printf("Branch destino existe.\n");
 
     // 2. Pega o hash do ultimo commit da branch destino
     FILE *branchDestino = fopen(path, "r");
