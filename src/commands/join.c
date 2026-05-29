@@ -4,7 +4,9 @@
 
 #include "../../includes/core/io.h"
 #include "../../includes/core/utils.h"
+#include "../../includes/core/zipper.h"
 #include "../../includes/types/entry.h"
+#include "../../includes/types/zipper_file.h"
 
 static unsigned char *_ler_objeto(char *hash, long *tamanho) {
 
@@ -246,10 +248,22 @@ static int _restaurar_arquivo(Entry *entry) {
     }
 
     // Pula o header do objeto
-    unsigned char *conteudo = _pular_header(buffer);
+    unsigned char *conteudoComprimido = _pular_header(buffer);
     
-    // Calcula o tamanho real do conteúdo (sem header)
-    size_t tamanhoConteudo = tamanho - (conteudo - buffer);
+    // Calcula o tamanho real do conteúdo comprimido (sem header)
+    size_t tamanhoConteudoComprimido = tamanho - (conteudoComprimido - buffer);
+
+    // Descompacta o conteúdo
+    ZipperFile arquivoZip;
+    arquivoZip.conteudoComprimido = (char *)conteudoComprimido;
+    arquivoZip.tamanhoComprimido = tamanhoConteudoComprimido;
+
+    char *conteudoDescompactado = descompacta_arquivos(arquivoZip);
+    if (!conteudoDescompactado) {
+        printf("Erro: Falha ao descompactar conteúdo do arquivo %s\n", entry->path);
+        free(buffer);
+        return 1;
+    }
 
     // Extrai o diretório do path
     char diretorio[1024];
@@ -266,14 +280,19 @@ static int _restaurar_arquivo(Entry *entry) {
     // Extrai o nome do arquivo
     char *nome_arquivo = ultima_barra != NULL ? ultima_barra + 1 : entry->path;
 
+    // Calcula o tamanho do conteúdo descompactado
+    size_t tamanhoConteudoDescompactado = strlen(conteudoDescompactado);
+
     // Salva o arquivo
-    if (salva_arquivo_no_diretorio(diretorio, nome_arquivo, conteudo, tamanhoConteudo)) {
+    if (salva_arquivo_no_diretorio(diretorio, nome_arquivo, (unsigned char *)conteudoDescompactado, tamanhoConteudoDescompactado)) {
         printf("Erro: Falha ao salvar arquivo %s\n", entry->path);
         free(buffer);
+        free(conteudoDescompactado);
         return 1;
     }
 
     free(buffer);
+    free(conteudoDescompactado);
     return 0;
 }
 
