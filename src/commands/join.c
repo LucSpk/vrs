@@ -229,11 +229,13 @@ static int _addEntry(Entry **array, int *tamanhoAtual, int *capacidade, Entry no
 }
 
 static int _restaurar_arquivo(Entry *entry) {
+
     // Converte hash binário para string hex
     char hashStr[65];
     for (int i = 0; i < 32; i++) {
         snprintf(hashStr + i * 2, 3, "%02x", entry->hash[i]);
     }
+    printf("O Hash a ser restaurado: %s\n", hashStr);
 
     // Lê o objeto do repositório
     long tamanho = 0;
