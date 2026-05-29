@@ -259,7 +259,7 @@ static int _restaurar_arquivo(Entry *entry) {
     ZipperFile arquivoZip;
     arquivoZip.conteudoComprimido = (char *)conteudoComprimido;
     arquivoZip.tamanhoComprimido = tamanhoConteudoComprimido;
-
+    printf("\nTeste.\n");
     char *conteudoDescompactado = descompacta_arquivos(arquivoZip);
     if (!conteudoDescompactado) {
         printf("Erro: Falha ao descompactar conteúdo do arquivo %s\n", entry->path);
