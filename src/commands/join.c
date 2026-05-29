@@ -714,7 +714,7 @@ static int _command_join(char *destino) {
     }
 
     for(int i = 0; i < tamanhoAtualConflitos; i++) {
-        printf("ADICIONAR: %s %s %s\n", conflitos[i].modo, conflitos[i].hash, conflitos[i].path);
+        printf("CONFLITOS: %s %s %s\n", conflitos[i].modo, conflitos[i].hash, conflitos[i].path);
     }
 
     // 8. Criar novo commit merge
