@@ -8,6 +8,9 @@
 #include "../../includes/types/entry.h"
 #include "../../includes/types/zipper_file.h"
 
+#include "../../includes/commands/track.h"
+#include "../../includes/commands/save.h"
+
 static unsigned char *_ler_objeto(char *hash, long *tamanho) {
 
     char caminho[128];
@@ -237,7 +240,6 @@ static int _restaurar_arquivo(Entry *entry) {
     for (int i = 0; i < 32; i++) {
         snprintf(hashStr + i * 2, 3, "%02x", entry->hash[i]);
     }
-    printf("O Hash a ser restaurado: %s\n", hashStr);
 
     // Lê o objeto do repositório
     long tamanho = 0;
@@ -706,12 +708,16 @@ static int _command_join(char *destino) {
     for(int i = 0; i < tamanhoAtualAceitar; i++) {
         printf("ACEITAR: %s %s %s\n", aceitar[i].modo, aceitar[i].hash, aceitar[i].path);
         _restaurar_arquivo(&aceitar[i]);
+        command_track_path(aceitar[i].path);
     }
 
     for(int i = 0; i < tamanhoAtualAdicionar; i++) {
         printf("ADICIONAR: %s %s %s\n", adicionar[i].modo, adicionar[i].hash, adicionar[i].path);
         _restaurar_arquivo(&adicionar[i]);
+        command_track_path(aceitar[i].path);
     }
+
+    printf("Faz o save.\n");
 
     for(int i = 0; i < tamanhoAtualConflitos; i++) {
         printf("CONFLITOS: %s %s %s\n", conflitos[i].modo, conflitos[i].hash, conflitos[i].path);
