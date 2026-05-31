@@ -233,7 +233,7 @@ static int _addEntry(Entry **array, int *tamanhoAtual, int *capacidade, Entry no
     return 0;
 }
 
-static int _addEntryConflito(Entry **array, int *tamanhoAtual, int *capacidade, Entry nova) {
+static int _addEntryConflito(EntrysConflito **array, int *tamanhoAtual, int *capacidade, Entry novaA, Entry novaB) {
     if (*tamanhoAtual >= *capacidade) {
         int novaCapacidade = (*capacidade == 0) ? 1 : (*capacidade * 2);
 
@@ -247,7 +247,8 @@ static int _addEntryConflito(Entry **array, int *tamanhoAtual, int *capacidade, 
         *capacidade = novaCapacidade;
     }
 
-    (*array)[*tamanhoAtual] = nova;
+    (*array)[*tamanhoAtual].entryA = novaA;
+    (*array)[*tamanhoAtual].entryB = novaB;
     (*tamanhoAtual)++;
     return 0;
 }
@@ -611,7 +612,7 @@ static int _command_join(char *destino) {
             }
 
             printf("ALTERADO DIFERENTE em A e em B, Conflito: %s\n", entriesBase[i].path);
-            if(_addEntry(&conflitos, &tamanhoAtualConflitos, &tamanhoConflitos, *entryA)) {
+            if(_addEntryConflito(&conflitos, &tamanhoAtualConflitos, &tamanhoConflitos, *entryA, *entryB)) {
                 printf("Erro ao adicionar entry na lista de aceitar.\n");
                 resultado = 1;
                 goto cleanup;
