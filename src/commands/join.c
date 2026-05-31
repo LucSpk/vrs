@@ -632,7 +632,8 @@ static int _command_join(char *destino) {
             }
 
             printf("DELETADO em B e ALTERADO em A - Conflito: %s\n", entriesBase[i].path);
-            if(_addEntry(&conflitos, &tamanhoAtualConflitos, &tamanhoConflitos, *entryA)) {
+            Entry *entryDeletado = &(Entry){.modo = "",  .path = "", .hash = ""};
+            if(_addEntryConflito(&conflitos, &tamanhoAtualConflitos, &tamanhoConflitos, *entryA, *entryDeletado)) {
                 printf("Erro ao adicionar entry na lista de aceitar.\n");
                 resultado = 1;
                 goto cleanup;
@@ -652,7 +653,8 @@ static int _command_join(char *destino) {
             }
 
             printf("DELETADO em A e ALTERADO em B - Conflito: %s\n", entriesBase[i].path);
-            if(_addEntry(&conflitos, &tamanhoAtualConflitos, &tamanhoConflitos, *entryB)) {
+            Entry *entryDeletado = &(Entry){.modo = "",  .path = "", .hash = ""};
+            if(_addEntryConflito(&conflitos, &tamanhoAtualConflitos, &tamanhoConflitos, *entryDeletado, *entryB)) {
                 printf("Erro ao adicionar entry na lista de aceitar.\n");
                 resultado = 1;
                 goto cleanup;
@@ -696,7 +698,7 @@ static int _command_join(char *destino) {
         }
 
         printf("CRIADO DIFERENTE, conflito: %s\n", entriesA[i].path);
-        if(_addEntry(&conflitos, &tamanhoAtualConflitos, &tamanhoConflitos, entriesA[i])) {
+        if(_addEntryConflito(&conflitos, &tamanhoAtualConflitos, &tamanhoConflitos, entriesA[i], *entryB)) {
             printf("Erro ao adicionar entry na lista de aceitar.\n");
             resultado = 1;
             goto cleanup;
@@ -738,9 +740,12 @@ static int _command_join(char *destino) {
     }
 
     printf("Faz o save.\n");
+    // - TODO: Faz o commit do merge
 
     for(int i = 0; i < tamanhoAtualConflitos; i++) {
-        printf("CONFLITOS: %s %s %s\n", conflitos[i].modo, conflitos[i].hash, conflitos[i].path);
+        printf("CONFLITOS, Arquivo A: %s %s %s\n", conflitos[i].entryA.modo, conflitos[i].entryA.hash, conflitos[i].entryA.path);
+        printf("CONFLITOS, Arquivo B: %s %s %s\n", conflitos[i].entryB.modo, conflitos[i].entryB.hash, conflitos[i].entryB.path);
+        // - TODO: Restaura arquivos e prepara para resolver conflitos
     }
 
     // 8. Criar novo commit merge
