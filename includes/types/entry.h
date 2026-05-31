@@ -7,4 +7,10 @@ typedef struct {
     unsigned char hash[32];
 } Entry;
 
+typedef struct {
+    Entry entryA;
+    Entry entryB;
+} EntrysConflito;
+
+
 #endif
