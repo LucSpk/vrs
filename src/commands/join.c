@@ -233,6 +233,25 @@ static int _addEntry(Entry **array, int *tamanhoAtual, int *capacidade, Entry no
     return 0;
 }
 
+static int _addEntryConflito(Entry **array, int *tamanhoAtual, int *capacidade, Entry nova) {
+    if (*tamanhoAtual >= *capacidade) {
+        int novaCapacidade = (*capacidade == 0) ? 1 : (*capacidade * 2);
+
+        EntrysConflito *temp = realloc(*array, novaCapacidade * sizeof(EntrysConflito));
+        if (!temp) {
+            printf("Erro no realloc de aceitar.\n");
+            return 1;
+        }
+
+        *array = temp;
+        *capacidade = novaCapacidade;
+    }
+
+    (*array)[*tamanhoAtual] = nova;
+    (*tamanhoAtual)++;
+    return 0;
+}
+
 static int _restaurar_arquivo(Entry *entry) {
 
     // Converte hash binário para string hex
@@ -529,7 +548,7 @@ static int _command_join(char *destino) {
 
     int tamanhoConflitos = 10;
     int tamanhoAtualConflitos = 0;
-    Entry *conflitos = malloc(sizeof(Entry) * tamanhoConflitos);
+    EntrysConflito *conflitos = malloc(sizeof(EntrysConflito) * tamanhoConflitos);
     if (!conflitos) {
         printf("Erro malloc conflitos\n");free(bufferCommitA);
         free(bufferCommitB);
