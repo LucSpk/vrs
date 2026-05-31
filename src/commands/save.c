@@ -268,6 +268,14 @@ static int _command_save(char *mensagem) {
     fclose(fileIndex);
 }
 
+static int _command_save_merge(char *mensagem) {
+    return 0;
+}
+
 int command_save(char *mensagem) {
     return _command_save(mensagem);
+}
+
+int command_save_merge(char *mensagem) {
+    return _command_save_merge(mensagem);
 }
