@@ -6,6 +6,8 @@
 #include "../../includes/core/utils.h"
 #include "../../includes/core/io.h"
 
+#include "../../includes/commands/change.h"
+
 static void _move_memoria(unsigned char *target, unsigned char *source, size_t *offset, size_t length) {
     // O memcpy move um bloco de memorioa de um lugar para o outro
     // Sintaxe: void *memcpy(void *dest, const void *src, size_t n);
@@ -347,7 +349,7 @@ static int _command_save_merge(char *parentHashA, char *parentHashB, char *branc
 
     fprintf(refFileWrite, "%s", commitHash);
 
-    // Atualizar HEAD
+    command_change(branchA);
     
     return 0;
 }
