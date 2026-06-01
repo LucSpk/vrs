@@ -322,12 +322,14 @@ static int _command_save_merge(char *parentHashA, char *parentHashB, char *branc
     char *commit = malloc(tamanhoHeaderCommit);
 
     _cria_objeto(commit, "commit ", 7, tamanhoCommitStr, lenTamanhoCommit, commitContent, lenCommit);
-    
+
     char *commitHash;
         commitHash = cria_hash_de_arquivo_com_tamanho(
         (unsigned char *)commit,
         tamanhoHeaderCommit
     );
+
+    _salva_objeto(commitHash, commit, tamanhoHeaderCommit);
     
     return 0;
 }
