@@ -268,7 +268,17 @@ static int _command_save(char *mensagem) {
     fclose(fileIndex);
 }
 
-static int _command_save_merge(char *mensagem) {
+static int _command_save_merge(char *parentHashA, char *parentHashB, char *branchA, char *branchB) {
+    int err = 0;
+    
+    // 1. Lê arquivo index
+    FILE *fileIndex = fopen("./.vsr/index", "r");
+    if(fileIndex == NULL) {
+        printf("Erro: Algo deu errado para ao abrir o arquivo index.");
+        return 1;
+    }
+
+    
     return 0;
 }
 
@@ -276,6 +286,6 @@ int command_save(char *mensagem) {
     return _command_save(mensagem);
 }
 
-int command_save_merge(char *mensagem) {
-    return _command_save_merge(mensagem);
+int command_save_merge(char *parentHashA, char *parentHashB, char *branchA, char *branchB) {
+    return _command_save_merge(parentHashA, parentHashB, branchA, branchB);
 }
