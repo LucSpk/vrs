@@ -331,6 +331,24 @@ static int _command_save_merge(char *parentHashA, char *parentHashB, char *branc
 
     _salva_objeto(commitHash, commit, tamanhoHeaderCommit);
     
+    char completeRefPath[256];
+    snprintf(
+        completeRefPath,
+        sizeof(completeRefPath),
+        "./.vsr/heads/%s",
+        branchA
+    );
+
+    FILE *refFileWrite = fopen(completeRefPath, "w");
+    if (refFileWrite == NULL) {
+        printf("Erro ao abrir HEAD\n");
+        return 1;
+    }
+
+    fprintf(refFileWrite, "%s", commitHash);
+
+    // Atualizar HEAD
+    
     return 0;
 }
 
