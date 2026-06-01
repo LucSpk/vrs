@@ -290,12 +290,12 @@ static int _command_save_merge(char *parentHashA, char *parentHashB, char *branc
     size_t treeSize = 5 + sizeOfTamanhoContent + 1 + tamanhoContent;
     
     unsigned char *tree = malloc(treeSize);
-
     size_t offsetTree = _cria_objeto(tree, "tree ", 5, tamanhoContentStr, sizeOfTamanhoContent, content, tamanhoContent);
-
     size_t finalTreeSize = offsetTree;
 
-
+    char *treeHash;
+    treeHash = cria_hash_de_arquivo_com_tamanho(tree, finalTreeSize);
+    _salva_objeto(treeHash, tree, treeSize);
     
     return 0;
 }
