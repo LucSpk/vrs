@@ -6,6 +6,8 @@
 #include "../../includes/core/utils.h"
 #include "../../includes/core/io.h"
 
+#include "../../includes/commands/change.h"
+
 static void _move_memoria(unsigned char *target, unsigned char *source, size_t *offset, size_t length) {
     // O memcpy move um bloco de memorioa de um lugar para o outro
     // Sintaxe: void *memcpy(void *dest, const void *src, size_t n);
@@ -268,6 +270,94 @@ static int _command_save(char *mensagem) {
     fclose(fileIndex);
 }
 
+static int _command_save_merge(char *parentHashA, char *parentHashB, char *branchA, char *branchB) {
+    int err = 0;
+    
+    // 1. Lê arquivo index
+    FILE *fileIndex = fopen("./.vsr/index", "r");
+    if(fileIndex == NULL) {
+        printf("Erro: Algo deu errado para ao abrir o arquivo index.");
+        return 1;
+    }
+
+    size_t tamanhoContent = 0;
+    unsigned char *content = NULL;
+
+    _prepara_tree(fileIndex, &content, &tamanhoContent);
+
+    char tamanhoContentStr[20];
+    sprintf(tamanhoContentStr, "%zu", tamanhoContent);
+
+    size_t sizeOfTamanhoContent = contar_digitos(tamanhoContent);
+    size_t treeSize = 5 + sizeOfTamanhoContent + 1 + tamanhoContent;
+    
+    unsigned char *tree = malloc(treeSize);
+    size_t offsetTree = _cria_objeto(tree, "tree ", 5, tamanhoContentStr, sizeOfTamanhoContent, content, tamanhoContent);
+    size_t finalTreeSize = offsetTree;
+
+    char *treeHash;
+    treeHash = cria_hash_de_arquivo_com_tamanho(tree, finalTreeSize);
+    _salva_objeto(treeHash, tree, treeSize);
+
+    time_t timeStamp = time(NULL);
+    char mensagem[1024];
+    sprintf(mensagem, "Join branch: %s, na branch: %s", branchB, branchA);
+
+    char commitContent[4096];
+    sprintf(
+        commitContent, 
+        "tree %s\nparent %s\nparent %s\nauthor %s\ndate %ld\n\n%s",
+        treeHash,
+        parentHashA,
+        parentHashB,
+        "", // TODO: Implementar melhoria para considerar o author
+        timeStamp,
+        mensagem
+    );
+
+    size_t lenCommit = strlen(commitContent);
+    char tamanhoCommitStr[32];
+    sprintf(tamanhoCommitStr, "%lu", lenCommit);
+
+    size_t lenTamanhoCommit = strlen(tamanhoCommitStr);
+    size_t tamanhoHeaderCommit = 7 + lenTamanhoCommit + 1 + lenCommit;
+    char *commit = malloc(tamanhoHeaderCommit);
+
+    _cria_objeto(commit, "commit ", 7, tamanhoCommitStr, lenTamanhoCommit, commitContent, lenCommit);
+
+    char *commitHash;
+        commitHash = cria_hash_de_arquivo_com_tamanho(
+        (unsigned char *)commit,
+        tamanhoHeaderCommit
+    );
+
+    _salva_objeto(commitHash, commit, tamanhoHeaderCommit);
+    
+    char completeRefPath[256];
+    snprintf(
+        completeRefPath,
+        sizeof(completeRefPath),
+        "./.vsr/heads/%s",
+        branchA
+    );
+
+    FILE *refFileWrite = fopen(completeRefPath, "w");
+    if (refFileWrite == NULL) {
+        printf("Erro ao abrir HEAD\n");
+        return 1;
+    }
+
+    fprintf(refFileWrite, "%s", commitHash);
+
+    command_change(branchA);
+    
+    return 0;
+}
+
 int command_save(char *mensagem) {
     return _command_save(mensagem);
+}
+
+int command_save_merge(char *parentHashA, char *parentHashB, char *branchA, char *branchB) {
+    return _command_save_merge(parentHashA, parentHashB, branchA, branchB);
 }

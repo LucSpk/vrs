@@ -5,8 +5,9 @@
 
 static int _command_change(char branchName[]) {
     // 1. Verifica se branch existe na ref
-    char path[] = "./.vsr/refs/heads/";
-    strcat(path, branchName);
+    char path[256];  // ✅ Buffer maior
+    snprintf(path, sizeof(path), "./.vsr/refs/heads/%s", branchName);  // ✅ Seguro
+    
 
     int err = 0;
     err = verifica(path);

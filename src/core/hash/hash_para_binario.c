@@ -4,24 +4,19 @@
 #include "../../../includes/core/utils.h"
 
 static char *_converte_hash_para_binario(char *hash) {
-    char *result = malloc((strlen(hash) * 8) + 1);
+    unsigned char *result = malloc(32);  // SHA256 = 32 bytes
+    if (!result) return NULL;
     
-    char output[sizeof(char *) + 1];
-    int count = 0;
-    while(*hash) {
-        char_to_bin((unsigned char)*hash, output);
-        result[count + 0] = output[0];
-        result[count + 1] = output[1];
-        result[count + 2] = output[2];
-        result[count + 3] = output[3];
-        result[count + 4] = output[4];
-        result[count + 5] = output[5];
-        result[count + 6] = output[6];
-        result[count + 7] = output[7];
-        count += 8;
-        ++hash;
+    // Processa 2 caracteres hex de cada vez
+    for (int i = 0; i < 32; i++) {
+        char hexPair[3];
+        hexPair[0] = hash[i * 2];      // '6'
+        hexPair[1] = hash[i * 2 + 1];  // 'a'
+        hexPair[2] = '\0';
+        
+        result[i] = (unsigned char)strtol(hexPair, NULL, 16);  // 0x6a
     }
-
+    
     return result;
 }
 

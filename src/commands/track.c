@@ -31,8 +31,8 @@ static char *_criar_hash(Arquivo arquivo) {
 
 static int _arquivo_traqueado(char *hash, char *caminho) {
     int err = verifica_diretorio(caminho);
-    if(err < 0) {
-        printf("Erro: Diretorio não existe.\n");
+    if(err != 0) {
+        // Diretório não existe, portanto o arquivo não foi rastreado
         return 1;
     }
 
