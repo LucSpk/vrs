@@ -312,6 +312,10 @@ static int _command_save_merge(char *parentHashA, char *parentHashB, char *branc
         timeStamp,
         mensagem
     );
+
+    size_t lenCommit = strlen(commitContent);
+    char tamanhoCommitStr[32];
+    sprintf(tamanhoCommitStr, "%lu", lenCommit);
     
     return 0;
 }
