@@ -316,6 +316,10 @@ static int _command_save_merge(char *parentHashA, char *parentHashB, char *branc
     size_t lenCommit = strlen(commitContent);
     char tamanhoCommitStr[32];
     sprintf(tamanhoCommitStr, "%lu", lenCommit);
+
+    size_t lenTamanhoCommit = strlen(tamanhoCommitStr);
+    size_t tamanhoHeaderCommit = 7 + lenTamanhoCommit + 1 + lenCommit;
+    char *commit = malloc(tamanhoHeaderCommit);
     
     return 0;
 }
