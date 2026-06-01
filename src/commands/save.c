@@ -278,6 +278,12 @@ static int _command_save_merge(char *parentHashA, char *parentHashB, char *branc
         return 1;
     }
 
+    size_t tamanhoContent = 0;
+    unsigned char *content = NULL;
+
+    _prepara_tree(fileIndex, &content, &tamanhoContent);
+
+
     
     return 0;
 }
