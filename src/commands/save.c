@@ -320,6 +320,14 @@ static int _command_save_merge(char *parentHashA, char *parentHashB, char *branc
     size_t lenTamanhoCommit = strlen(tamanhoCommitStr);
     size_t tamanhoHeaderCommit = 7 + lenTamanhoCommit + 1 + lenCommit;
     char *commit = malloc(tamanhoHeaderCommit);
+
+    _cria_objeto(commit, "commit ", 7, tamanhoCommitStr, lenTamanhoCommit, commitContent, lenCommit);
+    
+    char *commitHash;
+        commitHash = cria_hash_de_arquivo_com_tamanho(
+        (unsigned char *)commit,
+        tamanhoHeaderCommit
+    );
     
     return 0;
 }
