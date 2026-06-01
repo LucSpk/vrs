@@ -298,6 +298,8 @@ static int _command_save_merge(char *parentHashA, char *parentHashB, char *branc
     _salva_objeto(treeHash, tree, treeSize);
 
     time_t timeStamp = time(NULL);
+    char mensagem[1024];
+    sprintf(mensagem, "Join branch: %s, na branch: %s", branchB, branchA);
 
     char commitContent[4096];
     sprintf(
