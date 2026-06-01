@@ -748,6 +748,7 @@ static int _command_join(char *destino) {
         // - TODO: Restaura arquivos e prepara para resolver conflitos
     }
 
+    // Passos a baixo feitos no arquivo save:
     // 8. Criar novo commit merge
     //        |  tree <nova_tree>
     //        |  parent <commit_main>
