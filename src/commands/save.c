@@ -283,6 +283,18 @@ static int _command_save_merge(char *parentHashA, char *parentHashB, char *branc
 
     _prepara_tree(fileIndex, &content, &tamanhoContent);
 
+    char tamanhoContentStr[20];
+    sprintf(tamanhoContentStr, "%zu", tamanhoContent);
+
+    size_t sizeOfTamanhoContent = contar_digitos(tamanhoContent);
+    size_t treeSize = 5 + sizeOfTamanhoContent + 1 + tamanhoContent;
+    
+    unsigned char *tree = malloc(treeSize);
+
+    size_t offsetTree = _cria_objeto(tree, "tree ", 5, tamanhoContentStr, sizeOfTamanhoContent, content, tamanhoContent);
+
+    size_t finalTreeSize = offsetTree;
+
 
     
     return 0;
