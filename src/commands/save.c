@@ -296,6 +296,20 @@ static int _command_save_merge(char *parentHashA, char *parentHashB, char *branc
     char *treeHash;
     treeHash = cria_hash_de_arquivo_com_tamanho(tree, finalTreeSize);
     _salva_objeto(treeHash, tree, treeSize);
+
+    time_t timeStamp = time(NULL);
+
+    char commitContent[4096];
+    sprintf(
+        commitContent, 
+        "tree %s\nparent %s\nparent %s\nauthor %s\ndate %ld\n\n%s",
+        treeHash,
+        parentHashA,
+        parentHashB,
+        "", // TODO: Implementar melhoria para considerar o author
+        timeStamp,
+        mensagem
+    );
     
     return 0;
 }
