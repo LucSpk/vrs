@@ -746,6 +746,20 @@ static int _command_join(char *destino) {
         printf("CONFLITOS, Arquivo A: %s %s %s\n", conflitos[i].entryA.modo, conflitos[i].entryA.hash, conflitos[i].entryA.path);
         printf("CONFLITOS, Arquivo B: %s %s %s\n", conflitos[i].entryB.modo, conflitos[i].entryB.hash, conflitos[i].entryB.path);
         // - TODO: Restaura arquivos e prepara para resolver conflitos
+
+        if(strcmp(conflitos[i].entryA.hash, "") != 0 && strcmp(conflitos[i].entryB.hash, "") != 0) {
+            // - monta arquivo novo com as diferenças
+        }
+
+        if(strcmp(conflitos[i].entryA.hash, "") != 0) {
+            _restaurar_arquivo(&conflitos[i].entryA);
+            command_track_path(conflitos[i].entryA.path);
+        }
+
+        if(strcmp(conflitos[i].entryB.hash, "") != 0) {
+            _restaurar_arquivo(&conflitos[i].entryB);
+            command_track_path(conflitos[i].entryB.path);
+        }
     }
 
     // Passos a baixo feitos no arquivo save:
