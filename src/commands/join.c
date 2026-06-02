@@ -318,7 +318,7 @@ static int _restaurar_arquivo(Entry *entry) {
     return 0;
 }
 
-static int _restaurar_arquivo(Entry *entryA, Entry *entryB) {
+static int _restaurar_e_monta_arquivo_para_resolucao(Entry *entryA, Entry *entryB) {
     char hashStrA[65];
     for (int i = 0; i < 32; i++) {
         snprintf(hashStrA + i * 2, 3, "%02x", entryA->hash[i]);
@@ -791,9 +791,6 @@ static int _command_join(char *destino) {
         _restaurar_arquivo(&adicionar[i]);
         command_track_path(aceitar[i].path);
     }
-
-    printf("Faz o save.\n");
-    // - TODO: Faz o commit do merge
 
     for(int i = 0; i < tamanhoAtualConflitos; i++) {
         printf("CONFLITOS, Arquivo A: %s %s %s\n", conflitos[i].entryA.modo, conflitos[i].entryA.hash, conflitos[i].entryA.path);

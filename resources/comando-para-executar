@@ -13,6 +13,7 @@ clear && make clean && make && ./bin/vsr track ./teste/arquivo_de_teste.txt
 clear && make clean && make && ./bin/vsr compare 175911da2f33b045576100270d8999cc900f6d137c2843637799bb966490ac8b f735225e91fab82aa38d9b38063f2923bdd8c6a9eddf4e50ad7fe400f5982b77
 
 
+rm -rf .vsr
 clear && make clean && make && ./bin/vsr start
 echo "arquivo teste 01" > ./teste/arquivo-teste-join-01.txt
 ./bin/vsr track ./teste/arquivo-teste-join-01.txt
