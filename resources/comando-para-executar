@@ -29,3 +29,24 @@ echo "novo conteúdo aqui" > ./teste/arquivo-teste-join-01.txt
 rm ./teste/arquivo-teste-join-02.txt
 ./bin/vsr save "Salva Arquivos 02"
 ./bin/vsr join main
+
+rm -rf .vsr
+clear && make clean && make && ./bin/vsr start
+echo "arquivo teste 01 linha 1\nlinha 2" > ./teste/arquivo-teste-join-01.txt
+./bin/vsr track ./teste/arquivo-teste-join-01.txt
+echo "arquivo teste 02\n linha 2" > ./teste/arquivo-teste-join-02.txt
+./bin/vsr track ./teste/arquivo-teste-join-02.txt
+echo "arquivo teste 03\n linha 02" > ./teste/arquivo-teste-join-03.txt
+./bin/vsr track ./teste/arquivo-teste-join-03.txt
+./bin/vsr save "Salva Arquivos 01"
+./bin/vsr ramify branch-alternativa
+echo "conteúdo alterado NA BRANCH ALTERNATIVA\nlinha 2" > ./teste/arquivo-teste-join-01.txt
+echo "arquivo teste 04\nlinha 2" > ./teste/arquivo-teste-join-04.txt
+./bin/vsr track ./teste/arquivo-teste-join-01.txt
+./bin/vsr track ./teste/arquivo-teste-join-04.txt
+./bin/vsr save "Salva Arquivos 02 na branch"
+./bin/vsr change main
+echo "conteúdo DIFERENTE em MAIN\nlinha 2" > ./teste/arquivo-teste-join-01.txt
+./bin/vsr track ./teste/arquivo-teste-join-01.txt
+./bin/vsr save "Salva Arquivos 03 em main"
+./bin/vsr join branch-alternativa

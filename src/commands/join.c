@@ -318,6 +318,14 @@ static int _restaurar_arquivo(Entry *entry) {
     return 0;
 }
 
+static int _comparar_linhas(const char *conteudoA, const char *conteudoB) {
+    printf("Arquivo A: %s\n", conteudoA);
+    printf("\n\n\n\n\n\n\n");
+    printf("Arquivo B: %s\n", conteudoB);
+    printf("Chegou aqui.\n");
+    return 0;
+}
+
 static int _restaurar_e_monta_arquivo_para_resolucao(Entry *entryA, Entry *entryB) {
     char hashStrA[65];
     for (int i = 0; i < 32; i++) {
@@ -370,6 +378,8 @@ static int _restaurar_e_monta_arquivo_para_resolucao(Entry *entryA, Entry *entry
         free(bufferB);
         return 1;
     }
+
+    _comparar_linhas(conteudoDescompactadoA, conteudoDescompactadoB);
 }
 
 static int _command_join(char *destino) {
@@ -798,27 +808,21 @@ static int _command_join(char *destino) {
         // - TODO: Restaura arquivos e prepara para resolver conflitos
 
         if(strcmp(conflitos[i].entryA.hash, "") != 0 && strcmp(conflitos[i].entryB.hash, "") != 0) {
-            // - monta arquivo novo com as diferenças
+            _restaurar_e_monta_arquivo_para_resolucao(&conflitos[i].entryA, &conflitos[i].entryB);
         }
 
-        if(strcmp(conflitos[i].entryA.hash, "") != 0) {
-            _restaurar_arquivo(&conflitos[i].entryA);
-            command_track_path(conflitos[i].entryA.path);
-        }
+        // if(strcmp(conflitos[i].entryA.hash, "") != 0) {
+        //     printf("Modificado em A e apagado em B.\n");
+        //     _restaurar_arquivo(&conflitos[i].entryA);
+        //     command_track_path(conflitos[i].entryA.path);
+        // }
 
-        if(strcmp(conflitos[i].entryB.hash, "") != 0) {
-            _restaurar_arquivo(&conflitos[i].entryB);
-            command_track_path(conflitos[i].entryB.path);
-        }
+        // if(strcmp(conflitos[i].entryB.hash, "") != 0) {
+        //     printf("Modificado em B e apagado em A.\n");
+        //     _restaurar_arquivo(&conflitos[i].entryB);
+        //     command_track_path(conflitos[i].entryB.path);
+        // }
     }
-
-    // Passos a baixo feitos no arquivo save:
-    // 8. Criar novo commit merge
-    //        |  tree <nova_tree>
-    //        |  parent <commit_main>
-    //        |  parent <commit_branch>
-    //      merge commit possui 2 parents
-    // 9. Atualizar main
 
 cleanup:
 
