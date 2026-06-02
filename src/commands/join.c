@@ -279,7 +279,7 @@ static int _restaurar_arquivo(Entry *entry) {
     ZipperFile arquivoZip;
     arquivoZip.conteudoComprimido = (char *)conteudoComprimido;
     arquivoZip.tamanhoComprimido = tamanhoConteudoComprimido;
-    printf("\nTeste.\n");
+
     char *conteudoDescompactado = descompacta_arquivos(arquivoZip);
     if (!conteudoDescompactado) {
         printf("Erro: Falha ao descompactar conteúdo do arquivo %s\n", entry->path);
@@ -318,6 +318,59 @@ static int _restaurar_arquivo(Entry *entry) {
     return 0;
 }
 
+static int _restaurar_arquivo(Entry *entryA, Entry *entryB) {
+    char hashStrA[65];
+    for (int i = 0; i < 32; i++) {
+        snprintf(hashStrA + i * 2, 3, "%02x", entryA->hash[i]);
+    }
+
+    char hashStrB[65];
+    for (int i = 0; i < 32; i++) {
+        snprintf(hashStrB + i * 2, 3, "%02x", entryB->hash[i]);
+    }
+    
+    long tamanhoA = 0;
+    unsigned char *bufferA = _ler_objeto(hashStrA, &tamanhoA);
+    if (!bufferA) {
+        printf("Erro: Falha ao ler objeto com hash %s\n", hashStrA);
+        return 1;
+    }
+    
+    long tamanhoB = 0;
+    unsigned char *bufferB = _ler_objeto(hashStrB, &tamanhoB);
+    if (!bufferB) {
+        printf("Erro: Falha ao ler objeto com hash %s\n", hashStrB);
+        return 1;
+    }
+
+    unsigned char *conteudoComprimidoA = _pular_header(bufferA);
+    unsigned char *conteudoComprimidoB = _pular_header(bufferB);
+    
+    size_t tamanhoConteudoComprimidoA = tamanhoA - (conteudoComprimidoA - bufferA);
+    size_t tamanhoConteudoComprimidoB = tamanhoB - (conteudoComprimidoB - bufferB);
+
+    ZipperFile arquivoZipA;
+    arquivoZipA.conteudoComprimido = (char *)conteudoComprimidoA;
+    arquivoZipA.tamanhoComprimido = tamanhoConteudoComprimidoA;
+
+    ZipperFile arquivoZipB;
+    arquivoZipB.conteudoComprimido = (char *)conteudoComprimidoB;
+    arquivoZipB.tamanhoComprimido = tamanhoConteudoComprimidoB;
+
+    char *conteudoDescompactadoA = descompacta_arquivos(arquivoZipA);
+    if (!conteudoDescompactadoA) {
+        printf("Erro: Falha ao descompactar conteúdo do arquivo: %s\n", entryA->path);
+        free(bufferA);
+        return 1;
+    }
+
+    char *conteudoDescompactadoB = descompacta_arquivos(arquivoZipB);
+    if (!conteudoDescompactadoB) {
+        printf("Erro: Falha ao descompactar conteúdo do arquivo: %s\n", entryB->path);
+        free(bufferB);
+        return 1;
+    }
+}
 
 static int _command_join(char *destino) {
     // 1. Verifica se a branch destino existe
