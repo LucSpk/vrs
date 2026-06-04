@@ -322,11 +322,11 @@ static int _comparar_linhas(const char *conteudoA, const char *conteudoB, const 
     const char *ptrA = conteudoA;
     const char *ptrB = conteudoB;
 
-    char *cabecalhoConflito;
+    char cabecalhoConflito[256];
     sprintf(cabecalhoConflito, ">>>>>>> HEAD (%s) - %s\n", branchAtual, hashCommitAtual);
     size_t tamanhoCabecalhoConflito = strlen(cabecalhoConflito);
     
-    char *rodapeConflito;
+    char rodapeConflito[256];
     sprintf(rodapeConflito, "<<<<<<< %s - %s\n", branchDestino, hashCommitDestino);
     size_t tamanhoRodapeConflito = strlen(rodapeConflito);
 
@@ -336,7 +336,7 @@ static int _comparar_linhas(const char *conteudoA, const char *conteudoB, const 
     int linha = 1;
     int tamanhoConteudoResultante = 512;
     int tamanhoAtualConteudoResultante = 0;
-    char *conteudoResultante = malloc(sizeof(char *) * tamanhoConteudoResultante);
+    char *conteudoResultante = malloc(sizeof(char) * tamanhoConteudoResultante);
     while (*ptrA || *ptrB) {
 
         const char *fimLinhaA = strchr(ptrA, '\n');
@@ -346,11 +346,11 @@ static int _comparar_linhas(const char *conteudoA, const char *conteudoB, const 
         size_t tamB = fimLinhaB ? (size_t)(fimLinhaB - ptrB) : strlen(ptrB);
         
         if (tamA != tamB || strncmp(ptrA, ptrB, tamA) != 0) {
-            char *linhaA;
+            char linhaA[512];
             sprintf(linhaA, "%.*s\n", (int)tamA, ptrA);
             size_t lenLinhaA = strlen(linhaA);
 
-            char *linhaB;
+            char linhaB[512];
             sprintf(linhaB, "%.*s\n", (int)tamB, ptrB);
             size_t lenLinhaB = strlen(linhaB);
 
@@ -358,7 +358,7 @@ static int _comparar_linhas(const char *conteudoA, const char *conteudoB, const 
 
             if(tamanhoAtualConteudoResultante + (lenAPlusB + tamanhoConflitoSession) >= tamanhoConteudoResultante) {
                 tamanhoConteudoResultante = (tamanhoConteudoResultante * 2) + (lenAPlusB + tamanhoConflitoSession);
-                char *temp = realloc(conteudoResultante, sizeof(char *) * tamanhoConteudoResultante);
+                char *temp = realloc(conteudoResultante, sizeof(char) * tamanhoConteudoResultante);
                 if(temp == NULL) {
                     free(conteudoResultante);
                     return 0;
@@ -378,12 +378,12 @@ static int _comparar_linhas(const char *conteudoA, const char *conteudoB, const 
             printf("A: %.*s\n", (int)tamA, ptrA);
             printf("B: %.*s\n", (int)tamB, ptrB);
         } else {
-            char *linhaA;
+            char linhaA[512];
             sprintf(linhaA, "%.*s\n", (int)tamA, ptrA);
             size_t lenLinhaA = strlen(linhaA);
             if((tamanhoAtualConteudoResultante + lenLinhaA) >= tamanhoConteudoResultante) {
                 tamanhoConteudoResultante = (tamanhoConteudoResultante * 2) + lenLinhaA;
-                char *temp = realloc(conteudoResultante, sizeof(char *) * tamanhoConteudoResultante);
+                char *temp = realloc(conteudoResultante, sizeof(char) * tamanhoConteudoResultante);
                 if(temp == NULL) {
                     free(conteudoResultante);
                     return 0;
