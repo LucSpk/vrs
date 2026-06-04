@@ -279,7 +279,7 @@ static int _restaurar_arquivo(Entry *entry) {
     ZipperFile arquivoZip;
     arquivoZip.conteudoComprimido = (char *)conteudoComprimido;
     arquivoZip.tamanhoComprimido = tamanhoConteudoComprimido;
-    printf("\nTeste.\n");
+
     char *conteudoDescompactado = descompacta_arquivos(arquivoZip);
     if (!conteudoDescompactado) {
         printf("Erro: Falha ao descompactar conteúdo do arquivo %s\n", entry->path);
@@ -318,6 +318,190 @@ static int _restaurar_arquivo(Entry *entry) {
     return 0;
 }
 
+static int _comparar_linhas(
+        const char *conteudoA, 
+        const char *conteudoB, 
+        const char *branchAtual, 
+        const char *hashCommitAtual, 
+        const char *branchDestino, 
+        const char *hashCommitDestino,
+        const char *diretorio, 
+        const char *nome_arquivo
+    ) {
+    
+    const char *ptrA = conteudoA;
+    const char *ptrB = conteudoB;
+
+    char cabecalhoConflito[256];
+    sprintf(cabecalhoConflito, ">>>>>>> HEAD (%s) - %s\n", branchAtual, hashCommitAtual);
+    size_t tamanhoCabecalhoConflito = strlen(cabecalhoConflito);
+    
+    char rodapeConflito[256];
+    sprintf(rodapeConflito, "<<<<<<< %s - %s\n", branchDestino, hashCommitDestino);
+    size_t tamanhoRodapeConflito = strlen(rodapeConflito);
+
+    char *divisor = "=======\n";
+    size_t tamanhoConflitoSession = 8 + tamanhoCabecalhoConflito + tamanhoRodapeConflito;
+
+    int linha = 1;
+    int tamanhoConteudoResultante = 512;
+    int tamanhoAtualConteudoResultante = 0;
+    char *conteudoResultante = calloc(tamanhoConteudoResultante, sizeof(char));
+    while (*ptrA || *ptrB) {
+
+        const char *fimLinhaA = strchr(ptrA, '\n');
+        const char *fimLinhaB = strchr(ptrB, '\n');
+
+        size_t tamA = fimLinhaA ? (size_t)(fimLinhaA - ptrA) : strlen(ptrA);
+        size_t tamB = fimLinhaB ? (size_t)(fimLinhaB - ptrB) : strlen(ptrB);
+        
+        if (tamA != tamB || strncmp(ptrA, ptrB, tamA) != 0) {
+            char linhaA[512];
+            sprintf(linhaA, "%.*s\n", (int)tamA, ptrA);
+            size_t lenLinhaA = strlen(linhaA);
+
+            char linhaB[512];
+            sprintf(linhaB, "%.*s\n", (int)tamB, ptrB);
+            size_t lenLinhaB = strlen(linhaB);
+
+            size_t lenAPlusB = lenLinhaA + lenLinhaB;
+
+            if(tamanhoAtualConteudoResultante + (lenAPlusB + tamanhoConflitoSession) >= tamanhoConteudoResultante) {
+                int tamanhoAnterior = tamanhoConteudoResultante;
+                tamanhoConteudoResultante = (tamanhoConteudoResultante * 2) + (lenAPlusB + tamanhoConflitoSession);
+                char *temp = realloc(conteudoResultante, sizeof(char) * tamanhoConteudoResultante);
+                if(temp == NULL) {
+                    free(conteudoResultante);
+                    return 0;
+                }
+                memset(temp + tamanhoAnterior, 0, tamanhoConteudoResultante - tamanhoAnterior);
+                conteudoResultante = temp;
+            }
+            strcat(conteudoResultante, cabecalhoConflito);
+            strcat(conteudoResultante, linhaA);
+            strcat(conteudoResultante, divisor);
+            strcat(conteudoResultante, linhaB);
+            strcat(conteudoResultante, rodapeConflito);
+            tamanhoAtualConteudoResultante += lenAPlusB + tamanhoConflitoSession;
+            
+            printf("Linha %d diferente\n", linha);
+
+            printf("A: %.*s\n", (int)tamA, ptrA);
+            printf("B: %.*s\n", (int)tamB, ptrB);
+        } else {
+            char linhaA[512];
+            sprintf(linhaA, "%.*s\n", (int)tamA, ptrA);
+            size_t lenLinhaA = strlen(linhaA);
+            if((tamanhoAtualConteudoResultante + lenLinhaA) >= tamanhoConteudoResultante) {
+                int tamanhoAnterior = tamanhoConteudoResultante;
+                tamanhoConteudoResultante = (tamanhoConteudoResultante * 2) + lenLinhaA;
+                char *temp = realloc(conteudoResultante, sizeof(char) * tamanhoConteudoResultante);
+                if(temp == NULL) {
+                    free(conteudoResultante);
+                    return 0;
+                }
+                memset(temp + tamanhoAnterior, 0, tamanhoConteudoResultante - tamanhoAnterior);
+                conteudoResultante = temp;
+            }
+            strcat(conteudoResultante, linhaA);
+            tamanhoAtualConteudoResultante += lenLinhaA;
+        }
+
+        ptrA += tamA;
+        ptrB += tamB;
+
+        if (*ptrA == '\n')
+            ptrA++;
+
+        if (*ptrB == '\n')
+            ptrB++;
+
+        linha++;
+    }
+
+    if (salva_arquivo_no_diretorio(diretorio, nome_arquivo, (unsigned char *)conteudoResultante, tamanhoAtualConteudoResultante)) {
+        free(conteudoResultante);
+        return 1;
+    }
+
+    free(conteudoResultante);
+    return 0;
+}
+
+static int _restaurar_e_monta_arquivo_para_resolucao(
+        Entry *entryA, 
+        Entry *entryB, 
+        char *branchAtual, 
+        char *hashBranchAtual, 
+        char *branchDestino, 
+        char *hashBranchdestino,
+        const char *diretorio, 
+        const char *nome_arquivo
+    ) {
+    
+    char hashStrA[65];
+    for (int i = 0; i < 32; i++) {
+        snprintf(hashStrA + i * 2, 3, "%02x", entryA->hash[i]);
+    }
+
+    char hashStrB[65];
+    for (int i = 0; i < 32; i++) {
+        snprintf(hashStrB + i * 2, 3, "%02x", entryB->hash[i]);
+    }
+    
+    long tamanhoA = 0;
+    unsigned char *bufferA = _ler_objeto(hashStrA, &tamanhoA);
+    if (!bufferA) {
+        printf("Erro: Falha ao ler objeto com hash %s\n", hashStrA);
+        return 1;
+    }
+    
+    long tamanhoB = 0;
+    unsigned char *bufferB = _ler_objeto(hashStrB, &tamanhoB);
+    if (!bufferB) {
+        printf("Erro: Falha ao ler objeto com hash %s\n", hashStrB);
+        return 1;
+    }
+
+    unsigned char *conteudoComprimidoA = _pular_header(bufferA);
+    unsigned char *conteudoComprimidoB = _pular_header(bufferB);
+    
+    size_t tamanhoConteudoComprimidoA = tamanhoA - (conteudoComprimidoA - bufferA);
+    size_t tamanhoConteudoComprimidoB = tamanhoB - (conteudoComprimidoB - bufferB);
+
+    ZipperFile arquivoZipA;
+    arquivoZipA.conteudoComprimido = (char *)conteudoComprimidoA;
+    arquivoZipA.tamanhoComprimido = tamanhoConteudoComprimidoA;
+
+    ZipperFile arquivoZipB;
+    arquivoZipB.conteudoComprimido = (char *)conteudoComprimidoB;
+    arquivoZipB.tamanhoComprimido = tamanhoConteudoComprimidoB;
+
+    char *conteudoDescompactadoA = descompacta_arquivos(arquivoZipA);
+    if (!conteudoDescompactadoA) {
+        printf("Erro: Falha ao descompactar conteúdo do arquivo: %s\n", entryA->path);
+        free(bufferA);
+        return 1;
+    }
+
+    char *conteudoDescompactadoB = descompacta_arquivos(arquivoZipB);
+    if (!conteudoDescompactadoB) {
+        printf("Erro: Falha ao descompactar conteúdo do arquivo: %s\n", entryB->path);
+        free(bufferA);
+        free(bufferB);
+        free(conteudoDescompactadoA);
+        return 1;
+    }
+
+    int resultado = _comparar_linhas(conteudoDescompactadoA, conteudoDescompactadoB, branchAtual, hashBranchAtual, branchDestino, hashBranchdestino, diretorio, nome_arquivo);
+    
+    free(bufferA);
+    free(bufferB);
+    free(conteudoDescompactadoA);
+    free(conteudoDescompactadoB);
+    
+    return resultado;
+}
 
 static int _command_join(char *destino) {
     // 1. Verifica se a branch destino existe
@@ -736,25 +920,53 @@ static int _command_join(char *destino) {
     for(int i = 0; i < tamanhoAtualAdicionar; i++) {
         printf("ADICIONAR: %s %s %s\n", adicionar[i].modo, adicionar[i].hash, adicionar[i].path);
         _restaurar_arquivo(&adicionar[i]);
-        command_track_path(aceitar[i].path);
+        command_track_path(adicionar[i].path);
     }
-
-    printf("Faz o save.\n");
-    // - TODO: Faz o commit do merge
 
     for(int i = 0; i < tamanhoAtualConflitos; i++) {
         printf("CONFLITOS, Arquivo A: %s %s %s\n", conflitos[i].entryA.modo, conflitos[i].entryA.hash, conflitos[i].entryA.path);
         printf("CONFLITOS, Arquivo B: %s %s %s\n", conflitos[i].entryB.modo, conflitos[i].entryB.hash, conflitos[i].entryB.path);
         // - TODO: Restaura arquivos e prepara para resolver conflitos
-    }
+        
+        char diretorio[1024];
+        char *ultima_barra = strrchr(conflitos[i].entryA.path, '/');
+        if (ultima_barra != NULL) {
+            int tamanho_dir = ultima_barra - conflitos[i].entryA.path;
+            strncpy(diretorio, conflitos[i].entryA.path, tamanho_dir);
+            diretorio[tamanho_dir] = '\0';
+        } else {
+            strcpy(diretorio, ".");
+        }
 
-    // Passos a baixo feitos no arquivo save:
-    // 8. Criar novo commit merge
-    //        |  tree <nova_tree>
-    //        |  parent <commit_main>
-    //        |  parent <commit_branch>
-    //      merge commit possui 2 parents
-    // 9. Atualizar main
+        // Extrai o nome do arquivo
+        char *nome_arquivo = ultima_barra != NULL ? ultima_barra + 1 : conflitos[i].entryA.path;
+
+        if(strlen(conflitos[i].entryA.modo) > 0 && strlen(conflitos[i].entryB.modo) > 0) {          
+            _restaurar_e_monta_arquivo_para_resolucao(
+                &conflitos[i].entryA, 
+                &conflitos[i].entryB, 
+                ref, 
+                headHash, 
+                destino, 
+                hashCommitBranchDestino, 
+                diretorio, 
+                nome_arquivo
+            );
+            command_track_path(conflitos[i].entryA.path);
+        } else {
+            if(strlen(conflitos[i].entryA.modo) > 0) {
+                printf("Modificado em A e apagado em B.\n");
+                _restaurar_arquivo(&conflitos[i].entryA);
+                command_track_path(conflitos[i].entryA.path);
+            }
+
+            if(strlen(conflitos[i].entryB.modo) > 0) {
+                printf("Modificado em B e apagado em A.\n");
+                _restaurar_arquivo(&conflitos[i].entryB);
+                command_track_path(conflitos[i].entryB.path);
+            }
+        }
+    }
 
 cleanup:
 
