@@ -318,9 +318,17 @@ static int _restaurar_arquivo(Entry *entry) {
     return 0;
 }
 
-static int _comparar_linhas(const char *conteudoA, const char *conteudoB) {
+static int _comparar_linhas(const char *conteudoA, const char *conteudoB, const char *branchAtual, const char *hashCommitAtual, const char *branchDestino, const char *hashCommitDestino) {
     const char *ptrA = conteudoA;
     const char *ptrB = conteudoB;
+
+    char *cabecalhoConflito;
+    sprintf(cabecalhoConflito, ">>>>>>> HEAD (%s) - %s", branchAtual, hashCommitAtual);
+    size_t tamanhoCabecalhoConflito = strlen(cabecalhoConflito);
+    
+    char *rodapeConflito;
+    sprintf(rodapeConflito, "<<<<<<< %s - %s", branchDestino, hashCommitDestino);
+    size_t tamanhoRodapeConflito = strlen(rodapeConflito);
 
     int linha = 1;
     int tamanhoConteudoResultante = 512;
@@ -335,6 +343,7 @@ static int _comparar_linhas(const char *conteudoA, const char *conteudoB) {
         size_t tamB = fimLinhaB ? (size_t)(fimLinhaB - ptrB) : strlen(ptrB);
         
         if (tamA != tamB || strncmp(ptrA, ptrB, tamA) != 0) {
+            
             printf("Linha %d diferente\n", linha);
 
             printf("A: %.*s\n", (int)tamA, ptrA);
@@ -352,8 +361,6 @@ static int _comparar_linhas(const char *conteudoA, const char *conteudoB) {
             }
             strcat(conteudoResultante, ptrA);
             tamanhoAtualConteudoResultante += tamA;
-            // printf("Linha %d igual\n", linha);
-            // printf("%.*s\n", (int)tamA, ptrA);
         }
 
         ptrA += tamA;
@@ -369,7 +376,7 @@ static int _comparar_linhas(const char *conteudoA, const char *conteudoB) {
     }
 }
 
-static int _restaurar_e_monta_arquivo_para_resolucao(Entry *entryA, Entry *entryB) {
+static int _restaurar_e_monta_arquivo_para_resolucao(Entry *entryA, Entry *entryB, char *branchAtual, char *hashBranchAtual, char *branchDestino, char *hashBranchdestino) {
     char hashStrA[65];
     for (int i = 0; i < 32; i++) {
         snprintf(hashStrA + i * 2, 3, "%02x", entryA->hash[i]);
@@ -422,7 +429,7 @@ static int _restaurar_e_monta_arquivo_para_resolucao(Entry *entryA, Entry *entry
         return 1;
     }
 
-    _comparar_linhas(conteudoDescompactadoA, conteudoDescompactadoB);
+    _comparar_linhas(conteudoDescompactadoA, conteudoDescompactadoB, branchAtual, hashBranchAtual, branchDestino, hashBranchdestino);
 }
 
 static int _command_join(char *destino) {
@@ -850,8 +857,8 @@ static int _command_join(char *destino) {
         printf("CONFLITOS, Arquivo B: %s %s %s\n", conflitos[i].entryB.modo, conflitos[i].entryB.hash, conflitos[i].entryB.path);
         // - TODO: Restaura arquivos e prepara para resolver conflitos
 
-        if(strcmp(conflitos[i].entryA.hash, "") != 0 && strcmp(conflitos[i].entryB.hash, "") != 0) {
-            _restaurar_e_monta_arquivo_para_resolucao(&conflitos[i].entryA, &conflitos[i].entryB);
+        if(strcmp(conflitos[i].entryA.hash, "") != 0 && strcmp(conflitos[i].entryB.hash, "") != 0) {          
+            _restaurar_e_monta_arquivo_para_resolucao(&conflitos[i].entryA, &conflitos[i].entryB, ref , headHash , destino , hashCommitBranchDestino);
         }
 
         // if(strcmp(conflitos[i].entryA.hash, "") != 0) {
