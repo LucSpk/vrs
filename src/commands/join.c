@@ -325,8 +325,8 @@ static int _comparar_linhas(
         const char *hashCommitAtual, 
         const char *branchDestino, 
         const char *hashCommitDestino,
-        const char diretorio, 
-        const char nome_arquivo
+        const char *diretorio, 
+        const char *nome_arquivo
     ) {
     
     const char *ptrA = conteudoA;
@@ -433,8 +433,8 @@ static int _restaurar_e_monta_arquivo_para_resolucao(
         char *hashBranchAtual, 
         char *branchDestino, 
         char *hashBranchdestino,
-        const char diretorio, 
-        const char nome_arquivo
+        const char *diretorio, 
+        const char *nome_arquivo
     ) {
     
     char hashStrA[65];
@@ -938,8 +938,8 @@ static int _command_join(char *destino) {
                 headHash, 
                 destino, 
                 hashCommitBranchDestino, 
-                &diretorio, 
-                &nome_arquivo
+                diretorio, 
+                nome_arquivo
             );
         }
 
