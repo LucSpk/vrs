@@ -487,11 +487,20 @@ static int _restaurar_e_monta_arquivo_para_resolucao(
     char *conteudoDescompactadoB = descompacta_arquivos(arquivoZipB);
     if (!conteudoDescompactadoB) {
         printf("Erro: Falha ao descompactar conteúdo do arquivo: %s\n", entryB->path);
+        free(bufferA);
         free(bufferB);
+        free(conteudoDescompactadoA);
         return 1;
     }
 
-    _comparar_linhas(conteudoDescompactadoA, conteudoDescompactadoB, branchAtual, hashBranchAtual, branchDestino, hashBranchdestino, diretorio, nome_arquivo);
+    int resultado = _comparar_linhas(conteudoDescompactadoA, conteudoDescompactadoB, branchAtual, hashBranchAtual, branchDestino, hashBranchdestino, diretorio, nome_arquivo);
+    
+    free(bufferA);
+    free(bufferB);
+    free(conteudoDescompactadoA);
+    free(conteudoDescompactadoB);
+    
+    return resultado;
 }
 
 static int _command_join(char *destino) {
@@ -911,7 +920,7 @@ static int _command_join(char *destino) {
     for(int i = 0; i < tamanhoAtualAdicionar; i++) {
         printf("ADICIONAR: %s %s %s\n", adicionar[i].modo, adicionar[i].hash, adicionar[i].path);
         _restaurar_arquivo(&adicionar[i]);
-        command_track_path(aceitar[i].path);
+        command_track_path(adicionar[i].path);
     }
 
     for(int i = 0; i < tamanhoAtualConflitos; i++) {
@@ -932,7 +941,7 @@ static int _command_join(char *destino) {
         // Extrai o nome do arquivo
         char *nome_arquivo = ultima_barra != NULL ? ultima_barra + 1 : conflitos[i].entryA.path;
 
-        if(strcmp(conflitos[i].entryA.hash, "") != 0 && strcmp(conflitos[i].entryB.hash, "") != 0) {          
+        if(strlen(conflitos[i].entryA.modo) > 0 && strlen(conflitos[i].entryB.modo) > 0) {          
             _restaurar_e_monta_arquivo_para_resolucao(
                 &conflitos[i].entryA, 
                 &conflitos[i].entryB, 
@@ -944,18 +953,18 @@ static int _command_join(char *destino) {
                 nome_arquivo
             );
             command_track_path(conflitos[i].entryA.path);
-        }
+        } else {
+            if(strlen(conflitos[i].entryA.modo) > 0) {
+                printf("Modificado em A e apagado em B.\n");
+                _restaurar_arquivo(&conflitos[i].entryA);
+                command_track_path(conflitos[i].entryA.path);
+            }
 
-        if(strcmp(conflitos[i].entryA.hash, "") != 0) {
-            printf("Modificado em A e apagado em B.\n");
-            _restaurar_arquivo(&conflitos[i].entryA);
-            command_track_path(conflitos[i].entryA.path);
-        }
-
-        if(strcmp(conflitos[i].entryB.hash, "") != 0) {
-            printf("Modificado em B e apagado em A.\n");
-            _restaurar_arquivo(&conflitos[i].entryB);
-            command_track_path(conflitos[i].entryB.path);
+            if(strlen(conflitos[i].entryB.modo) > 0) {
+                printf("Modificado em B e apagado em A.\n");
+                _restaurar_arquivo(&conflitos[i].entryB);
+                command_track_path(conflitos[i].entryB.path);
+            }
         }
     }
 
