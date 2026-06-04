@@ -323,9 +323,7 @@ static int _comparar_linhas(const char *conteudoA, const char *conteudoB) {
     const char *ptrB = conteudoB;
 
     int linha = 1;
-    int inicioLinhaA = 0;
-    int inicioLinhaB = 0;
-    printf("Comparação: \n");
+    
     while (*ptrA || *ptrB) {
 
         const char *fimLinhaA = strchr(ptrA, '\n');
