@@ -943,19 +943,20 @@ static int _command_join(char *destino) {
                 diretorio, 
                 nome_arquivo
             );
+            command_track_path(conflitos[i].entryA.path);
         }
 
-        // if(strcmp(conflitos[i].entryA.hash, "") != 0) {
-        //     printf("Modificado em A e apagado em B.\n");
-        //     _restaurar_arquivo(&conflitos[i].entryA);
-        //     command_track_path(conflitos[i].entryA.path);
-        // }
+        if(strcmp(conflitos[i].entryA.hash, "") != 0) {
+            printf("Modificado em A e apagado em B.\n");
+            _restaurar_arquivo(&conflitos[i].entryA);
+            command_track_path(conflitos[i].entryA.path);
+        }
 
-        // if(strcmp(conflitos[i].entryB.hash, "") != 0) {
-        //     printf("Modificado em B e apagado em A.\n");
-        //     _restaurar_arquivo(&conflitos[i].entryB);
-        //     command_track_path(conflitos[i].entryB.path);
-        // }
+        if(strcmp(conflitos[i].entryB.hash, "") != 0) {
+            printf("Modificado em B e apagado em A.\n");
+            _restaurar_arquivo(&conflitos[i].entryB);
+            command_track_path(conflitos[i].entryB.path);
+        }
     }
 
 cleanup:
