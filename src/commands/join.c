@@ -319,6 +319,8 @@ static int _restaurar_arquivo(Entry *entry) {
 }
 
 static int _comparar_linhas(const char *conteudoA, const char *conteudoB) {
+    const char *ptrA = conteudoA;
+    const char *ptrB = conteudoB;
     printf("Arquivo A: %s\n", conteudoA);
     printf("\n\n\n\n\n\n\n");
     printf("Arquivo B: %s\n", conteudoB);
