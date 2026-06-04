@@ -318,7 +318,17 @@ static int _restaurar_arquivo(Entry *entry) {
     return 0;
 }
 
-static int _comparar_linhas(const char *conteudoA, const char *conteudoB, const char *branchAtual, const char *hashCommitAtual, const char *branchDestino, const char *hashCommitDestino) {
+static int _comparar_linhas(
+        const char *conteudoA, 
+        const char *conteudoB, 
+        const char *branchAtual, 
+        const char *hashCommitAtual, 
+        const char *branchDestino, 
+        const char *hashCommitDestino,
+        const char diretorio, 
+        const char nome_arquivo
+    ) {
+    
     const char *ptrA = conteudoA;
     const char *ptrB = conteudoB;
 
@@ -371,7 +381,7 @@ static int _comparar_linhas(const char *conteudoA, const char *conteudoB, const 
             strcat(conteudoResultante, divisor);
             strcat(conteudoResultante, linhaB);
             strcat(conteudoResultante, rodapeConflito);
-            tamanhoAtualConteudoResultante += lenAPlusB;
+            tamanhoAtualConteudoResultante += lenAPlusB + tamanhoConflitoSession;
             
             printf("Linha %d diferente\n", linha);
 
@@ -406,9 +416,27 @@ static int _comparar_linhas(const char *conteudoA, const char *conteudoB, const 
 
         linha++;
     }
+
+    if (salva_arquivo_no_diretorio(diretorio, nome_arquivo, (unsigned char *)conteudoResultante, tamanhoAtualConteudoResultante)) {
+        free(conteudoResultante);
+        return 1;
+    }
+
+    free(conteudoResultante);
+    return 0;
 }
 
-static int _restaurar_e_monta_arquivo_para_resolucao(Entry *entryA, Entry *entryB, char *branchAtual, char *hashBranchAtual, char *branchDestino, char *hashBranchdestino) {
+static int _restaurar_e_monta_arquivo_para_resolucao(
+        Entry *entryA, 
+        Entry *entryB, 
+        char *branchAtual, 
+        char *hashBranchAtual, 
+        char *branchDestino, 
+        char *hashBranchdestino,
+        const char diretorio, 
+        const char nome_arquivo
+    ) {
+    
     char hashStrA[65];
     for (int i = 0; i < 32; i++) {
         snprintf(hashStrA + i * 2, 3, "%02x", entryA->hash[i]);
@@ -461,7 +489,7 @@ static int _restaurar_e_monta_arquivo_para_resolucao(Entry *entryA, Entry *entry
         return 1;
     }
 
-    _comparar_linhas(conteudoDescompactadoA, conteudoDescompactadoB, branchAtual, hashBranchAtual, branchDestino, hashBranchdestino);
+    _comparar_linhas(conteudoDescompactadoA, conteudoDescompactadoB, branchAtual, hashBranchAtual, branchDestino, hashBranchdestino, diretorio, nome_arquivo);
 }
 
 static int _command_join(char *destino) {
@@ -888,9 +916,31 @@ static int _command_join(char *destino) {
         printf("CONFLITOS, Arquivo A: %s %s %s\n", conflitos[i].entryA.modo, conflitos[i].entryA.hash, conflitos[i].entryA.path);
         printf("CONFLITOS, Arquivo B: %s %s %s\n", conflitos[i].entryB.modo, conflitos[i].entryB.hash, conflitos[i].entryB.path);
         // - TODO: Restaura arquivos e prepara para resolver conflitos
+        
+        char diretorio[1024];
+        char *ultima_barra = strrchr(conflitos[i].entryA.path, '/');
+        if (ultima_barra != NULL) {
+            int tamanho_dir = ultima_barra - conflitos[i].entryA.path;
+            strncpy(diretorio, conflitos[i].entryA.path, tamanho_dir);
+            diretorio[tamanho_dir] = '\0';
+        } else {
+            strcpy(diretorio, ".");
+        }
+
+        // Extrai o nome do arquivo
+        char *nome_arquivo = ultima_barra != NULL ? ultima_barra + 1 : conflitos[i].entryA.path;
 
         if(strcmp(conflitos[i].entryA.hash, "") != 0 && strcmp(conflitos[i].entryB.hash, "") != 0) {          
-            _restaurar_e_monta_arquivo_para_resolucao(&conflitos[i].entryA, &conflitos[i].entryB, ref , headHash , destino , hashCommitBranchDestino);
+            _restaurar_e_monta_arquivo_para_resolucao(
+                &conflitos[i].entryA, 
+                &conflitos[i].entryB, 
+                ref, 
+                headHash, 
+                destino, 
+                hashCommitBranchDestino, 
+                &diretorio, 
+                &nome_arquivo
+            );
         }
 
         // if(strcmp(conflitos[i].entryA.hash, "") != 0) {
