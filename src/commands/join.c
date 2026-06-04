@@ -323,39 +323,39 @@ static int _comparar_linhas(const char *conteudoA, const char *conteudoB) {
     const char *ptrB = conteudoB;
 
     int linha = 1;
-
+    int inicioLinhaA = 0;
+    int inicioLinhaB = 0;
     printf("Comparação: \n");
     while (*ptrA || *ptrB) {
-        // printf("%s\n", ptrA);
-        // printf("%s\n", ptrB);
 
-        const char *linhaA = strchr(ptrA, '\n');
-        const char *linhaB = strchr(ptrB, '\n');
-        
-        if(linhaA != NULL) {
-            printf("Encontrou '\\n' na posição %ld\n", linhaA - ptrA);
-            printf("%s\n", ptrA);
-            printf("linha A: %s\n", linhaA);
-        }
-        
-        if(linhaB != NULL) {
-            printf("Encontrou '\\n' na posição %ld\n", linhaB - ptrB);
-            printf("%s\n", ptrB);
-            printf("linha B: %s\n", linhaB);
-        }
-        // printf("linha A: %s\n", linhaA);
-        // printf("linha B: %s\n", linhaB);
+        const char *fimLinhaA = strchr(ptrA, '\n');
+        const char *fimLinhaB = strchr(ptrB, '\n');
 
-        ptrA++;
-        ptrB++;
+        size_t tamA = fimLinhaA ? (size_t)(fimLinhaA - ptrA) : strlen(ptrA);
+        size_t tamB = fimLinhaB ? (size_t)(fimLinhaB - ptrB) : strlen(ptrB);
+        
+        if (tamA != tamB || strncmp(ptrA, ptrB, tamA) != 0) {
+            printf("Linha %d diferente\n", linha);
+
+            printf("A: %.*s\n", (int)tamA, ptrA);
+            printf("B: %.*s\n", (int)tamB, ptrB);
+        } else {
+            printf("Linha %d igual\n", linha);
+
+            printf("%.*s\n", (int)tamA, ptrA);
+        }
+
+        ptrA += tamA;
+        ptrB += tamB;
+
+        if (*ptrA == '\n')
+            ptrA++;
+
+        if (*ptrB == '\n')
+            ptrB++;
+
+        linha++;
     }
-    
-
-    printf("Arquivo A: %s\n", conteudoA);
-    printf("\n\n\n\n\n\n\n");
-    printf("Arquivo B: %s\n", conteudoB);
-    printf("Chegou aqui.\n");
-    return 0;
 }
 
 static int _restaurar_e_monta_arquivo_para_resolucao(Entry *entryA, Entry *entryB) {
