@@ -346,7 +346,7 @@ static int _comparar_linhas(
     int linha = 1;
     int tamanhoConteudoResultante = 512;
     int tamanhoAtualConteudoResultante = 0;
-    char *conteudoResultante = malloc(sizeof(char) * tamanhoConteudoResultante);
+    char *conteudoResultante = calloc(tamanhoConteudoResultante, sizeof(char));
     while (*ptrA || *ptrB) {
 
         const char *fimLinhaA = strchr(ptrA, '\n');
@@ -367,13 +367,14 @@ static int _comparar_linhas(
             size_t lenAPlusB = lenLinhaA + lenLinhaB;
 
             if(tamanhoAtualConteudoResultante + (lenAPlusB + tamanhoConflitoSession) >= tamanhoConteudoResultante) {
+                int tamanhoAnterior = tamanhoConteudoResultante;
                 tamanhoConteudoResultante = (tamanhoConteudoResultante * 2) + (lenAPlusB + tamanhoConflitoSession);
                 char *temp = realloc(conteudoResultante, sizeof(char) * tamanhoConteudoResultante);
                 if(temp == NULL) {
                     free(conteudoResultante);
                     return 0;
                 }
-
+                memset(temp + tamanhoAnterior, 0, tamanhoConteudoResultante - tamanhoAnterior);
                 conteudoResultante = temp;
             }
             strcat(conteudoResultante, cabecalhoConflito);
@@ -392,13 +393,14 @@ static int _comparar_linhas(
             sprintf(linhaA, "%.*s\n", (int)tamA, ptrA);
             size_t lenLinhaA = strlen(linhaA);
             if((tamanhoAtualConteudoResultante + lenLinhaA) >= tamanhoConteudoResultante) {
+                int tamanhoAnterior = tamanhoConteudoResultante;
                 tamanhoConteudoResultante = (tamanhoConteudoResultante * 2) + lenLinhaA;
                 char *temp = realloc(conteudoResultante, sizeof(char) * tamanhoConteudoResultante);
                 if(temp == NULL) {
                     free(conteudoResultante);
                     return 0;
                 }
-
+                memset(temp + tamanhoAnterior, 0, tamanhoConteudoResultante - tamanhoAnterior);
                 conteudoResultante = temp;
             }
             strcat(conteudoResultante, linhaA);
