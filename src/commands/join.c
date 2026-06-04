@@ -323,7 +323,9 @@ static int _comparar_linhas(const char *conteudoA, const char *conteudoB) {
     const char *ptrB = conteudoB;
 
     int linha = 1;
-    
+    int tamanhoConteudoResultante = 512;
+    int tamanhoAtualConteudoResultante = 0;
+    char *conteudoResultante = malloc(sizeof(char *) * tamanhoConteudoResultante);
     while (*ptrA || *ptrB) {
 
         const char *fimLinhaA = strchr(ptrA, '\n');
@@ -338,9 +340,21 @@ static int _comparar_linhas(const char *conteudoA, const char *conteudoB) {
             printf("A: %.*s\n", (int)tamA, ptrA);
             printf("B: %.*s\n", (int)tamB, ptrB);
         } else {
-            printf("Linha %d igual\n", linha);
 
-            printf("%.*s\n", (int)tamA, ptrA);
+            if((tamanhoAtualConteudoResultante + tamA) >= tamanhoConteudoResultante) {
+                tamanhoConteudoResultante = (tamanhoConteudoResultante * 2) + tamA;
+                char *temp = realloc(conteudoResultante, sizeof(char *) * tamanhoConteudoResultante);
+                if(temp == NULL) {
+                    free(conteudoResultante);
+                    return 0;
+                }
+
+                conteudoResultante = temp;
+                strcat(conteudoResultante, ptrA);
+            }
+            
+            // printf("Linha %d igual\n", linha);
+            // printf("%.*s\n", (int)tamA, ptrA);
         }
 
         ptrA += tamA;
