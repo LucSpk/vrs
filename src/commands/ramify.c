@@ -65,3 +65,34 @@ static int _command_ramify(char branchName[]) {
 int command_ramify(char branchName[]) {
     return _command_ramify(branchName);
 }
+
+int command_ramify_from(char branchName[], char parentHash[]) {
+    // 1. Verifica se ramificação ja existe nos refs
+    
+    char path[] = "./.vsr/refs/heads/";
+    strcat(path, branchName);
+
+    int err = 0;
+    err = verifica(path);
+    if(!err) {
+        // 2. Caso exista dê um erro "Ramificação ja existe"
+        printf("Ramificação ja existe");
+        return 1;
+    }
+
+    FILE *newBranchFile = fopen(path, "w");
+    if(newBranchFile == NULL) {
+        printf("Erro: Não foi possível criar o arquivo: %s\n", path);
+        return 1;
+    }
+
+    fprintf(newBranchFile, "%s", parentHash);
+    fclose(newBranchFile);
+
+    // 4. Muda o ref para qual o HEAD aponta
+    FILE *headWriteFile = fopen("./.vsr/HEAD", "w");
+    fprintf(headWriteFile, "ref: refs/heads/%s\n", branchName);
+
+    fclose(headWriteFile);
+    return 0;
+}
