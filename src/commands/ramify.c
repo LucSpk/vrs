@@ -2,6 +2,10 @@
 #include <string.h>
 #include <limits.h>
 
+#ifndef PATH_MAX
+#define PATH_MAX 4096
+#endif
+
 #include "../../includes/core/io.h"
 
 int command_ramify_from(char branchName[], char parentHash[]) {
