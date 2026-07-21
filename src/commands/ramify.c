@@ -3,6 +3,39 @@
 
 #include "../../includes/core/io.h"
 
+int command_ramify_from(char branchName[], char parentHash[]) {
+    // 1. Verifica se ramificação ja existe nos refs
+    char path[] = "./.vsr/refs/heads/";
+    strcat(path, branchName);
+
+    int err = 0;
+    err = verifica(path);
+    if(!err) {
+        // 2. Caso exista dê um erro "Ramificação ja existe"
+        printf("Ramificação ja existe");
+        return 1;
+    }
+
+    FILE *newBranchFile = fopen(path, "w");
+    if(newBranchFile == NULL) {
+        printf("Erro: Não foi possível criar o arquivo: %s\n", path);
+        return 1;
+    }
+
+    fprintf(newBranchFile, "%s", parentHash);
+    fclose(newBranchFile);
+
+    // 4. Muda o ref para qual o HEAD aponta
+    FILE *headWriteFile = fopen("./.vsr/HEAD", "w");
+    fprintf(headWriteFile, "ref: refs/heads/%s\n", branchName);
+
+    fclose(headWriteFile);
+
+    printf("Ramificação '%s' criada com sucesso!\n", branchName);
+
+    return 0;
+}
+
 static int _command_ramify(char branchName[]) {
     // 3. Caso não exista crie a ref com o nome da nova branch e o commit anterior da branch atual
     FILE *headFile = fopen("./.vsr/HEAD", "r");
@@ -33,36 +66,6 @@ static int _command_ramify(char branchName[]) {
     fclose(refFile);
 
     return command_ramify_from(branchName, parentHash);
-}
-
-int command_ramify_from(char branchName[], char parentHash[]) {
-    // 1. Verifica se ramificação ja existe nos refs
-    char path[] = "./.vsr/refs/heads/";
-    strcat(path, branchName);
-
-    int err = 0;
-    err = verifica(path);
-    if(!err) {
-        // 2. Caso exista dê um erro "Ramificação ja existe"
-        printf("Ramificação ja existe");
-        return 1;
-    }
-
-    FILE *newBranchFile = fopen(path, "w");
-    if(newBranchFile == NULL) {
-        printf("Erro: Não foi possível criar o arquivo: %s\n", path);
-        return 1;
-    }
-
-    fprintf(newBranchFile, "%s", parentHash);
-    fclose(newBranchFile);
-
-    // 4. Muda o ref para qual o HEAD aponta
-    FILE *headWriteFile = fopen("./.vsr/HEAD", "w");
-    fprintf(headWriteFile, "ref: refs/heads/%s\n", branchName);
-
-    fclose(headWriteFile);
-    return 0;
 }
 
 int command_ramify(char branchName[]) {
