@@ -20,13 +20,13 @@ int command_ramify_from(char branchName[], char parentHash[]) {
     err = verifica(path);
     if(!err) {
         // 2. Caso exista dê um erro "Ramificação ja existe"
-        printf("Ramificação ja existe");
+        printf("Ramificação ja existe.\n");
         return 1;
     }
 
     FILE *newBranchFile = fopen(path, "w");
     if(newBranchFile == NULL) {
-        printf("Erro: Não foi possível criar o arquivo: %s\n", path);
+        printf("Erro: Não foi possível criar o arquivo: %s.\n", path);
         return 1;
     }
 
@@ -52,7 +52,7 @@ static int _command_ramify(char branchName[]) {
     // 3. Caso não exista crie a ref com o nome da nova branch e o commit anterior da branch atual
     FILE *headFile = fopen("./.vsr/HEAD", "r");
     if(headFile == NULL) {
-        printf("Erro: Falha ao abrir arquivo HEAD\n");
+        printf("Erro: Falha ao abrir arquivo HEAD.\n");
         return 1;
     }
 
