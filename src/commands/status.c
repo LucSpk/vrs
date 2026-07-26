@@ -25,9 +25,9 @@ int _command_status() {
     char path[1024];
     char status[32];
 
-    int tamanhoStaged = 10;
-    char **staged = malloc(sizeof(char *) * tamanhoStaged);
-    int tamanhoAtualStaged = 0;
+    int tamanhoNewFile = 10;
+    char **newFile = malloc(sizeof(char *) * tamanhoNewFile);
+    int tamanhoAtualNewFile = 0;
 
     int tamanhoModified = 10;
     char **modified = malloc(sizeof(char *) * tamanhoModified);
@@ -40,29 +40,29 @@ int _command_status() {
 
         sscanf(linha, "%s %s %s", hash, path, status);
         
-        if(strcmp(status, "staged") == 0) {
-            if(tamanhoAtualStaged >= tamanhoStaged) {
-                tamanhoStaged *= 2;
-                char **temp = realloc(staged, sizeof(char *) * tamanhoStaged);
+        if(strcmp(status, "new file") == 0) {
+            if(tamanhoAtualNewFile >= tamanhoNewFile) {
+                tamanhoNewFile *= 2;
+                char **temp = realloc(newFile, sizeof(char *) * tamanhoNewFile);
                 if (!temp) {
-                    printf("Erro no realloc de staged.\n");
+                    printf("Erro no realloc de new file.\n");
                     return 1;
                 }
-                staged = temp;
+                newFile = temp;
             }
 
-            int tamanhoResult = strlen(path) + 11;    // - "staged:   + <path> + \0"
+            int tamanhoResult = strlen(path) + 11;    // - "new file:   + <path> + \0"
             char result[tamanhoResult]; 
-            snprintf(result, tamanhoResult, "staged:   %s", path);
+            snprintf(result, tamanhoResult, "new file:   %s", path);
 
-            staged[tamanhoAtualStaged] = malloc(sizeof(char) * tamanhoResult);
-            if(staged[tamanhoAtualStaged] == NULL) {
+            newFile[tamanhoAtualNewFile] = malloc(sizeof(char) * tamanhoResult);
+            if(newFile[tamanhoAtualNewFile] == NULL) {
                 printf("ERRO: Falha na alocação de memória (malloc retornou NULL)\n");
                 return 1;
             }
 
-            strcpy(staged[tamanhoAtualStaged], result);
-            tamanhoAtualStaged++;
+            strcpy(newFile[tamanhoAtualNewFile], result);
+            tamanhoAtualNewFile++;
         }
 
         if(strcmp(status, "modified") == 0) {
@@ -91,8 +91,8 @@ int _command_status() {
         }
     }
 
-    for(int i = 0; i < tamanhoAtualStaged; i++) {
-        printf("%s\n", staged[i]);
+    for(int i = 0; i < tamanhoAtualNewFile; i++) {
+        printf("%s\n", newFile[i]);
     }
 
     for(int i = 0; i < tamanhoAtualModified; i++) {
