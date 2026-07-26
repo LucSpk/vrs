@@ -128,13 +128,24 @@ static void _hash_binario_para_hex(unsigned char hash[32], char hex[65]) {
 }
 
 static int _command_compare_simples_dois_objetos(char objeto_a[], char objeto_b[]) {
+    char hashA[65];
+    if (resolver_referencia_para_hash(objeto_a, hashA, sizeof(hashA)) != 0) {
+        printf("Erro: referência inválida '%s'.\n", objeto_a);
+        return 1;
+    }
+
+    char hashB[65];
+    if (resolver_referencia_para_hash(objeto_b, hashB, sizeof(hashB)) != 0) {
+        printf("Erro: referência inválida '%s'.\n", objeto_b);
+        return 1;
+    }
     
     // 1. Lê os dois commits
     long tamanhoCommitA;
-    unsigned char *bufferCommitA = _ler_objeto(objeto_a, &tamanhoCommitA);
+    unsigned char *bufferCommitA = _ler_objeto(hashA, &tamanhoCommitA);
 
     long tamanhoCommitB;
-    unsigned char *bufferCommitB = _ler_objeto(objeto_b, &tamanhoCommitB);
+    unsigned char *bufferCommitB = _ler_objeto(hashB, &tamanhoCommitB);
 
     if (!bufferCommitA || !bufferCommitB) {
         printf("Erro: Falha ao ler algum commit.\n");
