@@ -90,7 +90,6 @@ void execuit() {
 int main(int argc, char *argv[]) {
 
     if(strcmp(argv[1], "start") == 0) {
-        char **filePaths = NULL;
         command_start();
         return 0; 
     }
