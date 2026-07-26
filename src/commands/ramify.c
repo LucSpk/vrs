@@ -8,7 +8,7 @@
 
 #include "../../includes/core/io.h"
 
-int command_ramify_from(char branchName[], char parentHash[]) {
+static int _command_ramify_from(char branchName[], char parentHash[]) {
     // 1. Verifica se ramificação ja existe nos refs
     char path[PATH_MAX];
     if (snprintf(path, sizeof(path), "./.vsr/refs/heads/%s", branchName) >= (int)sizeof(path)) {
@@ -86,6 +86,15 @@ static int _command_ramify(char branchName[]) {
     fclose(refFile);
 
     return command_ramify_from(branchName, parentHash);
+}
+
+int command_ramify_from(char branchName[], char reference[]) {
+    char hash[65];
+    if (resolver_referencia_para_hash(reference, hash, sizeof(hash)) != 0) {
+        printf("Erro: referência inválida '%s'.\n", reference);
+        return 1;
+    }
+    return _command_ramify_from(branchName, hash);
 }
 
 int command_ramify(char branchName[]) {
