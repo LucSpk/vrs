@@ -245,6 +245,13 @@ static int _command_compare_simples_dois_objetos(char objeto_a[], char objeto_b[
 }
 
 static int _command_compare_simples_um_objeto(char objeto_a[]) {
+    char hashA[65];
+    if (resolver_referencia_para_hash(objeto_a, hashA, sizeof(hashA)) != 0) {
+        printf("Erro: referência inválida '%s'.\n", objeto_a);
+        return 1;
+    }
+
+
     FILE *headFile = fopen("./.vsr/HEAD", "r");
     if(headFile == NULL) {
         printf("Erro: Falha ao abrir arquivo HEAD\n");
@@ -272,7 +279,7 @@ static int _command_compare_simples_um_objeto(char objeto_a[]) {
     headHash[strcspn(headHash, "\n")] = '\0';
     fclose(refFile);
 
-    return _command_compare_simples_dois_objetos(objeto_a, headHash);
+    return _command_compare_simples_dois_objetos(hashA, headHash);
 }
 
 int command_compare_simples_dois_objetos(char objeto_a[], char objeto_b[]) {
