@@ -7,6 +7,7 @@
 #endif
 
 #include "../../includes/core/io.h"
+#include "../../includes/core/utils.h"
 
 static int _command_ramify_from(char branchName[], char parentHash[]) {
     // 1. Verifica se ramificação ja existe nos refs
@@ -85,7 +86,7 @@ static int _command_ramify(char branchName[]) {
     parentHash[strcspn(parentHash, "\n")] = '\0';
     fclose(refFile);
 
-    return command_ramify_from(branchName, parentHash);
+    return _command_ramify_from(branchName, parentHash);
 }
 
 int command_ramify_from(char branchName[], char reference[]) {
