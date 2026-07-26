@@ -44,10 +44,12 @@ int identificar_tipo_referencia(const char *valor) {
 }
 
 int resolver_referencia_para_hash(const char *referencia, char *saida, size_t tamanho) {
+    // - Verifica se a referência é um hash válido
     if (referencia == NULL || saida == NULL || tamanho == 0) {
         return 1;
     }
 
+    // - Se for um hash válido, copia diretamente para a saída
     if (identificar_tipo_referencia(referencia) == TIPO_REFERENCIA_HASH) {
         if (snprintf(saida, tamanho, "%s", referencia) >= (int)tamanho) {
             return 1;
@@ -55,29 +57,35 @@ int resolver_referencia_para_hash(const char *referencia, char *saida, size_t ta
         return 0;
     }
 
+    // - Se for uma referência inválida, retorna erro
     if (identificar_tipo_referencia(referencia) == TIPO_REFERENCIA_INVALIDA) {
         return 1;
     }
 
+    // - Se for uma referência de branch, lê o arquivo correspondente
     char path[PATH_MAX];
     if (snprintf(path, sizeof(path), "./.vsr/refs/heads/%s", referencia) >= (int)sizeof(path)) {
         return 1;
     }
 
+    // - Lê o conteúdo do arquivo da branch
     FILE *refFile = fopen(path, "r");
     if (refFile == NULL) {
         return 1;
     }
 
+    // - Lê o hash do arquivo da branch
     char valor[129];
     if (fgets(valor, sizeof(valor), refFile) == NULL) {
         fclose(refFile);
         return 1;
     }
 
+    // - Remove o caractere de nova linha, se presente
     fclose(refFile);
     valor[strcspn(valor, "\n")] = '\0';
 
+    // - Copia o hash para a saída
     if (snprintf(saida, tamanho, "%s", valor) >= (int)tamanho) {
         return 1;
     }
