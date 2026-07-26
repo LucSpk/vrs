@@ -40,7 +40,7 @@ int _command_status() {
 
         sscanf(linha, "%s %s %s", hash, path, status);
         
-        if(strcmp(status, "new file") == 0) {
+        if(strcmp(status, "new") == 0) {
             if(tamanhoAtualNewFile >= tamanhoNewFile) {
                 tamanhoNewFile *= 2;
                 char **temp = realloc(newFile, sizeof(char *) * tamanhoNewFile);
@@ -53,7 +53,7 @@ int _command_status() {
 
             int tamanhoResult = strlen(path) + 11;    // - "new file:   + <path> + \0"
             char result[tamanhoResult]; 
-            snprintf(result, tamanhoResult, "new file:   %s", path);
+            snprintf(result, tamanhoResult, "new:   %s", path);
 
             newFile[tamanhoAtualNewFile] = malloc(sizeof(char) * tamanhoResult);
             if(newFile[tamanhoAtualNewFile] == NULL) {

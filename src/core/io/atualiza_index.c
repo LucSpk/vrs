@@ -56,7 +56,7 @@ static int _atualiza_index(char *hash, char *fileName) {
 
     // arquivo novo
     if(!existe) {
-        fprintf(temp, "%s %s new file\n", hash, fileName);
+        fprintf(temp, "%s %s new\n", hash, fileName);
     }
 
     fclose(file);
